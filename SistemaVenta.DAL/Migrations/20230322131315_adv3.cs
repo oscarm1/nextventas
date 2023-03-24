@@ -5,25 +5,24 @@
 namespace nextadvisordotnet.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class adv : Migration
+    public partial class adv3 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "Rnt",
-                table: "Establishments",
-                type: "nvarchar(max)",
-                nullable: false,
-                defaultValue: "");
+            migrationBuilder.RenameColumn(
+                name: "TypeDocument",
+                table: "Guests",
+                newName: "DocumentType");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "Rnt",
-                table: "Establishments");
+            migrationBuilder.RenameColumn(
+                name: "DocumentType",
+                table: "Guests",
+                newName: "TypeDocument");
         }
     }
 }

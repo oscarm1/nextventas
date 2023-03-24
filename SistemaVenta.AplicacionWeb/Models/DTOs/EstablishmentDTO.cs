@@ -12,6 +12,7 @@
         public string PhoneNumber { get; set; }
         public string Token { get; set; }
         public string Rnt { get; set; }
+        public string AccomodationType { get; set; }
         public int? isActive { get; set; }
         public DateTime CreationDate { get; set; }
         public DateTime ModificationDate { get; set; }

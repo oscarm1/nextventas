@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SistemaVenta.DAL.DBContext;
 
@@ -11,9 +12,11 @@ using SistemaVenta.DAL.DBContext;
 namespace nextadvisordotnet.DAL.Migrations
 {
     [DbContext(typeof(DbventaContext))]
-    partial class DbventaContextModelSnapshot : ModelSnapshot
+    [Migration("20230323135127_adv4")]
+    partial class adv4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

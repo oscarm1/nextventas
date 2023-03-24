@@ -43,9 +43,9 @@ public partial class DbventaContext : DbContext
     public virtual DbSet<Movimiento> Movimiento { get; set; }
     //  public virtual DbSet<Pedido> Pedido { get; set; }
 
-    public DbSet<Companion> Companions { get; set; }
+    //public DbSet<Companion> Companions { get; set; }
     public DbSet<Guest> Guests { get; set; }
-    public DbSet<GuestRoom> GuestRooms { get; set; }
+    public DbSet<Book> Books { get; set; }
     public DbSet<Establishment> Establishments { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<Room> Rooms { get; set; }
@@ -467,30 +467,22 @@ public partial class DbventaContext : DbContext
         });
 
 
-        modelBuilder.Entity<Companion>()
-    .HasKey(c => c.IdCompanion);
-
-        modelBuilder.Entity<Companion>()
-            .HasOne(c => c.Guest)
-            .WithMany(g => g.Companions)
-            .HasForeignKey(c => c.IdGuest);
-
         OnModelCreatingPartial(modelBuilder);
         modelBuilder.Entity<Guest>()
             .HasKey(g => g.IdGuest);
 
         OnModelCreatingPartial(modelBuilder);
-        modelBuilder.Entity<GuestRoom>()
-            .HasKey(gr => gr.IdGuestRoom);
+        modelBuilder.Entity<Book>()
+            .HasKey(gr => gr.IdBook);
 
-        modelBuilder.Entity<GuestRoom>()
-            .HasOne(gr => gr.Room)
-            .WithMany(r => r.GuestRooms)
+        modelBuilder.Entity<Book>()
+            .HasOne(gr => gr.IdRoomNavigation)
+            .WithMany(r => r.book)
             .HasForeignKey(gr => gr.IdRoom);
 
-        modelBuilder.Entity<GuestRoom>()
-            .HasOne(gr => gr.Guest)
-            .WithMany(g => g.GuestRooms)
+        modelBuilder.Entity<Book>()
+            .HasOne(gr => gr.IdGuestNavigation)
+            .WithMany(g => g.book)
             .HasForeignKey(gr => gr.IdGuest)
             .OnDelete(DeleteBehavior.NoAction);
 
@@ -521,11 +513,6 @@ public partial class DbventaContext : DbContext
         OnModelCreatingPartial(modelBuilder);
         modelBuilder.Entity<Room>()
             .HasKey(r => r.IdRoom);
-
-        //modelBuilder.Entity<Room>()
-        //    .HasOne(r => r.Guest)
-        //    .WithMany(g => g.Rooms)
-        //    .HasForeignKey(r => r.IdGuest);
 
         modelBuilder.Entity<Room>()
             .HasOne(r => r.IdEstablishmentNavigation)
@@ -583,10 +570,6 @@ public partial class DbventaContext : DbContext
         modelBuilder.Entity<Company>()
             .Property(c => c.PhoneNumber)
             .HasMaxLength(20);
-
-        //modelBuilder.Entity<Company>()
-        //    .Property(c => c.Activity)
-        //    .HasMaxLength(100);
 
         modelBuilder.Entity<Company>()
             .Property(c => c.CreationDate)

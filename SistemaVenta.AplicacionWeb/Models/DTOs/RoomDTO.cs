@@ -1,4 +1,6 @@
-﻿namespace SistemaVenta.AplicacionWeb.Models.DTOs
+﻿using SistemaVenta.Entity;
+
+namespace SistemaVenta.AplicacionWeb.Models.DTOs
 {
     public class RoomDTO
     {
@@ -14,8 +16,13 @@
         public string? NameImage { get; set; }
         public string? UrlImage { get; set; }
         public decimal? Price { get; set; }
+        public string Status { get; set; }
         public int? isActive { get; set; }
         public DateTime CreationDate { get; set; }
         public DateTime ModificationDate { get; set; }
+        public virtual CategoriaDTO? IdCategoriaNavigation { get; set; }
+        public virtual EstablishmentDTO? IdEstablishmentNavigation { get; set; }
+        public virtual ICollection<BookDTO> bookDTO { get; set; }
+
     }
 }

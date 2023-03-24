@@ -26,11 +26,19 @@
             line-height: 1.5;
             border-radius: 0.2rem;
         }
+
+
+        .detailRes {
+            position: fixed;
+            top: 94px;
+            z-index: 999;
+        }
+
     </style>
 }
 
     <div class="row">
-        <div class="col-sm-8">
+        <div class="col-sm-8" id="masterDetail">
             <div class="row">
                 <div class="col-sm-12">
                     <div class="card shadow mb-4">
@@ -108,115 +116,130 @@
                             <h6 class="m-0 font-weight-bold text-white">Huesped Principal</h6>
                         </div>
                         <div class="collapse" id="collapseGuest">
-
                             <div class="card-body">
-                                <form>
-                                    <div class="mb-3 d-flex flex-wrap justify-content-between align-items-center">
-                                        <div class="mb-3">
-                                            <select class="form-select form-control" aria-label="Tipo de Documento">
-                                                <option selected>Abre este menú select</option>
-                                                <option value="1">CC</option>
-                                                <option value="2">CE</option>
-                                                <option value="3">DNI</option>
-                                            </select>
+                                <form class="row g-3">
+                                    <div class="col-md-4">
+                                        <label for="DocumentType" class="form-label">Tipo Identificación</label>
+                                        <select id="DocumentType" class="form-select form-control">
+                                            <option selected>Elige...</option>
+                                            <option value="CC">CC</option>
+                                            <option value="TI">TI</option>
+                                            <option value="CE">CE</option>
+                                            <option value="Pasaporte">Pasaporte</option>
+                                            <option value="DNI">DNI</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="Document" class="form-label">N. Identificación</label>
+                                        <input type="text" class="form-control" id="Document">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label for="IdRoom" class="form-label">N. Habitación</label>
+                                        <select class="form-select form-control input-room" id="IdRoom">
+                                            <option selected>Elige...</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="Name" class="form-label">Nombres</label>
+                                        <input type="text" class="form-control" id="Name">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="LastName" class="form-label">Apellidos</label>
+                                        <input type="text" class="form-control" id="LastName">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="RecidenceCity" class="form-label">Ciudad de Residencia</label>
+                                        <input type="text" class="form-control" id="RecidenceCity">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="OriginCity" class="form-label">Ciudad de Procedencia</label>
+                                        <input type="text" class="form-control" id="OriginCity">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="Reason" class="form-label">Motivo</label>
+                                        <select id="Reason" class="form-select form-control">
+                                            <option selected>Elige...</option>
+                                            <option value="Trabajo">Trabajo</option>
+                                            <option value="Viaje">Viaje</option>
+                                            <option value="Otra">Otra</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="NumberCompanions" class="form-label">N. Acompañantes</label>
+                                        <input type="text" class="form-control" id="NumberCompanions">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="CheckIn" class="form-label">Fecha de Check-In</label>
+                                        <input type="date" class="form-control" id="CheckIn">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="CheckOut" class="form-label">Fecha de Check-Out</label>
+                                        <input type="date" class="form-control" id="CheckOut">
+                                    </div>
+                                        <input type="hidden" id="IsMain" value="1">
+                                    <div class="col-12">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="gridCheck">
+                                            <label class="form-check-label" for="gridCheck">
+                                                Acepto Terminos y Condiciones
+                                            </label>
                                         </div>
-                                        <div class="mb-3">
-                                            <input class="form-control" type="text" placeholder="Numero Identificacion" aria-label="Numero Identificacion">
-                                        </div>
                                     </div>
-                                    <div class="mb-3">
-                                        <label for="nombres" class="form-label">Nombres</label>
-                                        <input type="text" class="form-control" id="nombre_establecimiento">
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-primary">Siguiente</button>
                                     </div>
-                                    <div class="mb-3">
-                                        <label for="apellidos" class="form-label">Apellidos</label>
-                                        <input type="text" class="form-control" id="rnt_establecimiento">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="ciudad_recidencua" class="form-label">Ciudad de Recidencia</label>
-                                        <input type="text" class="form-control" id="nombre_establecimiento">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="ciudad_procedencia" class="form-label">Ciudad de Procedencia</label>
-                                        <input type="text" class="form-control" id="rnt_establecimiento">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="motivo" class="form-label">Motivo</label>
-                                        <input type="text" class="form-control" id="rnt_establecimiento">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="numero_acompanantes" class="form-label">Numero Acompanantes</label>
-                                        <input type="text" class="form-control" id="rnt_establecimiento">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="check_in" class="form-label">Fecha de Check-In</label>
-                                        <input type="date" class="form-control" id="check_in">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="check_out" class="form-label">Fecha de Check-Out</label>
-                                        <input type="date" class="form-control" id="check_out">
-                                    </div>
-                                    @*                                    <div class="mb-3">
-                                <label for="tipo_acomodacion" class="form-label">Tipo de Acomodación</label>
-                                <input type="text" class="form-control" id="tipo_acomodacion">//todo ojo esta info debe adicionarse al establecimiento
-                                </div>*@
-                                    <button type="submit" class="btn btn-primary">Siguiente</button>
                                 </form>
                             </div>
-
-
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
         <div class="col-sm-4">
-
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="card shadow mb-4">
-                        <div class="card-header py-3 bg-gradient-info">
-                            <h6 class="m-0 font-weight-bold text-white">Detalle Reserva</h6>
-                        </div>
-                        <div class="card-body">
-                            <div class="input-group input-group-sm mb-3">
-                                <div class="input-group-prepend">
-                                    <label class="input-group-text" for="cboTipoDocumentoMovimiento">Tipo</label>
-                                </div>
-                                <select class="custom-select" id="cboTipoDocumentoMovimiento">
-                                </select>
+            <div class="detailRes">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3 bg-gradient-info">
+                                <h6 class="m-0 font-weight-bold text-white">Detalle Reserva</h6>
                             </div>
-                            <div class="input-group input-group-sm mb-3">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text" id="inputGroupSubTotal">Sub Total</span>
+                            <div class="card-body">
+                                <div class="input-group input-group-sm mb-3">
+                                    <div class="input-group-prepend">
+                                        <label class="input-group-text" for="cboTipoDocumentoMovimiento">Tipo</label>
+                                    </div>
+                                    <select class="custom-select" id="cboTipoDocumentoMovimiento">
+                                    </select>
                                 </div>
-                                <input type="text" class="form-control text-right" aria-label="Small" aria-describedby="inputGroupSubTotal" id="txtSubTotal" disabled>
-                            </div>
-                            <div class="input-group input-group-sm mb-3">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text" id="inputGroupIGV">IMP (18%)</span>
+                                <div class="input-group input-group-sm mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="inputGroupSubTotal">Sub Total</span>
+                                    </div>
+                                    <input type="text" class="form-control text-right" aria-label="Small" aria-describedby="inputGroupSubTotal" id="txtSubTotal" disabled>
                                 </div>
-                                <input type="text" class="form-control text-right" aria-label="Small" aria-describedby="inputGroupIGV" id="txtIGV" disabled>
-                            </div>
-                            <div class="input-group input-group-sm mb-3">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text" id="inputGroupTotal">Total</span>
+                                <div class="input-group input-group-sm mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="inputGroupIGV">IMP (18%)</span>
+                                    </div>
+                                    <input type="text" class="form-control text-right" aria-label="Small" aria-describedby="inputGroupIGV" id="txtIGV" disabled>
                                 </div>
-                                <input type="text" class="form-control text-right" aria-label="Small" aria-describedby="inputGroupTotal" id="txtTotal" disabled>
+                                <div class="input-group input-group-sm mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="inputGroupTotal">Total</span>
+                                    </div>
+                                    <input type="text" class="form-control text-right" aria-label="Small" aria-describedby="inputGroupTotal" id="txtTotal" disabled>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-
-
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="card shadow">
-                        <div class="card-body">
-                            <div class="form-group mb-0">
-                                <button class="btn btn-warning btn-sm btn-block" id="btnFinishingBooking">Terminar y Grabar Reserva</button>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="card shadow">
+                            <div class="card-body">
+                                <div class="form-group mb-0">
+                                    <button class="btn btn-warning btn-sm btn-block" id="btnFinishingBooking">Terminar y Grabar Reserva</button>
+                                </div>
                             </div>
                         </div>
                     </div>

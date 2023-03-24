@@ -12,8 +12,8 @@ using SistemaVenta.DAL.DBContext;
 namespace nextadvisordotnet.DAL.Migrations
 {
     [DbContext(typeof(DbventaContext))]
-    [Migration("20230311200929_advisor1")]
-    partial class advisor1
+    [Migration("20230316144948_adv")]
+    partial class adv
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,49 @@ namespace nextadvisordotnet.DAL.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("SistemaVenta.Entity.Book", b =>
+                {
+                    b.Property<int>("IdBook")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdBook"));
+
+                    b.Property<DateTime>("CheckIn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CheckOut")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("IdGuest")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("IdMovimiento")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("IdMovimientoNavigationIdMovimiento")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdRoom")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ModificationDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("IdBook");
+
+                    b.HasIndex("IdGuest");
+
+                    b.HasIndex("IdMovimientoNavigationIdMovimiento");
+
+                    b.HasIndex("IdRoom");
+
+                    b.ToTable("Books");
+                });
 
             modelBuilder.Entity("SistemaVenta.Entity.Categoria", b =>
                 {
@@ -56,42 +99,6 @@ namespace nextadvisordotnet.DAL.Migrations
                     b.ToTable("Categoria");
                 });
 
-            modelBuilder.Entity("SistemaVenta.Entity.Companion", b =>
-                {
-                    b.Property<int>("IdCompanion")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdCompanion"));
-
-                    b.Property<DateTime>("CreationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Document")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("IdGuest")
-                        .HasColumnType("int");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("ModificationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("IdCompanion");
-
-                    b.HasIndex("IdGuest");
-
-                    b.ToTable("Companions");
-                });
-
             modelBuilder.Entity("SistemaVenta.Entity.Company", b =>
                 {
                     b.Property<int>("IdCompany")
@@ -99,11 +106,6 @@ namespace nextadvisordotnet.DAL.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdCompany"));
-
-                    b.Property<string>("Activity")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Address")
                         .IsRequired()
@@ -146,7 +148,7 @@ namespace nextadvisordotnet.DAL.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<string>("Task")
+                    b.Property<string>("Tax")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -264,6 +266,10 @@ namespace nextadvisordotnet.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Rnt")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Token")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -328,6 +334,12 @@ namespace nextadvisordotnet.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("IdMainGuest")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("IdUser")
+                        .HasColumnType("int");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -343,6 +355,13 @@ namespace nextadvisordotnet.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("NumberCompanions")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OriginCity")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("OriginCountry")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -351,51 +370,17 @@ namespace nextadvisordotnet.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Status")
+                    b.Property<string>("RecidenceCity")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TypeDocument")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("IdGuest");
 
                     b.ToTable("Guests");
-                });
-
-            modelBuilder.Entity("SistemaVenta.Entity.GuestRoom", b =>
-                {
-                    b.Property<int>("IdGuestRoom")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdGuestRoom"));
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime>("CheckIn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("CheckOut")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("CreationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("IdGuest")
-                        .HasColumnType("int");
-
-                    b.Property<int>("IdRoom")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("ModificationDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("IdGuestRoom");
-
-                    b.HasIndex("IdGuest");
-
-                    b.HasIndex("IdRoom");
-
-                    b.ToTable("GuestRooms");
                 });
 
             modelBuilder.Entity("SistemaVenta.Entity.Menu", b =>
@@ -860,6 +845,9 @@ namespace nextadvisordotnet.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdRoom"));
 
+                    b.Property<int?>("Capacity")
+                        .HasColumnType("int");
+
                     b.Property<string>("CategoryName")
                         .HasColumnType("nvarchar(max)");
 
@@ -868,9 +856,6 @@ namespace nextadvisordotnet.DAL.Migrations
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("GuestIdGuest")
-                        .HasColumnType("int");
 
                     b.Property<int>("IdCategoria")
                         .HasColumnType("int");
@@ -897,18 +882,17 @@ namespace nextadvisordotnet.DAL.Migrations
                     b.Property<decimal?>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("ReplyOnNotFound")
+                    b.Property<string>("Status")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("TimeInActivity")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UrlImagen")
+                    b.Property<string>("UrlImage")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("isActive")
+                        .HasColumnType("bit");
 
                     b.HasKey("IdRoom");
-
-                    b.HasIndex("GuestIdGuest");
 
                     b.HasIndex("IdCategoriaNavigationIdCategoria");
 
@@ -1117,15 +1101,29 @@ namespace nextadvisordotnet.DAL.Migrations
                     b.ToTable("Usuario", (string)null);
                 });
 
-            modelBuilder.Entity("SistemaVenta.Entity.Companion", b =>
+            modelBuilder.Entity("SistemaVenta.Entity.Book", b =>
                 {
-                    b.HasOne("SistemaVenta.Entity.Guest", "Guest")
-                        .WithMany("Companions")
+                    b.HasOne("SistemaVenta.Entity.Guest", "IdGuestNavigation")
+                        .WithMany("book")
                         .HasForeignKey("IdGuest")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("SistemaVenta.Entity.Movimiento", "IdMovimientoNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdMovimientoNavigationIdMovimiento");
+
+                    b.HasOne("SistemaVenta.Entity.Room", "IdRoomNavigation")
+                        .WithMany("book")
+                        .HasForeignKey("IdRoom")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Guest");
+                    b.Navigation("IdGuestNavigation");
+
+                    b.Navigation("IdMovimientoNavigation");
+
+                    b.Navigation("IdRoomNavigation");
                 });
 
             modelBuilder.Entity("SistemaVenta.Entity.DetalleMovimiento", b =>
@@ -1156,25 +1154,6 @@ namespace nextadvisordotnet.DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("Company");
-                });
-
-            modelBuilder.Entity("SistemaVenta.Entity.GuestRoom", b =>
-                {
-                    b.HasOne("SistemaVenta.Entity.Guest", "Guest")
-                        .WithMany("GuestRooms")
-                        .HasForeignKey("IdGuest")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("SistemaVenta.Entity.Room", "Room")
-                        .WithMany("GuestRooms")
-                        .HasForeignKey("IdRoom")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Guest");
-
-                    b.Navigation("Room");
                 });
 
             modelBuilder.Entity("SistemaVenta.Entity.Menu", b =>
@@ -1247,23 +1226,19 @@ namespace nextadvisordotnet.DAL.Migrations
 
             modelBuilder.Entity("SistemaVenta.Entity.Room", b =>
                 {
-                    b.HasOne("SistemaVenta.Entity.Guest", null)
-                        .WithMany("Rooms")
-                        .HasForeignKey("GuestIdGuest");
-
                     b.HasOne("SistemaVenta.Entity.Categoria", "IdCategoriaNavigation")
                         .WithMany()
                         .HasForeignKey("IdCategoriaNavigationIdCategoria");
 
-                    b.HasOne("SistemaVenta.Entity.Establishment", "Establishment")
+                    b.HasOne("SistemaVenta.Entity.Establishment", "IdEstablishmentNavigation")
                         .WithMany("Rooms")
                         .HasForeignKey("IdEstablishment")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Establishment");
-
                     b.Navigation("IdCategoriaNavigation");
+
+                    b.Navigation("IdEstablishmentNavigation");
                 });
 
             modelBuilder.Entity("SistemaVenta.Entity.Subscription", b =>
@@ -1333,11 +1308,7 @@ namespace nextadvisordotnet.DAL.Migrations
 
             modelBuilder.Entity("SistemaVenta.Entity.Guest", b =>
                 {
-                    b.Navigation("Companions");
-
-                    b.Navigation("GuestRooms");
-
-                    b.Navigation("Rooms");
+                    b.Navigation("book");
                 });
 
             modelBuilder.Entity("SistemaVenta.Entity.Menu", b =>
@@ -1378,7 +1349,7 @@ namespace nextadvisordotnet.DAL.Migrations
 
             modelBuilder.Entity("SistemaVenta.Entity.Room", b =>
                 {
-                    b.Navigation("GuestRooms");
+                    b.Navigation("book");
                 });
 
             modelBuilder.Entity("SistemaVenta.Entity.TipoDocumentoMovimiento", b =>

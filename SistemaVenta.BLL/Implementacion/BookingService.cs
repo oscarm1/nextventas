@@ -46,19 +46,19 @@ namespace SistemaVenta.BLL.Implementacion
             return query.Include(c => c.IdCategoriaNavigation).ToList();
         }
 
-        public async Task<Movimiento> Save(Movimiento entidad)
-        {
+        //public async Task<Book> Save(Book entidad)
+        //{
 
-            try
-            {
-                return await _repositorioMovimiento.Registrar(entidad);
-            }
-            catch (Exception)
-            {
+        //    try
+        //    {
+        //        return await _repositorioMovimiento.Registrar(entidad);
+        //    }
+        //    catch (Exception)
+        //    {
 
-                throw;
-            }
-        }
+        //        throw;
+        //    }
+        //}
         //public async Task<List<Booking>> Historial(string numeroBookingEstablishmentEstablishment, string fechaInicio, string fechaFin)
         //{
         //    IQueryable<Booking> query = await _repositorioBookingEstablishmentEstablishment.Consultar();

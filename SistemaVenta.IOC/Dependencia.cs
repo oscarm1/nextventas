@@ -45,7 +45,7 @@ namespace SistemaVenta.IOC
             services.AddScoped<IEstablishmentService, EstablishmentService>();
             services.AddScoped<IRoomService, RoomService>();
             services.AddScoped<IBookingService, BookingService>();
-            //services.AddScoped<IDashBoardService, DashBoardService>();
+            services.AddScoped<IGuestService, GuestService>();
             //services.AddScoped<IMenuService, MenuService>();
         }
     }

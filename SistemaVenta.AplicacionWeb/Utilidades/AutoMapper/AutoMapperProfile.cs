@@ -123,6 +123,18 @@ namespace SistemaVenta.AplicacionWeb.Utilidades.AutoMapper
 
             #endregion
 
+            #region Guest
+            CreateMap<Guest, GuestDTO>()
+                .ForMember(destino => destino.IsMain,
+                    opt => opt.MapFrom(origen => origen.IsMain == true ? 1 : 0));
+
+
+            CreateMap<GuestDTO, Guest>()
+                .ForMember(destino => destino.IsMain,
+                    opt => opt.MapFrom(origen => origen.IsMain == 1 ? true : false));
+
+            #endregion
+
             #region TipoDocumentoMovimiento
             CreateMap<TipoDocumentoMovimiento, TipoDocumentoMovimientoDTO>().ReverseMap();
             #endregion
