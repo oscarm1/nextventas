@@ -13,7 +13,6 @@ public partial class Proveedor
     public string? Correo { get; set; }
     public bool? EsActivo { get; set; }
     public DateTime? FechaRegistro { get; set; }
-  //  public virtual ICollection<Pedido> Pedido { get; } = new List<Pedido>();
     public virtual ICollection<Producto> Productos { get; } = new List<Producto>();
     public virtual ICollection<Movimiento> Movimiento { get; } = new List<Movimiento>();
 }

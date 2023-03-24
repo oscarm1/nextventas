@@ -116,8 +116,8 @@ $("#btnNuevo").click(function () {
 
 $("#btnGuardar").click(function () {
     //Validaciones
-    const inputs = $("input.input-validar").serializeArray(); // captura los imputs en un array
-    const inputs_sin_valor = inputs.filter((item) => item.value.trim() == "") // filtra los input vacios
+    const inputs = $("input.input-validar").serializeArray(); 
+    const inputs_sin_valor = inputs.filter((item) => item.value.trim() == "") 
 
     console.log(inputs_sin_valor);
 
@@ -128,7 +128,7 @@ $("#btnGuardar").click(function () {
         return;
     }
 
-    const modelo = structuredClone(MODELO_BASE); //Clona la estructura de MODELO_BSE
+    const modelo = structuredClone(MODELO_BASE); 
     modelo["idRoom"] = parseInt($("#txtId").val());
     modelo["number"] = $("#txtNumber").val();
   //  modelo["categoryName"] = $("#txtCategoryName").val();

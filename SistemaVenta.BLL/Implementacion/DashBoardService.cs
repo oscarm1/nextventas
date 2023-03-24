@@ -48,7 +48,7 @@ namespace SistemaVenta.BLL.Implementacion
             {
                 IQueryable<Movimiento> query = await _repositorioMovimiento.Consultar(v => v.FechaRegistro.Value.Date >= FechaInicio.Date);
                 Decimal resultado = query.Select(v => v.Total).Sum(v => v.Value);
-                string resultString = Convert.ToString(resultado, new CultureInfo("es-PE"));
+                string resultString = Convert.ToString(resultado, new CultureInfo("es-CO"));
                 return resultString;
             }
             catch (Exception)

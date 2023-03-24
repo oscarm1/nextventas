@@ -16,5 +16,5 @@ public partial class Book
     public DateTime CreationDate { get; set; }
     public virtual Room? IdRoomNavigation { get; set; }
     public virtual Guest? IdGuestNavigation { get; set; }
-    public virtual Movimiento? IdMovimientoNavigation { get; set; } //es la entidad de facturacion
+    public virtual Movimiento? IdMovimientoNavigation { get; set; }
 }

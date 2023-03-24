@@ -56,8 +56,8 @@ namespace SistemaVenta.BLL.Implementacion
 
             if (fechaInicio != "" && fechaFin != "")
             {
-                DateTime fecha_inicio = DateTime.ParseExact(fechaInicio, "dd/MM/yyyy", new CultureInfo("es-PE"));
-                DateTime fecha_fin = DateTime.ParseExact(fechaFin, "dd/MM/yyyy", new CultureInfo("es-PE"));
+                DateTime fecha_inicio = DateTime.ParseExact(fechaInicio, "dd/MM/yyyy", new CultureInfo("es-CO"));
+                DateTime fecha_fin = DateTime.ParseExact(fechaFin, "dd/MM/yyyy", new CultureInfo("es-CO"));
 
                 return query.Where(v => 
                         v.FechaRegistro.Value.Date >= fecha_inicio.Date &&
@@ -93,8 +93,8 @@ namespace SistemaVenta.BLL.Implementacion
 
         public async Task<List<DetalleMovimiento>> Reporte(string fechaInicio, string fechaFin)
         {
-            DateTime fecha_inicio = DateTime.ParseExact(fechaInicio, "dd/MM/yyyy", new CultureInfo("es-PE"));
-            DateTime fecha_fin = DateTime.ParseExact(fechaFin, "dd/MM/yyyy", new CultureInfo("es-PE"));
+            DateTime fecha_inicio = DateTime.ParseExact(fechaInicio, "dd/MM/yyyy", new CultureInfo("es-CO"));
+            DateTime fecha_fin = DateTime.ParseExact(fechaFin, "dd/MM/yyyy", new CultureInfo("es-CO"));
 
             List<DetalleMovimiento> lista = await _repositorioMovimiento.Reporte(fecha_inicio, fecha_fin);
             return lista;

@@ -115,9 +115,6 @@ $(document).ready(function () {
                 $("#cboBuscarProveedor").val("").trigger("change");
                 swal.close();
 
-                ////**se mueve consulta prod**////
-
-
                 if (data.nit != null) {
 
                     $.ajax({
@@ -128,7 +125,6 @@ $(document).ready(function () {
                         },
                         success: function (data) {
 
-                            //   console.log(data);
                             mostrarProducto_Precios(data);
                         },
                         error: function (error) {
@@ -284,7 +280,6 @@ $("#btnTerminarPedido").click(function () {
 
     productosParaMovimiento = [];
 
-    // Iterar por cada fila de la tabla y agregar los datos de cada producto al array productosParaMovimiento
     $("#tbProducto tbody tr").each(function () {
 
         const codigoBarra = $(this).find("td:eq(1)").text();
@@ -317,8 +312,6 @@ $("#btnTerminarPedido").click(function () {
 
     const detallePedidoDto = productosParaMovimiento;
 
-    //console.log(proveedorParaPedido);
-
     const Movimiento = {
         idTipoDocumentoMovimiento: $("#cboTipoDocumentoMovimiento").val(),
         idProveedor: proveedorParaPedido[0].idProveedor,
@@ -330,8 +323,6 @@ $("#btnTerminarPedido").click(function () {
         total: $("#txtTotal").val(),
         DetalleMovimiento: detallePedidoDto
     }
-
-    //console.log(Movimiento);
 
     $("#btnTerminarPedido").LoadingOverlay("show");
 

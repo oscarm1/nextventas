@@ -74,7 +74,7 @@ $("#btnGuardar").click(function () {
         return;
     }
 
-    const modelo = structuredClone(MODELO_BASE); //Clona la estructura de MODELO_BSE
+    const modelo = structuredClone(MODELO_BASE); 
     modelo["idCategoria"] = parseInt($("#txtId").val());
     modelo["descripcion"] = $("#txtDescripcion").val();
     modelo["esActivo"] = $("#cboEstado").val();

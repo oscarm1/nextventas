@@ -28,5 +28,4 @@ public partial class Usuario
     public virtual Rol? IdRolNavigation { get; set; }
 
     public virtual ICollection<Movimiento> Movimiento { get; } = new List<Movimiento>();
-  //  public virtual ICollection<Pedido> Pedido { get; } = new List<Pedido>();
 }

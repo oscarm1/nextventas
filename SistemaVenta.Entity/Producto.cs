@@ -31,7 +31,6 @@ public partial class Producto
     public DateTime? FechaRegistro { get; set; }
 
     public virtual ICollection<DetalleMovimiento> DetalleMovimiento { get; } = new List<DetalleMovimiento>();
-    //public virtual ICollection<DetallePedido> DetallePedido { get; } = new List<DetallePedido>();
 
     public virtual Categoria? IdCategoriaNavigation { get; set; }
     public virtual Proveedor? IdProveedorNavigation { get; set; }

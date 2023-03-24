@@ -8,15 +8,10 @@ public partial class DetalleMovimiento
     public int IdDetalleMovimiento { get; set; }
 
     public int? IdMovimiento { get; set; }
-    //public string? TipoMovimiento { get; set; }//ENTRADA - SALIDA
 
     public int IdProducto { get; set; }
 
-    //public string? MarcaProducto { get; set; }
-
     public string? DescripcionProducto { get; set; }
-
-    //public string? CategoriaProducto { get; set; }
 
     public int? Cantidad { get; set; }
 

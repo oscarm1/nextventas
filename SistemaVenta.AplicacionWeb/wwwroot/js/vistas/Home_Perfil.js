@@ -84,8 +84,8 @@ $("#btnGuardarCambios").click(function () {
 
 $("#btnCambiarClave").click(function () {
 
-    const inputs = $("input.input-validar").serializeArray(); // captura los imputs en un array
-    const inputs_sin_valor = inputs.filter((item) => item.value.trim() == "") // filtra los input vacios
+    const inputs = $("input.input-validar").serializeArray(); 
+    const inputs_sin_valor = inputs.filter((item) => item.value.trim() == "") 
 
     if (inputs_sin_valor.length > 0) {
         const mensaje = `Desbes completar el campo "${inputs_sin_valor[0].name}"`;

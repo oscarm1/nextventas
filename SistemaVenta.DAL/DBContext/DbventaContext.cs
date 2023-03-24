@@ -22,7 +22,6 @@ public partial class DbventaContext : DbContext
     public virtual DbSet<Configuracion> Configuracions { get; set; }
 
     public virtual DbSet<DetalleMovimiento> DetalleMovimiento { get; set; }
-    // public virtual DbSet<DetallePedido> DetallePedido { get; set; }
 
     public virtual DbSet<Menu> Menus { get; set; }
 
@@ -41,9 +40,6 @@ public partial class DbventaContext : DbContext
     public virtual DbSet<Usuario> Usuarios { get; set; }
 
     public virtual DbSet<Movimiento> Movimiento { get; set; }
-    //  public virtual DbSet<Pedido> Pedido { get; set; }
-
-    //public DbSet<Companion> Companions { get; set; }
     public DbSet<Guest> Guests { get; set; }
     public DbSet<Book> Books { get; set; }
     public DbSet<Establishment> Establishments { get; set; }

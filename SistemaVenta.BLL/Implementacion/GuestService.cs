@@ -45,7 +45,7 @@ namespace SistemaVenta.BLL.Implementacion
 
                 if (guest_creado.IdGuest == 0)
                 {
-                    throw new TaskCanceledException("No se pudo crear el guest");
+                    throw new TaskCanceledException("No se pudo crear el Huesped");
                 }
 
                 IQueryable<Guest> query = await _repositorio.Consultar(p => p.IdGuest == guest_creado.IdGuest);
@@ -78,7 +78,7 @@ namespace SistemaVenta.BLL.Implementacion
                 bool respuesta = await _repositorio.Editar(entidad);
                 if (!respuesta)
                 {
-                    throw new TaskCanceledException("No se pudo editar el guest");
+                    throw new TaskCanceledException("No se pudo editar el Huesped");
                 }
 
                 IQueryable<Guest> queryGuest = await _repositorio.Consultar(p => p.IdGuest == entidad.IdGuest);
@@ -99,7 +99,7 @@ namespace SistemaVenta.BLL.Implementacion
                 Guest guest_encontrado = await _repositorio.Obtener(p => p.IdGuest == idGuest);
                 if (guest_encontrado == null)
                 {
-                    throw new TaskCanceledException("El guest no existe");
+                    throw new TaskCanceledException("El huesped no existe");
                 }
 
                 bool respuesta = await _repositorio.Eliminar(guest_encontrado);

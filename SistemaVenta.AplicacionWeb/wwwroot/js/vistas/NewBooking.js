@@ -115,9 +115,6 @@ $(document).ready(function () {
                 $("#cboSearchEstablishment").val("").trigger("change");
                 swal.close();
 
-                ////**se mueve consulta prod**////
-
-
                 if (data.nit != null) {
 
                     $.ajax({
@@ -128,7 +125,6 @@ $(document).ready(function () {
                         },
                         success: function (data) {
 
-                            //   console.log(data);
                             mostrarRoom_Precios(data);
                         },
                         error: function (error) {
@@ -148,7 +144,7 @@ $(document).ready(function () {
         establishmentParaPedido.forEach((item) => {
             $("#tbEstablishment tbody").append(
                 $("<tr>").attr("id", item.idEstablishment).append(
-               // $("<tr>").append(
+                    // $("<tr>").append(
                     $("<td>").text(item.nitEstablishment),
                     $("<td>").text(item.nombreEstablishment),
                     $("<td>").text(item.descripcionEstablishment),
@@ -247,7 +243,6 @@ function mostrarRoom_Precios(Data) {
                         $("<i>").addClass("fa-badge-check")
                     ).data("idRoom", item.idRoom),
                 ),
-                //console.log("item.idRoom: " + item.idRoom)
             )
         )
     });
@@ -260,8 +255,6 @@ function mostrarRoom_Precios(Data) {
     let rooms = [];
 
     $(document).on("click", "button.btn-ok", function () {
-
-        //    console.log(roomsParaMovimiento);
 
         $("#collapseRoom").collapse('hide');
         $("#collapseGuest").collapse('show');
@@ -276,8 +269,6 @@ function mostrarRoom_Precios(Data) {
             const idRoom = parseFloat($(this).closest("tr").attr("id"));
             const room = parseFloat($(this).closest("tr").find(".td-number").text());
             cantidad = parseFloat($(this).closest("tr").find(".input-cantidad").val());
-
-            // console.log("id room " + idRoom);
 
             if (cantidad >= 1) {
 
@@ -383,7 +374,6 @@ function mostrarRoom_Precios(Data) {
         var formValid = true;
         var guest = {};
 
-        // Validar los campos de los formularios
         $("#collapseGuest, .collapseCompanion").each(function (index) {
             var $form = $(this).find("form");
             var formId = $(this).attr("id");
@@ -402,7 +392,6 @@ function mostrarRoom_Precios(Data) {
                 }
             });
 
-            // Si hay un error, detener la validación
             if (!formValid) {
                 return false;
             }
@@ -539,7 +528,6 @@ $("#btnFinishingBooking").click(function () {
         return;
     }
 
-    ////*****
 
     const detallePedidoDto = roomsParaMovimiento;
 
@@ -557,7 +545,6 @@ $("#btnFinishingBooking").click(function () {
         DetalleMovimiento: detallePedidoDto
     }
 
-    //console.log(Movimiento);
 
     $("#btnFinishingBooking").LoadingOverlay("show");
 

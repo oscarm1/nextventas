@@ -79,7 +79,7 @@ namespace SistemaVenta.BLL.Implementacion
                 bool respuesta = await _repositorio.Editar(establishment_para_editar);
                 if (!respuesta)
                 {
-                    throw new TaskCanceledException("No se pudo editar el establishment");
+                    throw new TaskCanceledException("No se pudo editar el Establecimiento");
                 }
 
                 Establishment establishment_editado = queryEstablishment.First();

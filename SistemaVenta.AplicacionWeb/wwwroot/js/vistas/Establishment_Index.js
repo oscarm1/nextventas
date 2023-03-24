@@ -87,7 +87,7 @@ $("#btnNuevo").click(function () {
 
 $("#btnGuardar").click(function () {
     //Validaciones
-    const inputs = $("input.input-validar").serializeArray(); // captura los imputs en un array
+    const inputs = $("input.input-validar").serializeArray();
     const inputs_sin_valor = inputs.filter((item) => item.value.trim() == "") // filtra los input vacios
 
     console.log(inputs_sin_valor);
