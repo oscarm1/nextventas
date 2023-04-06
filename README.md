@@ -1,1 +1,1 @@
-# All rigths reserved
+# All rights reserved
