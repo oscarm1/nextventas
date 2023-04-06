@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SistemaVenta.AplicacionWeb.Models.DTOs;
 using SistemaVenta.DAL.DBContext;
 using SistemaVenta.DAL.Interfaces;
 using SistemaVenta.Entity;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace SistemaVenta.DAL.Implementacion
 {
-    public class BookRepository : GenericRepository<Book> //, IBookRepository
+    public class BookRepository : GenericRepository<Book>, IBookRepository
     {
         private readonly DbventaContext _dbContext;
 
@@ -20,66 +21,69 @@ namespace SistemaVenta.DAL.Implementacion
             _dbContext = dbContext;
         }
 
-        //public async Task<Book> Registrar(Book entidad)
-        //{
-        //    Book bookGenerada = new Book();
-        //    using (var transaction = _dbContext.Database.BeginTransaction())
-        //    {
-        //        try
-        //        {
-        //            var tipoDoc = string.Empty;
+        public async Task<Book> Registrar(Book entidad)
+        {
+            Book bookGenerada = new Book();
+            using (var transaction = _dbContext.Database.BeginTransaction())
+            {
+                try
+                {
+                    var tipoDoc = string.Empty;
 
-        //            foreach (DetalleBook itemDV in entidad.IdGuestNavigation)
-        //            {
-        //                Producto productoEncontrado = new Producto();
-        //                productoEncontrado = _dbContext.Productos.Where(p => p.IdProducto == itemDV.IdProducto).First();
-        //                //tipoDoc = string.Empty;
+                    //List<Room> rooms = GetRooms(); // Obtener la lista de habitaciones
+                    List<int> distinctRoomIds = entidad.DetailBook.Select(r => r.IdRoom).Distinct().ToList();
 
-        //                if (entidad.IdTipoDocumentoBook == 3 || entidad.IdTipoDocumentoBook == 4)
-        //                {
-        //                    productoEncontrado.Stock = productoEncontrado.Stock + itemDV.Cantidad;
-        //                    productoEncontrado.PrecioCompra = itemDV.Precio;
-        //                    tipoDoc = "pedido";
-        //                }
-        //                else
-        //                {
-        //                    productoEncontrado.Stock = productoEncontrado.Stock - itemDV.Cantidad;
-        //                    tipoDoc = "book";
-        //                }
+                    foreach (int itemDV in distinctRoomIds)
+                    {
+                        Room roomEncontrado = new Room();
+                        roomEncontrado = _dbContext.Rooms.Where(p => p.IdRoom == itemDV).First();
+                        //tipoDoc = string.Empty;
 
-        //                _dbContext.Productos.Update(productoEncontrado);
-        //            }
+                        if (roomEncontrado.Status == "available")
+                        {
+                            roomEncontrado.Status = "unavailable";
+                           // roomEncontrado.PrecioCompra = itemDV.Precio;
+                            //    tipoDoc = "pedido";
+                        }
+                        //else
+                        //{
+                        //    roomEncontrado.Stock = roomEncontrado.Stock - itemDV.Cantidad;
+                        //    tipoDoc = "book";
+                        //}
 
-        //            await _dbContext.SaveChangesAsync();
+                        _dbContext.Rooms.Update(roomEncontrado);
+                    }
 
-        //            NumeroCorrelativo correlativo = _dbContext.NumeroCorrelativos.Where(c => c.Gestion == tipoDoc).First();
+                    await _dbContext.SaveChangesAsync();
 
-        //            correlativo.UltimoNumero = correlativo.UltimoNumero == null ? 1 : correlativo.UltimoNumero + 1;
-        //            correlativo.FechaActualizacion = DateTime.Now;
+                    //NumeroCorrelativo correlativo = _dbContext.NumeroCorrelativos.Where(c => c.Gestion == "reserva").First();
 
-        //            _dbContext.NumeroCorrelativos.Update(correlativo);
-        //            await _dbContext.SaveChangesAsync();
+                    //correlativo.UltimoNumero = correlativo.UltimoNumero == null ? 1 : correlativo.UltimoNumero + 1;
+                    //correlativo.FechaActualizacion = DateTime.Now;
 
-        //            string ceros = string.Concat(Enumerable.Repeat("0", correlativo.CantidadDigitos.Value));
-        //            string numeroBook = ceros + correlativo.UltimoNumero.ToString();
-        //            numeroBook = numeroBook.Substring(numeroBook.Length - correlativo.CantidadDigitos.Value, correlativo.CantidadDigitos.Value);
-        //            entidad.FechaRegistro = DateTime.Now;
-        //            entidad.NumeroBook = numeroBook;
-        //            await _dbContext.Book.AddAsync(entidad);
-        //            await _dbContext.SaveChangesAsync();
+                    //_dbContext.NumeroCorrelativos.Update(correlativo);
+                   // await _dbContext.SaveChangesAsync();
 
-        //            bookGenerada = entidad;
-        //            transaction.Commit();
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            transaction.Rollback();
-        //            throw ex;
-        //        }
-        //    }
+                   // string ceros = string.Concat(Enumerable.Repeat("0", correlativo.CantidadDigitos.Value));
+                   // string numeroBook = ceros + correlativo.UltimoNumero.ToString();
+                    //numeroBook = numeroBook.Substring(numeroBook.Length - correlativo.CantidadDigitos.Value, correlativo.CantidadDigitos.Value);
+                    entidad.CreationDate = DateTime.Now;
+                   // entidad.NumeroBook = numeroBook;
+                    await _dbContext.Books.AddAsync(entidad);
+                    await _dbContext.SaveChangesAsync();
 
-        //    return bookGenerada;
-        //}
+                    bookGenerada = entidad;
+                    transaction.Commit();
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw ex;
+                }
+            }
+
+            return bookGenerada;
+        }
 
         //public async Task<List<DetalleBook>> Reporte(DateTime fechaInicio, DateTime fechaFin)
         //{

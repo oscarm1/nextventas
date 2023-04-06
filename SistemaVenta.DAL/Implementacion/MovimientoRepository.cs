@@ -29,28 +29,35 @@ namespace SistemaVenta.DAL.Implementacion
                 {
                     var tipoDoc = string.Empty;
 
-                    foreach (DetalleMovimiento itemDV in entidad.DetalleMovimiento)
+                    if (entidad.DetalleMovimiento.Count > 0)
                     {
-                        Producto productoEncontrado = new Producto();
-                        productoEncontrado = _dbContext.Productos.Where(p => p.IdProducto == itemDV.IdProducto).First();
-                        //tipoDoc = string.Empty;
 
-                        if (entidad.IdTipoDocumentoMovimiento == 3 || entidad.IdTipoDocumentoMovimiento == 4)
+                        foreach (DetalleMovimiento itemDV in entidad.DetalleMovimiento)
                         {
-                            productoEncontrado.Stock = productoEncontrado.Stock + itemDV.Cantidad;
-                            productoEncontrado.PrecioCompra = itemDV.Precio;
-                            tipoDoc = "pedido";
-                        }
-                        else
-                        {
-                            productoEncontrado.Stock = productoEncontrado.Stock - itemDV.Cantidad;
-                            tipoDoc = "venta";
+                            Producto productoEncontrado = new Producto();
+                            productoEncontrado = _dbContext.Productos.Where(p => p.IdProducto == itemDV.IdProducto).First();
+                            //tipoDoc = string.Empty;
+
+                            if (entidad.IdTipoDocumentoMovimiento == 3 || entidad.IdTipoDocumentoMovimiento == 4)
+                            {
+                                productoEncontrado.Stock = productoEncontrado.Stock + itemDV.Cantidad;
+                                productoEncontrado.PrecioCompra = itemDV.Precio;
+                                tipoDoc = "pedido";
+                            }    
+
+                            else
+                            {
+                                productoEncontrado.Stock = productoEncontrado.Stock - itemDV.Cantidad;
+                                tipoDoc = "venta";
+                            }
+
+                            _dbContext.Productos.Update(productoEncontrado);
                         }
 
-                        _dbContext.Productos.Update(productoEncontrado);
+                        await _dbContext.SaveChangesAsync();
+
                     }
-
-                    await _dbContext.SaveChangesAsync();
+                    tipoDoc = "reserva";
 
                     NumeroCorrelativo correlativo = _dbContext.NumeroCorrelativos.Where(c => c.Gestion == tipoDoc).First();
 

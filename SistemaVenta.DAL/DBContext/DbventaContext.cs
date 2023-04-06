@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using SistemaVenta.AplicacionWeb.Models.DTOs;
 using SistemaVenta.DAL.Interfaces;
 using SistemaVenta.Entity;
 
@@ -126,6 +127,46 @@ public partial class DbventaContext : DbContext
             entity.HasOne(d => d.IdMovimientoNavigation).WithMany(p => p.DetalleMovimiento)
                 .HasForeignKey(d => d.IdMovimiento)
                 .HasConstraintName("FK__DetalleVe__idVen__440B1D61");
+        });
+
+        modelBuilder.Entity<DetailBook>(entity =>
+        {
+            entity.HasKey(e => e.IdDetailBook).HasName("PK__DetalleB__BFE2843FB3D3EFB5");
+
+            entity.Property(e => e.IdDetailBook).HasColumnName("idDetailBook");
+            //entity.Property(e => e.Cantidad).HasColumnName("cantidad");
+            // entity.Property(e => e.CategoriaProducto)
+            //.HasMaxLength(100)
+            //.IsUnicode(false)
+            //.HasColumnName("categoriaProducto");
+            //entity.Property(e => e.DescripcionProducto)
+            //    .HasMaxLength(100)
+            //    .IsUnicode(false)
+            //    .HasColumnName("descripcionProducto");
+            entity.Property(e => e.IdRoom).HasColumnName("idRoom");
+            entity.Property(e => e.IdBook).HasColumnName("idBook");
+            //entity.Property(e => e.MarcaProducto)
+            //.HasMaxLength(100)
+            //.IsUnicode(false)
+            //.HasColumnName("marcaProducto");
+            entity.Property(e => e.Price)
+                .HasColumnType("decimal(10, 2)")
+                .HasColumnName("precio");
+            entity.Property(e => e.Total)
+                .HasColumnType("decimal(10, 2)")
+                .HasColumnName("total");
+
+            entity.HasOne(d => d.IdRoomNavigation).WithMany(p => p.DetailBook)
+                .HasForeignKey(d => d.IdRoom)
+                .HasConstraintName("FK_DetailBook_Room");
+
+            entity.HasOne(d => d.IdGuestNavigation).WithMany(p => p.DetailBook)
+                .HasForeignKey(d => d.IdGuest)
+                .HasConstraintName("FK_DetailBook_Guest");
+
+            entity.HasOne(d => d.IdBookNavigation).WithMany(p => p.DetailBook)
+                .HasForeignKey(d => d.IdBook)
+                .HasConstraintName("FK__DetailBo__idBoo__440B1D61");
         });
 
         modelBuilder.Entity<Menu>(entity =>
@@ -471,16 +512,16 @@ public partial class DbventaContext : DbContext
         modelBuilder.Entity<Book>()
             .HasKey(gr => gr.IdBook);
 
-        modelBuilder.Entity<Book>()
-            .HasOne(gr => gr.IdRoomNavigation)
-            .WithMany(r => r.book)
-            .HasForeignKey(gr => gr.IdRoom);
+        //modelBuilder.Entity<Book>()
+        //    .HasOne(gr => gr.IdRoomNavigation)
+        //    .WithMany(r => r.book)
+        //    .HasForeignKey(gr => gr.IdRoom);
 
-        modelBuilder.Entity<Book>()
-            .HasOne(gr => gr.IdGuestNavigation)
-            .WithMany(g => g.book)
-            .HasForeignKey(gr => gr.IdGuest)
-            .OnDelete(DeleteBehavior.NoAction);
+        //modelBuilder.Entity<Book>()
+        //    .HasOne(gr => gr.IdGuestNavigation)
+        //    .WithMany(g => g.book)
+        //    .HasForeignKey(gr => gr.IdGuest)
+        //    .OnDelete(DeleteBehavior.NoAction);
 
 
         OnModelCreatingPartial(modelBuilder);

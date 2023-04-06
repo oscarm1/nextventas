@@ -15,14 +15,15 @@ namespace SistemaVenta.BLL.Implementacion
     {
         private readonly IGenericRepository<Establishment> _repositorioEstablishment;
         private readonly IGenericRepository<Room> _repositorioRoom;
-       // private readonly IGenericRepository<Movimiento> _repositorioBooking;
+        private readonly IBookRepository _repositorioBooking;
         private readonly IMovimientoRepository _repositorioMovimiento;
         public BookingService(IGenericRepository<Establishment> repositorioEstablishment, IGenericRepository<Room> repositorioRoom,
-            IMovimientoRepository repositorioMovimiento)
+            IBookRepository repositorioBooking, IMovimientoRepository repositorioMovimiento)
         {
             _repositorioEstablishment = repositorioEstablishment;
             _repositorioRoom = repositorioRoom;
             _repositorioMovimiento = repositorioMovimiento;
+            _repositorioBooking = repositorioBooking;
         }
 
         public async Task<List<Establishment>> ObtainEstablishments(string busqueda)
@@ -46,19 +47,19 @@ namespace SistemaVenta.BLL.Implementacion
             return query.Include(c => c.IdCategoriaNavigation).ToList();
         }
 
-        //public async Task<Book> Save(Book entidad)
-        //{
+        public async Task<Book> Save(Book entidad)
+        {
 
-        //    try
-        //    {
-        //        return await _repositorioMovimiento.Registrar(entidad);
-        //    }
-        //    catch (Exception)
-        //    {
+            try
+            {
+                return await _repositorioBooking.Registrar(entidad);
+            }
+            catch (Exception)
+            {
 
-        //        throw;
-        //    }
-        //}
+                throw;
+            }
+        }
         //public async Task<List<Booking>> Historial(string numeroBookingEstablishmentEstablishment, string fechaInicio, string fechaFin)
         //{
         //    IQueryable<Booking> query = await _repositorioBookingEstablishmentEstablishment.Consultar();

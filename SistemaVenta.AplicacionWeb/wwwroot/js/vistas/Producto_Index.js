@@ -138,11 +138,14 @@ $("#btnGuardar").click(function () {
     modelo["precio"] = $("#txtPrecio").val();
     modelo["esActivo"] = $("#cboEstado").val();
 
+    console.log("modelo " + modelo);
 
     const inputImagen = document.getElementById("txtImagen");
     const formData = new FormData();
     formData.append("imagen", inputImagen.files[0])
     formData.append("modelo", JSON.stringify(modelo))
+
+    console.log("formData " + formData);
 
     $("#modalData").find("div.modal-content").LoadingOverlay("show");
 

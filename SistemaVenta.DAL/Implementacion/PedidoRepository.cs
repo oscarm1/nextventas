@@ -20,7 +20,7 @@ namespace SistemaVenta.DAL.Implementacion
             _dbContext = dbContext;
         }
 
-        public async Task<Movimiento> Registrar(Movimiento entidad)
+        public async Task<Movimiento> Registrar(Movimiento entidad)//todo volar
         {
             Movimiento pedidoGenerado = new Movimiento();
             using(var transaction = _dbContext.Database.BeginTransaction())

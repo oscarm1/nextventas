@@ -29,7 +29,7 @@ namespace SistemaVenta.AplicacionWeb.Models.DTOs
         public decimal? Total { get; set; }
 
         public string? FechaRegistro { get; set; }
-        public virtual ICollection<DetalleMovimientoDTO> DetalleMovimiento { get; set; }
+        public virtual ICollection<DetalleMovimientoDTO>? DetalleMovimiento { get; set; }
 
 
 

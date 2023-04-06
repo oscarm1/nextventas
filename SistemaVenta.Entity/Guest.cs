@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SistemaVenta.AplicacionWeb.Models.DTOs;
+using System;
 using System.Collections.Generic;
 
 namespace SistemaVenta.Entity;
@@ -21,6 +22,6 @@ public partial class Guest
     public bool IsMain { get; set; }
     public DateTime CreationDate { get; set; }
     public DateTime ModificationDate { get; set; }
-    public List<Book> book { get; set; }
+    public virtual ICollection<DetailBook> DetailBook { get; } = new List<DetailBook>();
 
 }

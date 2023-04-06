@@ -11,7 +11,7 @@ namespace SistemaVenta.BLL.Interfaces
     {
         Task<List<Establishment>> ObtainEstablishments(string busqueda);
         Task<List<Room>> ObtainRooms(string busqueda);
-        //Task<Book> Save(Book entidad);
+        Task<Book> Save(Book entidad);
 
         //Task<List<Booking>> Historial(string numeroBookingProveedorProveedor, string fechaInicio, string fechaFin);
         //Task<Booking> Detalle(string numeroBookingProveedorProveedor);

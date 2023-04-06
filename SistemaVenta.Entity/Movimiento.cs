@@ -27,7 +27,7 @@ public partial class Movimiento
 
     public DateTime? FechaRegistro { get; set; }
 
-    public virtual ICollection<DetalleMovimiento> DetalleMovimiento { get; } = new List<DetalleMovimiento>();
+    public virtual ICollection<DetalleMovimiento>? DetalleMovimiento { get; } = new List<DetalleMovimiento>();
 
     public virtual TipoDocumentoMovimiento? IdTipoDocumentoMovimientoNavigation { get; set; }
 

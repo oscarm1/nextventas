@@ -10,13 +10,13 @@ namespace SistemaVenta.AplicacionWeb.Utilidades.AutoMapper
         public AutoMapperProfile()
         {
             #region Rol
-            CreateMap<Rol,RolDTO>().ReverseMap();
+            CreateMap<Rol, RolDTO>().ReverseMap();
             #endregion
 
             #region Usuario
             CreateMap<Usuario, UsuarioDTO>()
                 .ForMember(destino => destino.EsActivo,
-                    opt => opt.MapFrom(origen => origen.EsActivo == true?1:0))
+                    opt => opt.MapFrom(origen => origen.EsActivo == true ? 1 : 0))
                 .ForMember(destino => destino.nombreRol,
                     opt => opt.MapFrom(origen => origen.IdRolNavigation.Descripcion));
 
@@ -30,9 +30,9 @@ namespace SistemaVenta.AplicacionWeb.Utilidades.AutoMapper
             #region Negocio
             CreateMap<Negocio, NegocioDTO>()
                 .ForMember(destino => destino.PorcentajeImpuesto,
-                    opt => opt.MapFrom(origen => Convert.ToString(origen.PorcentajeImpuesto.Value,new CultureInfo("es-CO"))));
+                    opt => opt.MapFrom(origen => Convert.ToString(origen.PorcentajeImpuesto.Value, new CultureInfo("es-CO"))));
 
-            CreateMap<NegocioDTO , Negocio>()
+            CreateMap<NegocioDTO, Negocio>()
                .ForMember(destino => destino.PorcentajeImpuesto,
                    opt => opt.MapFrom(origen => Convert.ToDecimal(origen.PorcentajeImpuesto.Value, new CultureInfo("es-CO"))));
             #endregion
@@ -161,6 +161,32 @@ namespace SistemaVenta.AplicacionWeb.Utilidades.AutoMapper
                     opt => opt.MapFrom(origen => Convert.ToDecimal(origen.ImpuestoTotal, new CultureInfo("es-CO"))))
                 .ForMember(destino => destino.Total,
                     opt => opt.MapFrom(origen => Convert.ToDecimal(origen.Total, new CultureInfo("es-CO"))));
+            #endregion
+
+            #region Book
+            CreateMap<Book, BookDTO>()
+                    .ForMember(destino => destino.CheckIn,
+                    opt => opt.MapFrom(origen => origen.CheckIn.ToString("dd/MM/yyyy")))
+                    .ForMember(destino => destino.CheckOut,
+                    opt => opt.MapFrom(origen => origen.CheckOut.ToString("dd/MM/yyyy")));
+
+            CreateMap<BookDTO, Book>()
+                .ReverseMap();
+            #endregion
+
+            #region DetailBook
+            CreateMap<DetailBook, DetailBookDTO>()
+                .ForMember(destino => destino.Price,
+                    opt => opt.MapFrom(origen => Convert.ToString(origen.Price.Value, new CultureInfo("es-CO"))))
+                .ForMember(destino => destino.Total,
+                    opt => opt.MapFrom(origen => Convert.ToString(origen.Total.Value, new CultureInfo("es-CO"))));
+
+            CreateMap<DetailBookDTO, DetailBook>()
+                .ForMember(destino => destino.Price,
+                    opt => opt.MapFrom(origen => Convert.ToDecimal(origen.Price, new CultureInfo("es-CO"))))
+                .ForMember(destino => destino.Total,
+                    opt => opt.MapFrom(origen => Convert.ToDecimal(origen.Total, new CultureInfo("es-CO"))));
+
             #endregion
 
             #region DetalleMovimiento

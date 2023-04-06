@@ -25,8 +25,9 @@ namespace SistemaVenta.IOC
 
             services.AddTransient(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped<IMovimientoRepository,MovimientoRepository>();
+            services.AddScoped<IBookRepository, BookRepository>();
             services.AddScoped<IPedidoService, PedidoService>();
-            services.AddScoped<IPedidoRepository, PedidoRepository>();
+            services.AddScoped<IPedidoRepository, PedidoRepository>();//todo volar
             services.AddScoped<ICorreoService, CorreoService>();
             services.AddScoped<IFireBaseService, FireBaseService>();
             services.AddScoped<IUtilidadesService, UtilidadesService>();

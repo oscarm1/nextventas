@@ -182,10 +182,10 @@ $(document).ready(function () {
             if (responseJson.estado) {
                 const d = responseJson.objeto;
                 console.log(d);
-                $("#inputGroupSubTotal").text(`Sub Total - ${d.Currency}`)
-                $("#inputGroupIGV").text(`IMP(${d.Tax}%) - ${d.Currency}`)
-                $("#inputGroupTotal").text(`Total - ${d.Currency}`)
-                valorImpuesto = parseFloat(d.Tax);
+                $("#inputGroupSubTotal").text(`Sub Total - ${d.currency}`)
+                $("#inputGroupIGV").text(`IMP(${d.tax}%) - ${d.currency}`)
+                $("#inputGroupTotal").text(`Total - ${d.currency}`)
+                valorImpuesto = parseFloat(d.tax);
             }
         })
 })
@@ -299,7 +299,7 @@ function mostrarRoom_Precios(Data) {
         // Crear un formulario adicional para cada acompañante
         for (var i = 1; i <= numAcompanantes; i++) {
             // Crear un elemento div para cada formulario adicional
-            var nuevoForm = $("<div class='row'><div class= 'col-sm-12' >");
+            var nuevoForm = $("<div class='row childs'><div class= 'col-sm-12' >");
 
             // Agregar el formulario adicional dentro del elemento div
             nuevoForm.append(`
@@ -365,107 +365,6 @@ function mostrarRoom_Precios(Data) {
 
     });
 
-    // Agregar la validación de campos obligatorios a los formularios dinámicos
-
-    $(document).on("click", ".btnSendData", function (e) {
-
-        e.preventDefault();
-
-        var formValid = true;
-        var guest = {};
-
-        $("#collapseGuest, .collapseCompanion").each(function (index) {
-            var $form = $(this).find("form");
-            var formId = $(this).attr("id");
-            var formName = "Huésped principal";
-            if (formId !== "collapseGuest") {
-                formName = "Acompañante " + (index);
-            }
-            var formFields = ["#DocumentType", "#Document", "#inputRoom", "#inputName", "#Name", "#RecidenceCity", "#OriginCity", "#CheckIn", "#CheckOut", "#IsMain"];
-
-            // Validar que todos los campos del formulario estén llenos
-            $form.find(formFields.join(",")).each(function () {
-                if ($(this).val() === "") {
-                    alert(formName + ": Por favor, complete todos los campos.");
-                    formValid = false;
-                    return false;
-                }
-            });
-
-            if (!formValid) {
-                return false;
-            }
-        });
-
-
-
-
-        var formValues = [];
-
-
-        $("#masterDetail, .collapseCompanion").each(function (index) {
-
-            var guest = {};
-
-            var $form = $(this).find("form");
-
-
-            guest.DocumentType = $form.find("#DocumentType").val();
-            guest.Document = $form.find("#Document").val();
-            guest.IdRoom = $form.find("#IdRoom").val();
-            guest.Name = $form.find("#Name").val();
-            guest.LastName = $form.find("#LastName").val();
-            guest.RecidenceCity = $form.find("#RecidenceCity").val();
-            guest.OriginCity = $form.find("#OriginCity").val();
-            guest.NumberCompanions = $form.find("#NumberCompanions").val();
-            guest.CheckIn = $form.find("#CheckIn").val();
-            guest.CheckOut = $form.find("#CheckOut").val();
-            guest.IsMain = $form.find("#IsMain").val();
-
-            formValues.push(guest);
-
-        });
-
-        console.log("data form" + JSON.stringify(formValues));
-
-
-        $("#btnTerminarPedido").LoadingOverlay("show");
-
-        fetch("/Booking/SaveGuest", {
-            method: "POST",
-            headers: { "Content-type": "application/json; charset=utf-8" },
-            body: JSON.stringify(formValues),
-        })
-            .then(response => {
-                $("#btnTerminarPedido").LoadingOverlay("hide");
-                return response.ok ? response.json() : Promise.reject(response);
-            })
-            .then(responseJson => {
-                if (responseJson.estado) {
-
-                    productosParaMovimiento = [];
-                    proveedorParaPedido = [];
-
-                    mostrarProducto_Precios(productosParaMovimiento);
-                    limpiarProveedor(proveedorParaPedido);
-
-                    $("#txtDocumentoCliente").val("");
-                    $("#txtNombreCliente").val("");
-                    $("#cboTipoDocumentoMovimiento").val($("#cboTipoDocumentoMovimiento option:first").val())
-                    $("#txtSubTotal").val("");
-                    $("#txtIGV").val("");
-                    $("#txtTotal").val("");
-
-                    swal("Registrado", `Numero de Reserva:${responseJson.objeto.numeroDocumentoExterno}  `, "success")
-                } else {
-                    swal("Error", responseJson.mensaje, "error")
-
-                }
-
-            })
-
-    })
-
     function actualizarTotal() {
         let subtotal2 = 0;
         $(".input-cantidad, .input-price").each(function () {
@@ -493,68 +392,100 @@ function mostrarRoom_Precios(Data) {
     }
 }
 
+// Agregar la validación de campos obligatorios a los formularios dinámicos
 
+$(document).on("click", ".btnSendData", function (e) {
 
-$("#btnFinishingBooking").click(function () {
+    e.preventDefault();
 
-    roomsParaMovimiento = [];
+    var formValid = true;
+    // var guest = {};
 
-    // Iterar por cada fila de la tabla y agregar los datos de cada room al array roomsParaMovimiento
-    $("#tbRoom tbody tr").each(function () {
+    $("#collapseGuest, .collapseCompanion").each(function (index) {
+        var $form = $(this).find("form");
+        var formId = $(this).attr("id");
+        var formName = "Huésped principal";
+        if (formId !== "collapseGuest") {
+            formName = "Acompañante " + (index);
+        }
+        var formFields = ["#DocumentType", "#Document", "#inputRoom", "#inputName", "#Name", "#RecidenceCity", "#OriginCity", "#CheckIn", "#CheckOut", "#IsMain"];
 
-        const codigoBarra = $(this).find("td:eq(1)").text();
-        const descripcion = $(this).find("td:eq(2)").text();
-        const precio = parseFloat($(this).find(".input-price").val());
-        const cantidad = parseFloat($(this).find(".input-cantidad").val());
-        const subtotal = parseFloat($(this).find(".input-subtotal").val());
-        const idRoom = $(this).attr("id");
+        // Validar que todos los campos del formulario estén llenos
+        $form.find(formFields.join(",")).each(function () {
+            if ($(this).val() === "") {
+                alert(formName + ": Por favor, complete todos los campos.");
+                formValid = false;
+                return false;
+            }
+        });
 
-        if (!isNaN(precio) && !isNaN(cantidad) && !isNaN(subtotal)
-            && !(cantidad == 0) && !(cantidad == null) && !(cantidad == "")) {
-            const room = {
-                codigoBarra: codigoBarra,
-                descripcionRoom: descripcion,
-                precio: precio,
-                cantidad: cantidad,
-                total: subtotal,
-                idRoom: idRoom
-            };
-            roomsParaMovimiento.push(room);
+        if (!formValid) {
+            return false;
         }
     });
 
-    if (roomsParaMovimiento.length < 1) {
-        toastr.warning("", "Debe ingresar una habitacion");
-        return;
-    }
+    //var formValues = [];
+
+    var data = {
+        "Guests": [],
+        "Book": {},
+        "Movement": {}
+    };
+
+    var movement = {};
+
+    movement.IdTipoDocumentoMovimiento = $("#cboTipoDocumentoMovimiento").val();
+    //movement.documentoCliente = $("#txtDocumentoCliente").val();
+    movement.NombreCliente = $("#txtNombreCliente").val();
+    movement.SubTotal = $("#txtSubTotal").val();
+    movement.ImpuestoTotal = $("#txtIGV").val();
+    movement.Total = $("#txtTotal").val();
+    movement.numeroDocumentoExterno = establishmentParaPedido[0].cantidad
+
+    var book = {};
+
+    book.Reason = $("#Reason").val();
+    book.CheckIn = $("#CheckIn").val();
+    book.CheckOut = $("#CheckOut").val();
+    book.EstablishmentId = $("#tbEstablishment tbody tr:first").attr("id");
+
+    $("#masterDetail, .collapseCompanion").each(function (index) {
+
+        var guest = {};
+
+        var $form = $(this).find("form");
 
 
-    const detallePedidoDto = roomsParaMovimiento;
+        guest.DocumentType = $form.find("#DocumentType").val();
+        guest.Document = $form.find("#Document").val();
+        guest.RoomId = $form.find("#IdRoom").val();
+        guest.Room = $form.find("#IdRoom option:selected").text();
+        guest.Name = $form.find("#Name").val();
+        guest.LastName = $form.find("#LastName").val();
+        guest.RecidenceCity = $form.find("#RecidenceCity").val();
+        guest.OriginCity = $form.find("#OriginCity").val();
+        guest.NumberCompanions = $form.find("#NumberCompanions").val();
+        guest.CheckIn = $form.find("#CheckIn").val();
+        guest.CheckOut = $form.find("#CheckOut").val();
+        guest.IsMain = $form.find("#IsMain").val();
 
-    console.log(roomsParaMovimiento);
+        data.Guests.push(guest);
+    });
 
-    const Movimiento = {
-        idTipoDocumentoMovimiento: $("#cboTipoDocumentoMovimiento").val(),
-        idEstablishment: establishmentParaPedido[0].idEstablishment,
-        numeroDocumentoExterno: establishmentParaPedido[0].cantidad,
-        documentoCliente: establishmentParaPedido[0].nitEstablishment,
-        nombreCliente: establishmentParaPedido[0].nombreEstablishment,
-        subTotal: $("#txtSubTotal").val(),
-        impuestoTotal: $("#txtIGV").val(),
-        total: $("#txtTotal").val(),
-        DetalleMovimiento: detallePedidoDto
-    }
+    data.Movement = movement;
+    data.Book = book;
 
+    console.log("data " + JSON.stringify(data));
 
-    $("#btnFinishingBooking").LoadingOverlay("show");
+    $("#btnTerminarPedido").LoadingOverlay("show");
 
-    fetch("/Booking/SaveBooking", {
+    fetch("/Booking/SaveBook", {
         method: "POST",
         headers: { "Content-type": "application/json; charset=utf-8" },
-        body: JSON.stringify(Movimiento),
+        body: JSON.stringify(data),
     })
         .then(response => {
-            $("#btnFinishingBooking").LoadingOverlay("hide");
+            $("#btnTerminarPedido").LoadingOverlay("hide");
             return response.ok ? response.json() : Promise.reject(response);
         })
         .then(responseJson => {
@@ -564,7 +495,17 @@ $("#btnFinishingBooking").click(function () {
                 establishmentParaPedido = [];
 
                 mostrarRoom_Precios(roomsParaMovimiento);
-                limpiarEstablishment(establishmentParaPedido);
+
+                $("#collapseEstablishment").collapse('show');
+
+                $("#collapseRoom").collapse('hide');
+
+                
+                $(".childs").empty();
+                $("#miFormulario")[0].reset();
+
+               // mostrarProducto_Precios(productosParaMovimiento);
+                limpiarEstablishment()
 
                 $("#txtDocumentoCliente").val("");
                 $("#txtNombreCliente").val("");
@@ -573,7 +514,8 @@ $("#btnFinishingBooking").click(function () {
                 $("#txtIGV").val("");
                 $("#txtTotal").val("");
 
-                swal("Registrado", `Numero de Pedido:${responseJson.objeto.numeroDocumentoExterno}  `, "success")
+                swal("Registrado", `Numero de Reserva:${responseJson.objeto.movement.numeroDocumentoExterno}  `, "success")
+
             } else {
                 swal("Error", responseJson.mensaje, "error")
 

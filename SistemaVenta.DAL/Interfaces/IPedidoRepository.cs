@@ -9,7 +9,7 @@ namespace SistemaVenta.DAL.Interfaces
 {
     public interface IPedidoRepository: IGenericRepository<Movimiento>
     {
-        Task<Movimiento> Registrar(Movimiento entidad);
+        Task<Movimiento> Registrar(Movimiento entidad);//todo volar
        // Task<List<DetalleMovimiento>> Reporte(DateTime fechaInicio,DateTime fechaFin);
     }
 }

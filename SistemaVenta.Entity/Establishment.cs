@@ -10,6 +10,7 @@ public partial class Establishment
     public string NIT { get; set; }
     public int IdCompany { get; set; }
     public string EstablishmentName { get; set; }
+    public string EstablishmentType { get; set; }
     public string Contact { get; set; }
     public Company Company { get; set; }
     public string Address { get; set; }
