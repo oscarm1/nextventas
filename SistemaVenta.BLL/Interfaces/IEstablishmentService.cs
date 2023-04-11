@@ -10,6 +10,7 @@ namespace SistemaVenta.BLL.Interfaces
     public interface IEstablishmentService
     {
         Task<List<Establishment>> Listar();
+        Task<List<Establishment>> ListByIdCompany(int idCompany);
         Task<Establishment> getEstablishmentById(int Id);
         Task<Establishment> Crear(Establishment entidad);
         Task<Establishment> Editar(Establishment entidad);

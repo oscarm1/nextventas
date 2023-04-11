@@ -82,5 +82,11 @@ namespace SistemaVenta.DAL.Implementacion
             return queryEntidad;
         }
 
+        public async Task<IQueryable<TEntity>> ConsultarLista(Expression<Func<TEntity, bool>> filtro)
+        {
+            IQueryable<TEntity> queryEntidad = filtro == null ? _dbContext.Set<TEntity>() : _dbContext.Set<TEntity>().Where(filtro);
+            return queryEntidad;
+        }
+
     }
 }

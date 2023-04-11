@@ -12,10 +12,14 @@ namespace SistemaVenta.AplicacionWeb.Controllers
     {
         private readonly IUsuarioService _usuarioServicio;
         private readonly INegocioService _negocioService;
-        public AccesoController(IUsuarioService usuarioServicio, INegocioService negocioService)
+        private readonly ICompanyService _companyService;
+        private readonly ISubscriptionService _subscriptionService;
+        public AccesoController(IUsuarioService usuarioServicio, INegocioService negocioService, ICompanyService companyService, ISubscriptionService subscriptionService)
         {
             _usuarioServicio = usuarioServicio;
             _negocioService = negocioService;
+            _companyService = companyService;
+            _subscriptionService = subscriptionService;
         }
 
         public IActionResult Login()
@@ -32,16 +36,18 @@ namespace SistemaVenta.AplicacionWeb.Controllers
         public async Task<IActionResult> Login(UsuarioLoginDTO modelo)
         {
             Usuario usuario_encontrado = await _usuarioServicio.ObtenerPorCredenciales(modelo.Correo, modelo.Clave);
-            Negocio negocio = await _negocioService.Obtener();
+            Company empresa_encontrada = await _companyService.GetCompanyById(usuario_encontrado.IdCompany);
+            Subscription suscripcion_encontrada = await _subscriptionService.GetSubscriptionByIdCompany(empresa_encontrada.IdCompany);
 
-            if(usuario_encontrado == null)
+            // Company compania = await _companyService.Obtener();
+
+            if (usuario_encontrado == null)
             {
-                ViewData["Mensaje"] = "Usuario o clave incorrecta, no se encontraron considencias";
+                ViewData["Mensaje"] = "Usuario o clave incorrecta, no se encontraron coincidencia";
                 return View();
             }
             else
             {
-
                 ViewData["Mensaje"] = null;
 
                 //Creando lista de reclamación 
@@ -51,7 +57,12 @@ namespace SistemaVenta.AplicacionWeb.Controllers
                 new Claim(ClaimTypes.NameIdentifier, usuario_encontrado.IdUsuario.ToString()),
                 new Claim(ClaimTypes.Role, usuario_encontrado.IdRol.ToString()),
                 new Claim("UrlFoto", usuario_encontrado.UrlFoto),
-                new Claim("urlLogo", negocio.UrlLogo),
+                new Claim("urlLogo", empresa_encontrada.UrlLogo),
+                new Claim("IdCompany", empresa_encontrada.IdCompany.ToString()),
+                new Claim("Subscription", suscripcion_encontrada.IdPlan.ToString()),
+                new Claim("SubscriptionStatus", suscripcion_encontrada.SubscriptionStatus.ToString()),
+                new Claim("ExpiryDateSubscription", suscripcion_encontrada.ExpiryDate.ToString())
+
             };
 
                 //registrando los claims a la autenticacion por coockies

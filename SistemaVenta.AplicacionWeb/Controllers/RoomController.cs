@@ -6,6 +6,7 @@ using SistemaVenta.AplicacionWeb.Models.DTOs;
 using SistemaVenta.AplicacionWeb.Utilidades.Response;
 using SistemaVenta.BLL.Interfaces;
 using SistemaVenta.Entity;
+using System.Security.Claims;
 
 namespace SistemaVenta.AplicacionWeb.Controllers
 {
@@ -29,8 +30,20 @@ namespace SistemaVenta.AplicacionWeb.Controllers
         [HttpGet]
         public async Task<IActionResult> Lista()
         {
+            ClaimsPrincipal claimUser = HttpContext.User;
+            var idCompany = int.Parse(((ClaimsIdentity)claimUser.Identity).FindFirst("IdCompany").Value);
+
             List<RoomDTO> roomDTOLista = _mapper.Map<List<RoomDTO>>(await _roomService.Listar());
-            return StatusCode(StatusCodes.Status200OK, new { data = roomDTOLista }); // El DataTable funciona recibiendo un objeto 'data' . 
+            return StatusCode(StatusCodes.Status200OK, new { data = roomDTOLista }); 
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ListByIdEstablishment(string idEstablis)
+        {
+            int idEstablishment = int.Parse(idEstablis);
+            
+            List<RoomDTO> roomDTOLista = _mapper.Map<List<RoomDTO>>(await _roomService.GetByIdEstablishment(idEstablishment));
+            return StatusCode(StatusCodes.Status200OK, new { data = roomDTOLista });
         }
 
         [HttpPost]

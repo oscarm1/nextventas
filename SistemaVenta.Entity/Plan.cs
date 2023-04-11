@@ -9,7 +9,8 @@ public partial class Plan
     public string PlanName { get; set; }
     public string PlanDescription { get; set; }
     public decimal Amount { get; set; }
-    public DateTime CreationDate { get; set; }
-    public DateTime ModificationDate { get; set; }
+    public DateTime? CreationDate { get; set; }
+    public DateTime? ModificationDate { get; set; }
     public List<Subscription> Subscriptions { get; set; }
+    public List<ParamPlan> ParamPlans { get; set; }
 }

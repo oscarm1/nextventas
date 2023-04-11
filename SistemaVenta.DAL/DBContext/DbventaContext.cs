@@ -50,6 +50,7 @@ public partial class DbventaContext : DbContext
     public DbSet<Company> Companies { get; set; }
     public DbSet<GeneralParams> GeneralParams { get; set; }
     public DbSet<Plan> Plans { get; set; }
+    public DbSet<ParamPlan> ParamPlans { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -512,18 +513,6 @@ public partial class DbventaContext : DbContext
         modelBuilder.Entity<Book>()
             .HasKey(gr => gr.IdBook);
 
-        //modelBuilder.Entity<Book>()
-        //    .HasOne(gr => gr.IdRoomNavigation)
-        //    .WithMany(r => r.book)
-        //    .HasForeignKey(gr => gr.IdRoom);
-
-        //modelBuilder.Entity<Book>()
-        //    .HasOne(gr => gr.IdGuestNavigation)
-        //    .WithMany(g => g.book)
-        //    .HasForeignKey(gr => gr.IdGuest)
-        //    .OnDelete(DeleteBehavior.NoAction);
-
-
         OnModelCreatingPartial(modelBuilder);
         modelBuilder.Entity<Establishment>()
             .HasKey(e => e.IdEstablishment);
@@ -542,9 +531,9 @@ public partial class DbventaContext : DbContext
         modelBuilder.Entity<User>()
             .HasKey(u => u.IdUser);
 
-        modelBuilder.Entity<User>()
-            .HasOne(u => u.Company)
-            .WithMany(c => c.Users)
+        modelBuilder.Entity<Usuario>()
+            .HasOne(u => u.IdCompanyNavigation)
+            .WithMany(c => c.Usuarios)
             .HasForeignKey(u => u.IdCompany);
 
         OnModelCreatingPartial(modelBuilder);
@@ -581,8 +570,8 @@ public partial class DbventaContext : DbContext
             .HasForeignKey(e => e.IdCompany);
 
         modelBuilder.Entity<Company>()
-             .HasMany(c => c.Users)
-             .WithOne(u => u.Company)
+             .HasMany(c => c.Usuarios)
+             .WithOne(u => u.IdCompanyNavigation)
              .HasForeignKey(u => u.IdCompany);
 
         modelBuilder.Entity<Company>()
@@ -626,6 +615,15 @@ public partial class DbventaContext : DbContext
             .HasForeignKey(e => e.IdPlan);
 
         OnModelCreatingPartial(modelBuilder);
+        modelBuilder.Entity<ParamPlan>()
+            .HasKey(c => c.IdParamPlan);
+
+        OnModelCreatingPartial(modelBuilder);
+
+        modelBuilder.Entity<ParamPlan>()
+            .HasOne(gr => gr.IdPlanNavigation)
+            .WithMany(r => r.ParamPlans)
+            .HasForeignKey(gr => gr.IdPlan);
 
     }
 

@@ -34,6 +34,11 @@ namespace SistemaVenta.BLL.Implementacion
             }
 
         }
+        public async Task<Company> GetCompanyById(int Id)
+        {
+            Company company_found = await _repositorio.Obtener(c => c.IdCompany == Id);
+            return company_found;
+        }
 
         public async Task<Company> GuardarCambios(Company entidad, Stream logo = null, string nombreLogo = "")
         {

@@ -10,6 +10,7 @@ namespace SistemaVenta.BLL.Interfaces
     public interface IUsuarioService
     {
         Task<List<Usuario>> Lista();
+        Task<List<Usuario>> ListByCompany(int idCompany);
         Task<Usuario> Crear(Usuario entidad, Stream foto = null, string nombreFoto="", string urlPlantillaCorreo ="");
         Task<Usuario> Editar(Usuario entidad, Stream foto = null, string nombreFoto = "");
         Task<bool> Eliminar(int idUsuario);

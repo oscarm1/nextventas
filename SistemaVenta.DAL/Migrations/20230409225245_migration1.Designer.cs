@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SistemaVenta.DAL.DBContext;
 
@@ -11,9 +12,11 @@ using SistemaVenta.DAL.DBContext;
 namespace nextadvisordotnet.DAL.Migrations
 {
     [DbContext(typeof(DbventaContext))]
-    partial class DbventaContextModelSnapshot : ModelSnapshot
+    [Migration("20230409225245_migration1")]
+    partial class migration1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -642,38 +645,6 @@ namespace nextadvisordotnet.DAL.Migrations
                     b.ToTable("NumeroCorrelativo", (string)null);
                 });
 
-            modelBuilder.Entity("SistemaVenta.Entity.ParamPlan", b =>
-                {
-                    b.Property<int>("IdParamPlan")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdParamPlan"));
-
-                    b.Property<DateTime?>("CreationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("IdPlan")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("ModificationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("IdParamPlan");
-
-                    b.HasIndex("IdPlan");
-
-                    b.ToTable("ParamPlans");
-                });
-
             modelBuilder.Entity("SistemaVenta.Entity.Plan", b =>
                 {
                     b.Property<int>("IdPlan")
@@ -977,10 +948,13 @@ namespace nextadvisordotnet.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdSubscription"));
 
-                    b.Property<DateTime>("DateIni")
+                    b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("ExpiryDate")
+                    b.Property<DateTime>("DateFin")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateIni")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("IdCompany")
@@ -989,24 +963,8 @@ namespace nextadvisordotnet.DAL.Migrations
                     b.Property<int>("IdPlan")
                         .HasColumnType("int");
 
-                    b.Property<int?>("IdUsuario")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("ModificationDate")
+                    b.Property<DateTime>("ModificationDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("PaymentDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("PaymentMethod")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PaymentReceipt")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SubscriptionStatus")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("IdSubscription");
 
@@ -1293,17 +1251,6 @@ namespace nextadvisordotnet.DAL.Migrations
                     b.Navigation("IdUsuarioNavigation");
                 });
 
-            modelBuilder.Entity("SistemaVenta.Entity.ParamPlan", b =>
-                {
-                    b.HasOne("SistemaVenta.Entity.Plan", "IdPlanNavigation")
-                        .WithMany("ParamPlans")
-                        .HasForeignKey("IdPlan")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("IdPlanNavigation");
-                });
-
             modelBuilder.Entity("SistemaVenta.Entity.Producto", b =>
                 {
                     b.HasOne("SistemaVenta.Entity.Categoria", "IdCategoriaNavigation")
@@ -1452,8 +1399,6 @@ namespace nextadvisordotnet.DAL.Migrations
 
             modelBuilder.Entity("SistemaVenta.Entity.Plan", b =>
                 {
-                    b.Navigation("ParamPlans");
-
                     b.Navigation("Subscriptions");
                 });
 

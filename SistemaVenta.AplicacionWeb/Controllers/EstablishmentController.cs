@@ -16,8 +16,9 @@ namespace SistemaVenta.AplicacionWeb.Controllers
     {
         private readonly IMapper _mapper;
         private readonly IEstablishmentService _establishmentService;
+        private readonly IParamPlanService _paramPlanService;
 
-        public EstablishmentController(IMapper mapper, IEstablishmentService establishmentService)
+        public EstablishmentController(IMapper mapper, IEstablishmentService establishmentService, IParamPlanService paramPlanService)
         {
             _mapper = mapper;
             _establishmentService = establishmentService;
@@ -31,7 +32,11 @@ namespace SistemaVenta.AplicacionWeb.Controllers
         [HttpGet]
         public async Task<IActionResult> List()
         {
-            List<EstablishmentDTO> EstablishmentDTOLista = _mapper.Map<List<EstablishmentDTO>>(await _establishmentService.Listar());
+
+            ClaimsPrincipal claimUser = HttpContext.User;
+            var idCompany = int.Parse(((ClaimsIdentity)claimUser.Identity).FindFirst("IdCompany").Value);
+
+            List<EstablishmentDTO> EstablishmentDTOLista = _mapper.Map<List<EstablishmentDTO>>(await _establishmentService.ListByIdCompany(idCompany));
             return StatusCode(StatusCodes.Status200OK, new { data = EstablishmentDTOLista }); // El DataTable funciona recibiendo un objeto 'data' . 
         }
 
@@ -53,13 +58,33 @@ namespace SistemaVenta.AplicacionWeb.Controllers
                     streamImagen = imagen.OpenReadStream();
                 }
 
-                EstablishmentDTO.IdCompany = 1; // todo just a single company
-                
-                Establishment producto_creado = await _establishmentService.Crear(_mapper.Map<Establishment>(EstablishmentDTO));
+                ClaimsPrincipal claimUser = HttpContext.User;
 
-                EstablishmentDTO = _mapper.Map<EstablishmentDTO>(producto_creado);
-                response.Estado = true;
-                response.Objeto = EstablishmentDTO;
+                var idCompany = int.Parse(((ClaimsIdentity)claimUser.Identity).FindFirst("IdCompany").Value);
+                var subscription = int.Parse(((ClaimsIdentity)claimUser.Identity).FindFirst("Subscription").Value);
+
+                var listaEstablecimientos = await _establishmentService.ListByIdCompany(idCompany);
+                List<EstablishmentDTO> listaEstablecimientosDto = _mapper.Map<List<EstablishmentDTO>>(listaEstablecimientos);
+
+                var parametros_encontrados = await _paramPlanService.GetParamPlanByIdPlan(subscription);
+
+
+                var CantidadEstablecimientosPlan = parametros_encontrados
+                .Where(objeto => objeto.Name == "CantidadEstablecimientos" && objeto.IdPlan == subscription) // Condición que debe cumplir el objeto
+                .Select(objeto => objeto.Value).First(); // Seleccionar sólo el nombre del objeto
+
+                if (listaEstablecimientos.Count() < int.Parse(CantidadEstablecimientosPlan))
+                {
+                    EstablishmentDTO.IdCompany = idCompany; // todo just a single company
+
+                    Establishment producto_creado = await _establishmentService.Crear(_mapper.Map<Establishment>(EstablishmentDTO));
+
+                    EstablishmentDTO = _mapper.Map<EstablishmentDTO>(producto_creado);
+                    response.Estado = true;
+                    response.Objeto = EstablishmentDTO;
+                }
+                response.Estado = false;
+                response.Mensaje = "Has superado los establecimientos subscritos en tu plan";
             }
             catch (Exception ex)
             {

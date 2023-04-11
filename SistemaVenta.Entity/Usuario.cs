@@ -15,6 +15,8 @@ public partial class Usuario
 
     public int? IdRol { get; set; }
 
+    public int IdCompany { get; set; }
+
     public string? UrlFoto { get; set; }
 
     public string? NombreFoto { get; set; }
@@ -26,6 +28,6 @@ public partial class Usuario
     public DateTime? FechaRegistro { get; set; }
 
     public virtual Rol? IdRolNavigation { get; set; }
-
+    public virtual Company IdCompanyNavigation { get; set; }
     public virtual ICollection<Movimiento> Movimiento { get; } = new List<Movimiento>();
 }

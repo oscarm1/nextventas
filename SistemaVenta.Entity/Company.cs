@@ -19,6 +19,6 @@ public partial class Company
     public DateTime CreationDate { get; set; }
     public DateTime ModificationDate { get; set; }
     public List<Establishment> Establishments { get; set; }
-    public List<User> Users { get; set; }
+    public List<Usuario> Usuarios { get; set; }
     public List<Subscription> Subscriptions { get; set; }
 }

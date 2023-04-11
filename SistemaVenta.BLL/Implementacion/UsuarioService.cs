@@ -30,6 +30,14 @@ namespace SistemaVenta.BLL.Implementacion
             IQueryable<Usuario> query = await _repositorio.Consultar();
             return query.Include(r => r.IdRolNavigation).ToList();
         }
+
+        public async Task<List<Usuario>> ListByCompany(int idCompany)
+        {
+   
+            IQueryable<Usuario> query = await _repositorio.Consultar(c => c.IdCompany == idCompany);
+            return query.Include(r => r.IdRolNavigation).ToList();
+        }
+
         public async Task<Usuario> Crear(Usuario entidad, Stream foto = null, string nombreFoto = "", string urlPlantillaCorreo = "")
         {
             Usuario usuario_existe = await _repositorio.Obtener(u => u.Correo == entidad.Correo);

@@ -12,7 +12,6 @@ public partial class Establishment
     public string EstablishmentName { get; set; }
     public string EstablishmentType { get; set; }
     public string Contact { get; set; }
-    public Company Company { get; set; }
     public string Address { get; set; }
     public string PhoneNumber { get; set; }
     public string Token { get; set; }
@@ -20,6 +19,7 @@ public partial class Establishment
     public bool? isActive { get; set; }
     public DateTime CreationDate { get; set; }
     public DateTime ModificationDate { get; set; }
+    public Company Company { get; set; }
     public List<Room> Rooms { get; set; }
     public List<User> Users { get; set; }
 }

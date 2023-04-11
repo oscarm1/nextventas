@@ -43,7 +43,7 @@ namespace SistemaVenta.DAL.Implementacion
                                 productoEncontrado.Stock = productoEncontrado.Stock + itemDV.Cantidad;
                                 productoEncontrado.PrecioCompra = itemDV.Precio;
                                 tipoDoc = "pedido";
-                            }    
+                            }
 
                             else
                             {
@@ -57,7 +57,11 @@ namespace SistemaVenta.DAL.Implementacion
                         await _dbContext.SaveChangesAsync();
 
                     }
-                    tipoDoc = "reserva";
+                    else
+                    {
+                        tipoDoc = "reserva";
+
+                    }
 
                     NumeroCorrelativo correlativo = _dbContext.NumeroCorrelativos.Where(c => c.Gestion == tipoDoc).First();
 

@@ -12,6 +12,7 @@ using SistemaVenta.DAL.Interfaces;
 using SistemaVenta.DAL.Implementacion;
 using SistemaVenta.BLL.Interfaces;
 using SistemaVenta.BLL.Implementacion;
+using SistemaVenta.Entity;
 
 namespace SistemaVenta.IOC
 {
@@ -47,7 +48,8 @@ namespace SistemaVenta.IOC
             services.AddScoped<IRoomService, RoomService>();
             services.AddScoped<IBookingService, BookingService>();
             services.AddScoped<IGuestService, GuestService>();
-            //services.AddScoped<IMenuService, MenuService>();
+            services.AddScoped<ISubscriptionService, SubscriptionService>();
+            services.AddScoped<IParamPlanService, ParamPlanService>();
         }
     }
 }

@@ -30,6 +30,11 @@ namespace SistemaVenta.BLL.Implementacion
             IQueryable<Establishment> query = await _repositorio.Consultar();
             return query.ToList();
         }
+        public async Task<List<Establishment>> ListByIdCompany(int idCompany)
+        {
+            IQueryable<Establishment> query = await _repositorio.Consultar(c => c.IdCompany == idCompany);
+            return query.ToList();
+        }
         public async Task<Establishment> getEstablishmentById(int Id)
         {
             Establishment establishment_found = await _repositorio.Obtener(c => c.IdEstablishment == Id);

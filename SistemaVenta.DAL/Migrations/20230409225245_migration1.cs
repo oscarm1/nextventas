@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace nextadvisordotnet.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class firstmg : Migration
+    public partial class migration1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -174,8 +174,8 @@ namespace nextadvisordotnet.DAL.Migrations
                     PlanName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PlanDescription = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ModificationDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ModificationDate = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -363,6 +363,7 @@ namespace nextadvisordotnet.DAL.Migrations
                     correo = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
                     telefono = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
                     idRol = table.Column<int>(type: "int", nullable: true),
+                    IdCompany = table.Column<int>(type: "int", nullable: false),
                     urlFoto = table.Column<string>(type: "varchar(500)", unicode: false, maxLength: 500, nullable: true),
                     nombreFoto = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: true),
                     clave = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: true),
@@ -372,6 +373,12 @@ namespace nextadvisordotnet.DAL.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK__Usuario__645723A6ACC301A0", x => x.idUsuario);
+                    table.ForeignKey(
+                        name: "FK_Usuario_Companies_IdCompany",
+                        column: x => x.IdCompany,
+                        principalTable: "Companies",
+                        principalColumn: "IdCompany",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK__Usuario__idRol__300424B4",
                         column: x => x.idRol,
@@ -428,6 +435,7 @@ namespace nextadvisordotnet.DAL.Migrations
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IdCompany = table.Column<int>(type: "int", nullable: false),
+                    CompanyIdCompany = table.Column<int>(type: "int", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Username = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -441,8 +449,8 @@ namespace nextadvisordotnet.DAL.Migrations
                 {
                     table.PrimaryKey("PK_Users", x => x.IdUser);
                     table.ForeignKey(
-                        name: "FK_Users_Companies_IdCompany",
-                        column: x => x.IdCompany,
+                        name: "FK_Users_Companies_CompanyIdCompany",
+                        column: x => x.CompanyIdCompany,
                         principalTable: "Companies",
                         principalColumn: "IdCompany",
                         onDelete: ReferentialAction.Cascade);
@@ -501,6 +509,8 @@ namespace nextadvisordotnet.DAL.Migrations
                     Reason = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CheckIn = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CheckOut = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IdUsuario = table.Column<int>(type: "int", nullable: true),
+                    EstablishmentId = table.Column<int>(type: "int", nullable: false),
                     ModificationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IdMovimientoNavigationIdMovimiento = table.Column<int>(type: "int", nullable: true)
@@ -554,25 +564,25 @@ namespace nextadvisordotnet.DAL.Migrations
                     idRoom = table.Column<int>(type: "int", nullable: false),
                     IdGuest = table.Column<int>(type: "int", nullable: false),
                     precio = table.Column<decimal>(type: "decimal(10,2)", nullable: true),
-                    total = table.Column<decimal>(type: "decimal(10,2)", nullable: true),
-                    IdGuestNavigationIdGuest = table.Column<int>(type: "int", nullable: true)
+                    total = table.Column<decimal>(type: "decimal(10,2)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK__DetalleB__BFE2843FB3D3EFB5", x => x.idDetailBook);
                     table.ForeignKey(
-                        name: "FK_DetailBook_Guests_IdGuestNavigationIdGuest",
-                        column: x => x.IdGuestNavigationIdGuest,
+                        name: "FK_DetailBook_Guest",
+                        column: x => x.IdGuest,
                         principalTable: "Guests",
-                        principalColumn: "IdGuest");
+                        principalColumn: "IdGuest",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_DetailBook_Producto",
+                        name: "FK_DetailBook_Room",
                         column: x => x.idRoom,
                         principalTable: "Rooms",
                         principalColumn: "IdRoom",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK__DetalleBo__idBoo__440B1D61",
+                        name: "FK__DetailBo__idBoo__440B1D61",
                         column: x => x.idBook,
                         principalTable: "Books",
                         principalColumn: "IdBook",
@@ -590,9 +600,9 @@ namespace nextadvisordotnet.DAL.Migrations
                 column: "idBook");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DetailBook_IdGuestNavigationIdGuest",
+                name: "IX_DetailBook_IdGuest",
                 table: "DetailBook",
-                column: "IdGuestNavigationIdGuest");
+                column: "IdGuest");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DetailBook_idRoom",
@@ -675,13 +685,18 @@ namespace nextadvisordotnet.DAL.Migrations
                 column: "IdPlan");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Users_CompanyIdCompany",
+                table: "Users",
+                column: "CompanyIdCompany");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Users_EstablishmentIdEstablishment",
                 table: "Users",
                 column: "EstablishmentIdEstablishment");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Users_IdCompany",
-                table: "Users",
+                name: "IX_Usuario_IdCompany",
+                table: "Usuario",
                 column: "IdCompany");
 
             migrationBuilder.CreateIndex(
@@ -748,9 +763,6 @@ namespace nextadvisordotnet.DAL.Migrations
                 name: "Categoria");
 
             migrationBuilder.DropTable(
-                name: "Companies");
-
-            migrationBuilder.DropTable(
                 name: "Proveedor");
 
             migrationBuilder.DropTable(
@@ -758,6 +770,9 @@ namespace nextadvisordotnet.DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "Usuario");
+
+            migrationBuilder.DropTable(
+                name: "Companies");
 
             migrationBuilder.DropTable(
                 name: "Rol");

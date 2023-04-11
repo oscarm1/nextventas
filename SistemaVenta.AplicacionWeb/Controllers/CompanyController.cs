@@ -6,6 +6,7 @@ using SistemaVenta.AplicacionWeb.Models.DTOs;
 using SistemaVenta.AplicacionWeb.Utilidades.Response;
 using SistemaVenta.BLL.Interfaces;
 using SistemaVenta.Entity;
+using System.Security.Claims;
 
 namespace SistemaVenta.AplicacionWeb.Controllers
 {
@@ -34,7 +35,11 @@ namespace SistemaVenta.AplicacionWeb.Controllers
 
             try
             {
-                CompanyDTO companyDTO = _mapper.Map<CompanyDTO>(await _companyService.Obtener());
+
+                ClaimsPrincipal claimUser = HttpContext.User;
+                var idCompany = int.Parse(((ClaimsIdentity)claimUser.Identity).FindFirst("IdCompany").Value);
+
+                CompanyDTO companyDTO = _mapper.Map<CompanyDTO>(await _companyService.GetCompanyById(idCompany));
                 response.Estado = true;
                 response.Objeto = companyDTO;
             }

@@ -15,6 +15,88 @@ let tablaData;
 
 $(document).ready(function () {
 
+    fetch("/Establishment/List")
+        .then(response => {
+            return response.ok ? response.json() : Promise.reject(response);
+        })
+        .then(responseJson => {
+            if (responseJson.data.length > 0) {
+                responseJson.data.forEach((item) => {
+                    $("#cboSearchEstablishment").append(
+                        $("<option>").val(item.idEstablishment).text(item.establishmentName)
+                    )
+                })
+            }
+        })
+
+    //$form.find("#IdRoom option:selected").text();
+
+    //let tablaData;
+
+    $("#cboSearchEstablishment").on("change", function () {
+        // get the selected option value
+        const selectedValue = $(this).val();
+
+        if ($.fn.DataTable.isDataTable('#tbdata')) {
+            tablaData.destroy();
+        }
+
+        if (selectedValue !== '') {
+            tablaData = $('#tbdata').DataTable({
+                responsive: true,
+                "ajax": {
+                    "url": '/Room/ListByIdEstablishment',
+                    "type": "GET",
+                    "data": {
+                        idEstablis: selectedValue
+                    },
+                    "datatype": "json"
+                },
+                "columns": [
+                    { "data": "idRoom", "visible": false, "searchable": false },
+                    { "data": "urlImage", render: function (data) { return `<img style="height:60px" src=${data} class="rounded mx-auto d-block"/>` } },
+                    { "data": "number" },
+                    { "data": "description" },
+                    { "data": "categoryName" },//de la categoria
+                    { "data": "capacity" },
+                    { "data": "price" },
+                    {
+                        "data": "isActive", render: function (data) {
+                            if (data == 1) return '<span class="badge badge-success">Activo</span>';
+                            else return '<span class="badge badge-secondary">No Activo</span>';
+                        }
+                    },
+                    {
+                        "defaultContent": '<button class="btn btn-outline-secondary btn-editar btn-sm mr-2"><i class="fas fa-pencil-alt"></i></button>' +
+                            '<button class="btn btn-outline-danger btn-eliminar btn-sm"><i class="fas fa-trash-alt"></i></button>',
+                        "orderable": false,
+                        "searchable": false,
+                        "width": "80px"
+                    }
+                ],
+                order: [[0, "desc"]],
+                dom: "Bfrtip",
+                buttons: [
+                    {
+                        text: 'Exportar Excel',
+                        className: '',
+                        extend: 'excelHtml5',
+                        title: '',
+                        filename: 'Reporte Habitaciones',
+                        exportOptions: {
+                            columns: [2, 3, 4, 5, 6, 7]
+                        }
+                    }, 'pageLength'
+                ],
+                language: {
+                    url: "https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json"
+                },
+            });
+        }
+    });
+
+
+
     fetch("/Categoria/Lista")
         .then(response => {
             return response.ok ? response.json() : Promise.reject(response);
@@ -28,6 +110,7 @@ $(document).ready(function () {
                 })
             }
         })
+
 
     fetch("/Establishment/List")
         .then(response => {
@@ -43,61 +126,12 @@ $(document).ready(function () {
             }
         })
 
-    tablaData = $('#tbdata').DataTable({
-        responsive: true,
-        "ajax": {
-            "url": '/Room/Lista',
-            "type": "GET",
-            "datatype": "json"
-        },
-        "columns": [
-            { "data": "idRoom", "visible": false, "searchable": false },
-            { "data": "urlImage", render: function (data) { return `<img style="height:60px" src=${data} class="rounded mx-auto d-block"/>` } },
-            { "data": "number" },
-            { "data": "description" },
-            { "data": "categoryName" },//de la categoria
-            { "data": "capacity" },
-            { "data": "price" },
-            {
-                "data": "isActive", render: function (data) {
-                    if (data == 1) return '<span class="badge badge-success">Activo</span>';
-                    else return '<span class="badge badge-secondary">No Activo</span>';
-                }
-            },
-            {
-                "defaultContent": '<button class="btn btn-outline-secondary btn-editar btn-sm mr-2"><i class="fas fa-pencil-alt"></i></button>' +
-                    '<button class="btn btn-outline-danger btn-eliminar btn-sm"><i class="fas fa-trash-alt"></i></button>',
-                "orderable": false,
-                "searchable": false,
-                "width": "80px"
-            }
-        ],
-        order: [[0, "desc"]],
-        dom: "Bfrtip",
-        buttons: [
-            {
-                text: 'Exportar Excel',
-                className: '',
-                extend: 'excelHtml5',
-                title: '',
-                filename: 'Reporte Habitaciones',
-                exportOptions: {
-                    columns: [2, 3, 4, 5, 6, 7]
-                }
-            }, 'pageLength'
-        ],
-        language: {
-            url: "https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json"
-        },
-    });
-
-
 });
 
 function MostrarModal(modelo = MODELO_BASE) {
     $("#txtId").val(modelo.idRoom);
     $("#txtNumber").val(modelo.number);
-  //  $("#txtCategoryName").val(modelo.categoryName);
+    //  $("#txtCategoryName").val(modelo.categoryName);
     $("#txtDescription").val(modelo.description);
     $("#cboCategoria").val(modelo.idCategoria == 0 ? $("#cboCategoria option:first").val() : modelo.idCategoria);
     $("#cboEstablishment").val(modelo.idEstablishment == 0 ? $("#cboEstablishment option:first").val() : modelo.idEstablishment);
@@ -116,8 +150,8 @@ $("#btnNuevo").click(function () {
 
 $("#btnGuardar").click(function () {
     //Validaciones
-    const inputs = $("input.input-validar").serializeArray(); 
-    const inputs_sin_valor = inputs.filter((item) => item.value.trim() == "") 
+    const inputs = $("input.input-validar").serializeArray();
+    const inputs_sin_valor = inputs.filter((item) => item.value.trim() == "")
 
     console.log(inputs_sin_valor);
 
@@ -128,10 +162,10 @@ $("#btnGuardar").click(function () {
         return;
     }
 
-    const modelo = structuredClone(MODELO_BASE); 
+    const modelo = structuredClone(MODELO_BASE);
     modelo["idRoom"] = parseInt($("#txtId").val());
     modelo["number"] = $("#txtNumber").val();
-  //  modelo["categoryName"] = $("#txtCategoryName").val();
+    //  modelo["categoryName"] = $("#txtCategoryName").val();
     modelo["description"] = $("#txtDescription").val();
     modelo["idCategoria"] = $("#cboCategoria").val();
     modelo["idEstablishment"] = $("#cboEstablishment").val();

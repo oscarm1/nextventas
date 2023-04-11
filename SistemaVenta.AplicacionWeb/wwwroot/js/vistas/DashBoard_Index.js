@@ -14,7 +14,7 @@
 
                 //Mostrar datos para las tarjetas
                 $("#totalMovimiento").text(obj.totalMovimientos);
-                $("#totalIngresos").text("$/. " + obj.totalIngresos);
+                $("#totalIngresos").text("$ " + obj.totalIngresos);
                 $("#totalProductos").text(obj.totalProductos);
                 $("#totalCategorias").text(obj.totalCategorias);
 

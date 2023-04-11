@@ -29,6 +29,12 @@ namespace SistemaVenta.BLL.Implementacion
             return query.Include(p => p.IdCategoriaNavigation).ToList();
         }
 
+        public async Task<List<Room>> GetByIdEstablishment(int idCompany)
+        {
+            IQueryable<Room> query = await _repositorio.ConsultarLista(c => c.IdEstablishment == idCompany);
+            return query.Include(p => p.IdCategoriaNavigation).ToList();
+        }
+
         public async Task<Room> Crear(Room entidad, Stream imagen = null, string nombreImagen = "")
         {
             Room room_existe = await _repositorio.Obtener(p => p.Number == entidad.Number);
