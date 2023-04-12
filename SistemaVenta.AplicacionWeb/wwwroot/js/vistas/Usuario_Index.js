@@ -200,16 +200,16 @@ $("#tbdata tbody").on("click", ".btn-eliminar", function () {
     },
         function (respuesta) {
             if (respuesta) {
-                $(".showSweetAlert").LoadingOverlay("show");
+                $(".sweet-alert  .showSweetAlert .visible").LoadingOverlay("show");
 
                 fetch(`/Usuario/Eliminar?IdUsuario=${data.idUsuario}`, {
                     method: "DELETE",
                 })
                     .then(response => {
-                        $(".showSweetAlert").LoadingOverlay("hide");
+                        $(".sweet-alert  .showSweetAlert .visible").LoadingOverlay("hide");
                         return response.ok ? response.json() : Promise.reject(response);
                     })
-                    .then(responseJson => {
+                    .   then(responseJson => {
                         if (responseJson.estado) {
                             tablaData.row(fila).remove().draw();
                             swal("Listo!", "El Usuario fue eliminado", "success")

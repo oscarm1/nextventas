@@ -22,6 +22,7 @@ namespace SistemaVenta.AplicacionWeb.Controllers
         {
             _mapper = mapper;
             _establishmentService = establishmentService;
+            _paramPlanService = paramPlanService;
         }
 
         public IActionResult Index()
