@@ -29,7 +29,7 @@ namespace SistemaVenta.BLL.Implementacion
         public async Task<List<Establishment>> ObtainEstablishments(string busqueda)
         {
             IQueryable<Establishment> query = await _repositorioEstablishment.Consultar(
-                p => p.isActive == true && 
+                p => p.IsActive == true && 
                // p.Stock > 0 && 
                 string.Concat(p.NIT, p.EstablishmentName, p.Contact).Contains(busqueda)
                 );

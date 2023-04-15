@@ -15,8 +15,8 @@ public partial class Room
     public string? CategoryName { get; set; }
     public string? Description { get; set; }
     public int? Capacity { get; set; }
-    public string? NameImage { get; set; }
-    public string? UrlImage { get; set; }
+    public string NameImage { get; set; }
+    public string UrlImage { get; set; }
     public decimal? Price { get; set; }
     public string? Status { get; set; }
     public bool? isActive { get; set; }

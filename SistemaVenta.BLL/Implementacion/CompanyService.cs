@@ -44,7 +44,7 @@ namespace SistemaVenta.BLL.Implementacion
         {
             try
             {
-                Company company_encontrado = await _repositorio.Obtener(n => n.IdCompany == 1);
+                Company company_encontrado = await _repositorio.Obtener(n => n.IdCompany == entidad.IdCompany);
 
                 company_encontrado.CompanyNumber = entidad.CompanyNumber;
                 company_encontrado.CompanyName = entidad.CompanyName;

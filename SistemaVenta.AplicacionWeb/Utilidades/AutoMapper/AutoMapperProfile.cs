@@ -113,13 +113,13 @@ namespace SistemaVenta.AplicacionWeb.Utilidades.AutoMapper
 
             #region Establishment
             CreateMap<Establishment, EstablishmentDTO>()
-                .ForMember(destino => destino.isActive,
-                    opt => opt.MapFrom(origen => origen.isActive == true ? 1 : 0));
+                .ForMember(destino => destino.IsActive,
+                    opt => opt.MapFrom(origen => origen.IsActive == true ? 1 : 0));
 
 
             CreateMap<EstablishmentDTO, Establishment>()
-                .ForMember(destino => destino.isActive,
-                    opt => opt.MapFrom(origen => origen.isActive == 1 ? true : false));
+                .ForMember(destino => destino.IsActive,
+                    opt => opt.MapFrom(origen => origen.IsActive == 1 ? true : false));
 
             #endregion
 

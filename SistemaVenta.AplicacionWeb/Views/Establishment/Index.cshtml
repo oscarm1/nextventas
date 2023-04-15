@@ -1,5 +1,4 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -31,6 +30,7 @@
                         <thead>
                             <tr>
                                 <th>Id</th>
+                                <th>Logo</th>
                                 <th>NIT</th>
                                 <th>Nombre</th>
                                 <th>Contacto</th>
@@ -113,11 +113,16 @@
                                         </select>
                                     </div>
                                 </div>
+                                <div class="form-row">
+                                    <div class="form-group col-sm-6">
+                                        <label for="txtImage">Imagen</label>
+                                        <input class="form-control-file" type="file" id="txtImagen" />
+                                    </div>
+                                </div>
                             </div>
                             <div class="col-sm-4">
-                                <img id="imgProducto" style="max-width:200px;" src="https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=300" class="rounded mx-auto d-block" alt="...">
+                                <img id="imgEstablishment" style="max-width:200px;" src="https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=300" class="rounded mx-auto d-block" alt="...">
                             </div>
-
                         </div>
                     </form>
                 </div>
@@ -144,7 +149,4 @@
     <script src="~/vendor/datatables/extensiones/js/buttons.print.min.js"></script>
     <script src="~/js/vistas/Establishment_Index.js"></script>
 
-
-    <!-- SOLO ES DE EJEMPLO - IGNORAR -->
-@*    <script src="~/js/vistas/datatables-demo.js"></script>
-*@    }
+   }

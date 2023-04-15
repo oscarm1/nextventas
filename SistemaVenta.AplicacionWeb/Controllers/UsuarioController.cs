@@ -43,7 +43,12 @@ namespace SistemaVenta.AplicacionWeb.Controllers
         [HttpGet]
         public async Task<IActionResult> Lista()
         {
-            var lista = await _usuarioService.Lista();
+
+            ClaimsPrincipal claimUser = HttpContext.User;
+            var idCompany = int.Parse(((ClaimsIdentity)claimUser.Identity).FindFirst("IdCompany").Value);
+
+            var lista = await _usuarioService.ListByCompany(idCompany);
+            //var lista = await _usuarioService.Lista();
             List<UsuarioDTO> listaUsuariosDto = _mapper.Map<List<UsuarioDTO>>(lista);
 
             return StatusCode(StatusCodes.Status200OK, new { data = listaUsuariosDto });
@@ -96,9 +101,13 @@ namespace SistemaVenta.AplicacionWeb.Controllers
                     response.Objeto = dtoUsuario;
 
                 }
+                else
+                {
 
-                response.Estado = false;
-                response.Mensaje = "Has superado los usuarios subscritos en tu plan";
+                    response.Estado = false;
+                    response.Mensaje = "Has superado los usuarios subscritos en tu plan";
+
+                }
 
             }
             catch (Exception ex)

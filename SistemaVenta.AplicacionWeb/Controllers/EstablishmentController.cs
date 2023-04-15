@@ -63,29 +63,28 @@ namespace SistemaVenta.AplicacionWeb.Controllers
 
                 var idCompany = int.Parse(((ClaimsIdentity)claimUser.Identity).FindFirst("IdCompany").Value);
                 var subscription = int.Parse(((ClaimsIdentity)claimUser.Identity).FindFirst("Subscription").Value);
-
                 var listaEstablecimientos = await _establishmentService.ListByIdCompany(idCompany);
                 List<EstablishmentDTO> listaEstablecimientosDto = _mapper.Map<List<EstablishmentDTO>>(listaEstablecimientos);
-
                 var parametros_encontrados = await _paramPlanService.GetParamPlanByIdPlan(subscription);
-
-
                 var CantidadEstablecimientosPlan = parametros_encontrados
-                .Where(objeto => objeto.Name == "CantidadEstablecimientos" && objeto.IdPlan == subscription) // Condición que debe cumplir el objeto
-                .Select(objeto => objeto.Value).First(); // Seleccionar sólo el nombre del objeto
+                .Where(objeto => objeto.Name == "CantidadEstablecimientos" && objeto.IdPlan == subscription)
+                .Select(objeto => objeto.Value).First();
 
                 if (listaEstablecimientos.Count() < int.Parse(CantidadEstablecimientosPlan))
                 {
-                    EstablishmentDTO.IdCompany = idCompany; // todo just a single company
+                    EstablishmentDTO.IdCompany = idCompany;
 
-                    Establishment producto_creado = await _establishmentService.Crear(_mapper.Map<Establishment>(EstablishmentDTO));
+                    Establishment establecimiento_creado = await _establishmentService.Crear(_mapper.Map<Establishment>(EstablishmentDTO), streamImagen, nombreImagen);
 
-                    EstablishmentDTO = _mapper.Map<EstablishmentDTO>(producto_creado);
+                    EstablishmentDTO = _mapper.Map<EstablishmentDTO>(establecimiento_creado);
                     response.Estado = true;
                     response.Objeto = EstablishmentDTO;
                 }
-                response.Estado = false;
-                response.Mensaje = "Has superado los establecimientos subscritos en tu plan";
+                else
+                {
+                    response.Estado = false;
+                    response.Mensaje = "Has superado los establecimientos subscritos en tu plan";
+                }
             }
             catch (Exception ex)
             {
@@ -111,7 +110,7 @@ namespace SistemaVenta.AplicacionWeb.Controllers
                     streamImagen = imagen.OpenReadStream();
                 }
 
-                Establishment producto_editado = await _establishmentService.Editar(_mapper.Map<Establishment>(EstablishmentDTO));
+                Establishment producto_editado = await _establishmentService.Editar(_mapper.Map<Establishment>(EstablishmentDTO), streamImagen);
 
                 EstablishmentDTO = _mapper.Map<EstablishmentDTO>(producto_editado);
                 response.Estado = true;

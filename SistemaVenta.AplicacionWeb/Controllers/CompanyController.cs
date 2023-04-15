@@ -59,7 +59,13 @@ namespace SistemaVenta.AplicacionWeb.Controllers
 
             try
             {
+
                 CompanyDTO companyDTO = JsonConvert.DeserializeObject<CompanyDTO>(modelo);
+
+                ClaimsPrincipal claimUser = HttpContext.User;
+                var idCompany = int.Parse(((ClaimsIdentity)claimUser.Identity).FindFirst("IdCompany").Value);
+                companyDTO.IdCompany = idCompany;
+
                 string nombreLogo = "";
                 Stream streamLogo = null;
 

@@ -13,7 +13,9 @@
         public string Token { get; set; }
         public string Rnt { get; set; }
         public string AccomodationType { get; set; }
-        public int? isActive { get; set; }
+        public int? IsActive { get; set; }
+        public string? NameImage { get; set; }
+        public string? UrlImage { get; set; }
         public DateTime CreationDate { get; set; }
         public DateTime ModificationDate { get; set; }
     }

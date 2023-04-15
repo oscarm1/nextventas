@@ -29,12 +29,9 @@ $(document).ready(function () {
             }
         })
 
-    //$form.find("#IdRoom option:selected").text();
-
-    //let tablaData;
 
     $("#cboSearchEstablishment").on("change", function () {
-        // get the selected option value
+
         const selectedValue = $(this).val();
 
         if ($.fn.DataTable.isDataTable('#tbdata')) {
@@ -165,7 +162,6 @@ $("#btnGuardar").click(function () {
     const modelo = structuredClone(MODELO_BASE);
     modelo["idRoom"] = parseInt($("#txtId").val());
     modelo["number"] = $("#txtNumber").val();
-    //  modelo["categoryName"] = $("#txtCategoryName").val();
     modelo["description"] = $("#txtDescription").val();
     modelo["idCategoria"] = $("#cboCategoria").val();
     modelo["idEstablishment"] = $("#cboEstablishment").val();

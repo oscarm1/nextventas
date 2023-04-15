@@ -2,7 +2,7 @@
 {
     public class CompanyDTO
     {
-        public string ldCompany { get; set; }
+        public int IdCompany { get; set; }
         public string UrlLogo { get; set; }
         public string CompanyNumber { get; set; }
         public string CompanyName { get; set; }

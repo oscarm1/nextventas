@@ -8,6 +8,7 @@
     rnt: "",
     token: "",
     address: "",
+    urlImage: "",
     isActive: 1,
 }
 
@@ -24,6 +25,7 @@ $(document).ready(function () {
         },
         "columns": [
             { "data": "idEstablishment", "visible": false, "searchable": false },
+            { "data": "urlImage", render: function (data) { return `<img style="height:60px" src=${data} class="rounded mx-auto d-block"/>` } },
             { "data": "nit" },
             { "data": "establishmentName" },
             { "data": "contact" },
@@ -77,6 +79,8 @@ function MostrarModal(modelo = MODELO_BASE) {
     $("#txtToken ").val(modelo.token);
     $("#txtAddress ").val(modelo.address);
     $("#cboEstado").val(modelo.isActive);
+    $("#txtImagen").val("");
+    $("#imgEstablishment").attr("src", modelo.urlImage);
 
     $("#modalData").modal("show");
 }
@@ -88,7 +92,7 @@ $("#btnNuevo").click(function () {
 $("#btnGuardar").click(function () {
     //Validaciones
     const inputs = $("input.input-validar").serializeArray();
-    const inputs_sin_valor = inputs.filter((item) => item.value.trim() == "") // filtra los input vacios
+    const inputs_sin_valor = inputs.filter((item) => item.value.trim() == "") 
 
     console.log(inputs_sin_valor);
 
@@ -99,7 +103,7 @@ $("#btnGuardar").click(function () {
         return;
     }
 
-    const modelo = structuredClone(MODELO_BASE); //Clona la estructura de MODELO_BSE
+    const modelo = structuredClone(MODELO_BASE); 
     modelo["idEstablishment"] = parseInt($("#txtId").val());
     modelo["nit"] = $("#txtNIT").val();
     modelo["establishmentName"] = $("#txtNombre").val();
@@ -112,9 +116,9 @@ $("#btnGuardar").click(function () {
     modelo["isActive"] = $("#cboEstado").val();
 
 
-    //const inputImagen = document.getElementById("txtImagen");
+    const inputImagen = document.getElementById("txtImagen");
     const formData = new FormData();
-   // formData.append("imagen", inputImagen.files[0])
+    formData.append("imagen", inputImagen.files[0])
     formData.append("modelo", JSON.stringify(modelo))
 
     $("#modalData").find("div.modal-content").LoadingOverlay("show");
@@ -151,7 +155,7 @@ $("#btnGuardar").click(function () {
                     tablaData.row(filaSeleccionada).data(responseJson.objeto).draw(false);
                     filaSeleccionada = null;
                     $("#modalData").modal("hide");
-                    swal("Listo!", "El Proveedor fue modificado", "success")
+                    swal("Listo!", "El Establecimiento fue modificado", "success")
                 } else {
                     swal("Lo sentimos!", responseJson.mensaje, "error")
                 }
@@ -187,7 +191,7 @@ $("#tbdata tbody").on("click", ".btn-eliminar", function () {
 
     swal({
         title: "¿Está seguro?",
-        text: `Eliminar El Establecimiento "${data.Telefono}"`,
+        text: `Eliminar El Establecimiento "${data.establishmentName}"`,
         type: "warning",
         showCancelButton: true,
         showConfirmButton: true,

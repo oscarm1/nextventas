@@ -36,8 +36,6 @@ namespace SistemaVenta.AplicacionWeb.Controllers
         public async Task<IActionResult> Login(UsuarioLoginDTO modelo)
         {
             Usuario usuario_encontrado = await _usuarioServicio.ObtenerPorCredenciales(modelo.Correo, modelo.Clave);
-            Company empresa_encontrada = await _companyService.GetCompanyById(usuario_encontrado.IdCompany);
-            Subscription suscripcion_encontrada = await _subscriptionService.GetSubscriptionByIdCompany(empresa_encontrada.IdCompany);
 
             // Company compania = await _companyService.Obtener();
 
@@ -50,6 +48,8 @@ namespace SistemaVenta.AplicacionWeb.Controllers
             {
                 ViewData["Mensaje"] = null;
 
+                Company empresa_encontrada = await _companyService.GetCompanyById(usuario_encontrado.IdCompany);
+                Subscription suscripcion_encontrada = await _subscriptionService.GetSubscriptionByIdCompany(empresa_encontrada.IdCompany);
                 //Creando lista de reclamación 
                 List<Claim> claims = new List<Claim>()
             {

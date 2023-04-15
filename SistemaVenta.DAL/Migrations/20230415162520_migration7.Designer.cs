@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SistemaVenta.DAL.DBContext;
 
@@ -11,9 +12,11 @@ using SistemaVenta.DAL.DBContext;
 namespace nextadvisordotnet.DAL.Migrations
 {
     [DbContext(typeof(DbventaContext))]
-    partial class DbventaContextModelSnapshot : ModelSnapshot
+    [Migration("20230415162520_migration7")]
+    partial class migration7
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -285,10 +288,6 @@ namespace nextadvisordotnet.DAL.Migrations
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("EstablishmentName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -310,7 +309,8 @@ namespace nextadvisordotnet.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("NameImage")
+                    b.Property<string>("NameLogo")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
@@ -325,7 +325,8 @@ namespace nextadvisordotnet.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UrlImage")
+                    b.Property<string>("UrlLogo")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("IdEstablishment");

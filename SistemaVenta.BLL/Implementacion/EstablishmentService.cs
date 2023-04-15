@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace SistemaVenta.BLL.Implementacion
 {
@@ -40,22 +41,28 @@ namespace SistemaVenta.BLL.Implementacion
             Establishment establishment_found = await _repositorio.Obtener(c => c.IdEstablishment == Id);
             return establishment_found;
         }
-        public async Task<Establishment> Crear(Establishment entidad)
+        public async Task<Establishment> Crear(Establishment entidad, Stream imagen = null, string nombreImagen = "")
         {
             Establishment establishment_existe = await _repositorio.Obtener(p => p.NIT == entidad.NIT);
             if (establishment_existe != null)
             {
-                throw new TaskCanceledException("El Nit de establishment ya existe");
+                throw new TaskCanceledException("El Nit del establecimiento ya existe");
             }
 
             try
             {
+                entidad.UrlImage = nombreImagen;
+                if (imagen != null)
+                {
+                    string urlIMagen = await _firebaseSerice.SubirStorage(imagen, "carpeta_establishment", nombreImagen);
+                    entidad.UrlImage = urlIMagen;
+                }
 
                 Establishment establishment_creado = await _repositorio.Crear(entidad);
 
                 if (establishment_creado.IdEstablishment == 0)
                 {
-                    throw new TaskCanceledException("No se pudo crear el establishment");
+                    throw new TaskCanceledException("No se pudo crear el establecimiento");
                 }
 
                 IQueryable<Establishment> query = await _repositorio.Consultar(p => p.IdEstablishment == establishment_creado.IdEstablishment);
@@ -70,12 +77,12 @@ namespace SistemaVenta.BLL.Implementacion
 
         }
 
-        public async Task<Establishment> Editar(Establishment entidad)
+        public async Task<Establishment> Editar(Establishment entidad, Stream imagen = null)
         {
             Establishment establishment_existe = await _repositorio.Obtener(p => p.NIT == entidad.NIT && p.IdEstablishment != entidad.IdEstablishment);
             if (establishment_existe != null)
             {
-                throw new TaskCanceledException("El Establishment ya existe");
+                throw new TaskCanceledException("El Establecimiento ya existe");
             }
             try
             {
@@ -85,7 +92,15 @@ namespace SistemaVenta.BLL.Implementacion
                 establishment_para_editar.IdEstablishment = entidad.IdEstablishment;
                 establishment_para_editar.PhoneNumber = entidad.PhoneNumber;
                 establishment_para_editar.Contact = entidad.Contact;
+                establishment_para_editar.IsActive = entidad.IsActive;
+                establishment_para_editar.EstablishmentType = entidad.EstablishmentType;
+                establishment_para_editar.Email = entidad.Email;
 
+                if (imagen != null)
+                {
+                    string urlImagen = await _firebaseSerice.SubirStorage(imagen, "carpeta_establishment", establishment_para_editar.NameImage);
+                    establishment_para_editar.UrlImage = urlImagen;
+                }
                 bool respuesta = await _repositorio.Editar(establishment_para_editar);
                 if (!respuesta)
                 {

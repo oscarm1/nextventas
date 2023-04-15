@@ -76,30 +76,28 @@ namespace SistemaVenta.BLL.Implementacion
             Room room_existe = await _repositorio.Obtener(p => p.Number == entidad.Number && p.IdRoom != entidad.IdRoom);
             if (room_existe != null)
             {
-                throw new TaskCanceledException("El Codigo de barra ya existe");
+                throw new TaskCanceledException("El numero de habitacion ya existe");
             }
             try
             {
                 IQueryable<Room> queryRoom = await _repositorio.Consultar(p => p.IdRoom == entidad.IdRoom);
                 Room room_para_editar = queryRoom.First();
                 room_para_editar.Number = entidad.Number;
-               // room_para_editar.Marca = entidad.Marca;
                 room_para_editar.Description = entidad.Description;
                 room_para_editar.IdCategoria = entidad.IdCategoria;
-                //room_para_editar.Stock = entidad.Stock;
                 room_para_editar.Price = entidad.Price;
                 room_para_editar.isActive = entidad.isActive;
 
-                if(imagen != null)
+
+                if (imagen != null)
                 {
                     string urlImagen = await _firebaseSerice.SubirStorage(imagen, "carpeta_room", room_para_editar.NameImage);
                     room_para_editar.UrlImage = urlImagen;
                 }
-
                 bool respuesta = await _repositorio.Editar(room_para_editar);
                 if (!respuesta)
                 {
-                    throw new TaskCanceledException("No se pudo editar el room");
+                    throw new TaskCanceledException("No se pudo editar el producto");
                 }
 
                 Room room_editado = queryRoom.Include(c => c.IdCategoriaNavigation).First();

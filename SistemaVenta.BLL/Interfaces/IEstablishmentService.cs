@@ -12,8 +12,8 @@ namespace SistemaVenta.BLL.Interfaces
         Task<List<Establishment>> Listar();
         Task<List<Establishment>> ListByIdCompany(int idCompany);
         Task<Establishment> getEstablishmentById(int Id);
-        Task<Establishment> Crear(Establishment entidad);
-        Task<Establishment> Editar(Establishment entidad);
+        Task<Establishment> Crear(Establishment entidad, Stream imagen = null, string nombreImagen = "");
+        Task<Establishment> Editar(Establishment entidad, Stream imagen = null);
         Task<bool> Eliminar(int idEstablishment);
     }
 }
