@@ -79,6 +79,7 @@ function MostrarModal(modelo = MODELO_BASE) {
     $("#txtToken ").val(modelo.token);
     $("#txtAddress ").val(modelo.address);
     $("#cboEstado").val(modelo.isActive);
+    $("#cboEstablishmentType").val(modelo.establishmentType);
     $("#txtImagen").val("");
     $("#imgEstablishment").attr("src", modelo.urlImage);
 
@@ -114,6 +115,7 @@ $("#btnGuardar").click(function () {
     modelo["token"] = $("#txtToken").val();
     modelo["address"] = $("#txtAddress").val();
     modelo["isActive"] = $("#cboEstado").val();
+    modelo["establishmentType"] = $("#cboEstablishmentType").val();
 
 
     const inputImagen = document.getElementById("txtImagen");
