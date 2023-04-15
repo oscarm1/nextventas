@@ -1,1 +1,1 @@
-# SistemaVentaNet6
+# All rights reserved
