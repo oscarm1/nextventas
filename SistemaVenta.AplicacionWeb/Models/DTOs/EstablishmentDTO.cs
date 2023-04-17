@@ -12,7 +12,7 @@
         public string PhoneNumber { get; set; }
         public string Token { get; set; }
         public string Rnt { get; set; }
-        public string AccomodationType { get; set; }
+        public string EstablishmentType { get; set; }
         public int? IsActive { get; set; }
         public string? NameImage { get; set; }
         public string? UrlImage { get; set; }

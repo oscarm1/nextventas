@@ -54,7 +54,7 @@ $(document).ready(function () {
                     { "data": "urlImage", render: function (data) { return `<img style="height:60px" src=${data} class="rounded mx-auto d-block"/>` } },
                     { "data": "number" },
                     { "data": "description" },
-                    { "data": "categoryName" },//de la categoria
+                    { "data": "categoryName" },
                     { "data": "capacity" },
                     { "data": "price" },
                     {
