@@ -502,7 +502,7 @@ $(document).on("click", ".btnSendData", function (e) {
 
                 
                 $(".childs").empty();
-                $("#miFormulario")[0].reset();
+                $("#frmMainGuest")[0].reset();
 
                // mostrarProducto_Precios(productosParaMovimiento);
                 limpiarEstablishment()

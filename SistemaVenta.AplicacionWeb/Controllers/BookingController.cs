@@ -15,6 +15,7 @@ using System.Text;
 using System.Security.Policy;
 using Azure.Core;
 using SistemaVenta.BLL.Implementacion;
+using Microsoft.Identity.Client;
 
 namespace SistemaVenta.AplicacionWeb.Controllers
 {
@@ -26,9 +27,12 @@ namespace SistemaVenta.AplicacionWeb.Controllers
         private readonly IBookingService _bookingService;
         private readonly IPedidoService _movimientoService;
         private readonly IMapper _mapper;
+        private readonly IConfiguration _configuration;
+        private readonly ConfigDTO _apiConfigs;
         private readonly IConverter _converter;
 
-        public BookingController(IEstablishmentService establishmentService, IPedidoService movimientoService, IGuestService guestService, IMapper mapper, IConverter converter, IBookingService bookingService)
+        public BookingController(IEstablishmentService establishmentService, IPedidoService movimientoService,
+            IGuestService guestService, IMapper mapper, IConverter converter, IBookingService bookingService, IConfiguration configuration)
         {
             _establishmentService = establishmentService;
             _guestService = guestService;
@@ -36,6 +40,9 @@ namespace SistemaVenta.AplicacionWeb.Controllers
             _converter = converter;
             _bookingService = bookingService;
             _movimientoService = movimientoService;
+            _configuration = configuration;
+            _apiConfigs = new ConfigDTO();
+            _configuration.GetSection("ConfigurationValues").Bind(_apiConfigs);
         }
         public IActionResult NewBooking()
         {
@@ -100,83 +107,88 @@ namespace SistemaVenta.AplicacionWeb.Controllers
 
                     //var responseContent = string.Empty;
 
-                    if (!guest_creado.IsMain && code > 1)
-                    {
-                        var url = "https://pms.mincit.gov.co/two/";
-                        var content = new StringContent(
-                                   JsonSerializer.Serialize(new
-                                   {
-                                       tipo_identificacion = guest_creado.DocumentType,
-                                       numero_identificacion = guest_creado.Document,
-                                       nombres = guest_creado.Name,
-                                       apellidos = guest_creado.LastName,
-                                       cuidad_residencia = guest_creado.RecidenceCity,
-                                       cuidad_procedencia = guest_creado.OriginCity,
-                                       numero_habitacion = guestDTO.Room,
-                                       check_in = guestDTO.CheckIn.ToString("yyyy-MM-dd"),
-                                       check_out = guestDTO.CheckOut.ToString("yyyy-MM-dd"),
-                                       padre = code.ToString()
-                                   }),
-                                   Encoding.UTF8,
-                                   "application/json"
-                               );
-
-                        content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-
-                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("token", " " + establishment_Found.Token);
-
-                        var response = await client.PostAsync(url, content);
-
-                        var responseContent = await response.Content.ReadAsStringAsync();
-                        //statuscode 201 is ok
-                        var responseObject = JsonSerializer.Deserialize<ResponseMCITDTO>(responseContent);
-
-                        guest_creado.IdMainGuest = code;
-
-                        Guest producto_editado = await _guestService.Editar(guest_creado);
-
-                    }
-                    else
+                    if (_apiConfigs.flagSendApiMinisterio == "1")
                     {
 
-                        var url = "https://pms.mincit.gov.co/one/";
 
-                        var content = new StringContent(
-                                    JsonSerializer.Serialize(new
-                                    {
-                                        tipo_identificacion = guest_creado.DocumentType,
-                                        numero_identificacion = guest_creado.Document,
-                                        nombres = guest_creado.Name,
-                                        apellidos = guest_creado.LastName,
-                                        cuidad_residencia = guest_creado.RecidenceCity,
-                                        cuidad_procedencia = guest_creado.OriginCity,
-                                        numero_habitacion = guestDTO.Room,
-                                        motivo = data.Book.Reason,
-                                        numero_acompanantes = guest_creado.NumberCompanions.ToString(),
-                                        check_in = guestDTO.CheckIn.ToString("yyyy-MM-dd"),
-                                        check_out = guestDTO.CheckOut.ToString("yyyy-MM-dd"),
-                                        tipo_acomodacion = establishment_Found.EstablishmentType,
-                                        costo = movement_created.Total.ToString(),
-                                        nombre_establecimiento = establishment_Found.EstablishmentName,
-                                        rnt_establecimiento = establishment_Found.Rnt,
+                        if (!guest_creado.IsMain && code > 1)
+                        {
+                            var url = "https://pms.mincit.gov.co/two/";
+                            var content = new StringContent(
+                                       JsonSerializer.Serialize(new
+                                       {
+                                           tipo_identificacion = guest_creado.DocumentType,
+                                           numero_identificacion = guest_creado.Document,
+                                           nombres = guest_creado.Name,
+                                           apellidos = guest_creado.LastName,
+                                           cuidad_residencia = guest_creado.RecidenceCity,
+                                           cuidad_procedencia = guest_creado.OriginCity,
+                                           numero_habitacion = guestDTO.Room,
+                                           check_in = guestDTO.CheckIn.ToString("yyyy-MM-dd"),
+                                           check_out = guestDTO.CheckOut.ToString("yyyy-MM-dd"),
+                                           padre = code.ToString()
+                                       }),
+                                       Encoding.UTF8,
+                                       "application/json"
+                                   );
 
-                                    }),
-                                    Encoding.UTF8,
-                                    "application/json"
-                                );
+                            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-                        content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("token", " " + establishment_Found.Token);
 
-                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("token", " " + establishment_Found.Token);
+                            var response = await client.PostAsync(url, content);
 
-                        var response = await client.PostAsync(url, content);
+                            var responseContent = await response.Content.ReadAsStringAsync();
+                            //statuscode 201 is ok
+                            var responseObject = JsonSerializer.Deserialize<ResponseMCITDTO>(responseContent);
 
-                        var responseContent = await response.Content.ReadAsStringAsync();
-                        var responseObject = JsonSerializer.Deserialize<ResponseMCITDTO>(responseContent);
-                        code = responseObject.code;
+                            guest_creado.IdMainGuest = code;
 
-                       
+                            Guest producto_editado = await _guestService.Editar(guest_creado);
 
+                        }
+                        else
+                        {
+
+                            var url = "https://pms.mincit.gov.co/one/";
+
+                            var content = new StringContent(
+                                        JsonSerializer.Serialize(new
+                                        {
+                                            tipo_identificacion = guest_creado.DocumentType,
+                                            numero_identificacion = guest_creado.Document,
+                                            nombres = guest_creado.Name,
+                                            apellidos = guest_creado.LastName,
+                                            cuidad_residencia = guest_creado.RecidenceCity,
+                                            cuidad_procedencia = guest_creado.OriginCity,
+                                            numero_habitacion = guestDTO.Room,
+                                            motivo = data.Book.Reason,
+                                            numero_acompanantes = guest_creado.NumberCompanions.ToString(),
+                                            check_in = guestDTO.CheckIn.ToString("yyyy-MM-dd"),
+                                            check_out = guestDTO.CheckOut.ToString("yyyy-MM-dd"),
+                                            tipo_acomodacion = establishment_Found.EstablishmentType,
+                                            costo = movement_created.Total.ToString(),
+                                            nombre_establecimiento = establishment_Found.EstablishmentName,
+                                            rnt_establecimiento = establishment_Found.Rnt,
+
+                                        }),
+                                        Encoding.UTF8,
+                                        "application/json"
+                                    );
+
+                            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("token", " " + establishment_Found.Token);
+
+                            var response = await client.PostAsync(url, content);
+
+                            var responseContent = await response.Content.ReadAsStringAsync();
+                            var responseObject = JsonSerializer.Deserialize<ResponseMCITDTO>(responseContent);
+                            code = responseObject.code;
+
+
+
+                        }
                     }
 
                     //if (responseObject.code)
