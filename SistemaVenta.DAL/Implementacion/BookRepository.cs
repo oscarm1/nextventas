@@ -20,6 +20,25 @@ namespace SistemaVenta.DAL.Implementacion
         {
             _dbContext = dbContext;
         }
+        public async Task<bool> CheckBookings(string identification, DateTime checkIn, DateTime checkOut)
+        {
+            try
+            {
+                var hasBookings = _dbContext.Guests
+                .Where(g => g.Document == identification)
+                .SelectMany(g => g.DetailBook)
+                .Select(d => d.IdBookNavigation)
+                .Any(b => b.CheckIn <= checkOut && b.CheckOut >= checkIn);
+
+                return hasBookings;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return false;
+            }
+        }
+
 
         public async Task<Book> Registrar(Book entidad)
         {
@@ -29,46 +48,24 @@ namespace SistemaVenta.DAL.Implementacion
                 try
                 {
                     var tipoDoc = string.Empty;
-
-                    //List<Room> rooms = GetRooms(); // Obtener la lista de habitaciones
                     List<int> distinctRoomIds = entidad.DetailBook.Select(r => r.IdRoom).Distinct().ToList();
 
                     foreach (int itemDV in distinctRoomIds)
                     {
                         Room roomEncontrado = new Room();
                         roomEncontrado = _dbContext.Rooms.Where(p => p.IdRoom == itemDV).First();
-                        //tipoDoc = string.Empty;
 
                         if (roomEncontrado.Status == "available")
                         {
                             roomEncontrado.Status = "unavailable";
-                           // roomEncontrado.PrecioCompra = itemDV.Precio;
-                            //    tipoDoc = "pedido";
                         }
-                        //else
-                        //{
-                        //    roomEncontrado.Stock = roomEncontrado.Stock - itemDV.Cantidad;
-                        //    tipoDoc = "book";
-                        //}
 
                         _dbContext.Rooms.Update(roomEncontrado);
                     }
 
                     await _dbContext.SaveChangesAsync();
 
-                    //NumeroCorrelativo correlativo = _dbContext.NumeroCorrelativos.Where(c => c.Gestion == "reserva").First();
-
-                    //correlativo.UltimoNumero = correlativo.UltimoNumero == null ? 1 : correlativo.UltimoNumero + 1;
-                    //correlativo.FechaActualizacion = DateTime.Now;
-
-                    //_dbContext.NumeroCorrelativos.Update(correlativo);
-                   // await _dbContext.SaveChangesAsync();
-
-                   // string ceros = string.Concat(Enumerable.Repeat("0", correlativo.CantidadDigitos.Value));
-                   // string numeroBook = ceros + correlativo.UltimoNumero.ToString();
-                    //numeroBook = numeroBook.Substring(numeroBook.Length - correlativo.CantidadDigitos.Value, correlativo.CantidadDigitos.Value);
                     entidad.CreationDate = DateTime.Now;
-                   // entidad.NumeroBook = numeroBook;
                     await _dbContext.Books.AddAsync(entidad);
                     await _dbContext.SaveChangesAsync();
 

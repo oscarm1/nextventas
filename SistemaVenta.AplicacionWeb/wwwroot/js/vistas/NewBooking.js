@@ -498,12 +498,12 @@ $(document).on("click", ".btnSendData", function (e) {
 
                 $("#collapseEstablishment").collapse('show');
 
-                $("#collapseRoom").collapse('hide');
-
-                
                 $(".childs").empty();
                 $("#frmMainGuest")[0].reset();
 
+
+                $("#collapseGuest").collapse('hide');
+                $("#collapseRoom").collapse('hide');
                // mostrarProducto_Precios(productosParaMovimiento);
                 limpiarEstablishment()
 

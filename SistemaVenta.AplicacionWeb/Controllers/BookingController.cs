@@ -16,6 +16,7 @@ using System.Security.Policy;
 using Azure.Core;
 using SistemaVenta.BLL.Implementacion;
 using Microsoft.Identity.Client;
+using System.Threading.Tasks;
 
 namespace SistemaVenta.AplicacionWeb.Controllers
 {
@@ -72,148 +73,159 @@ namespace SistemaVenta.AplicacionWeb.Controllers
             GenericResponse<ResponseBookingDTO> genericResponse = new GenericResponse<ResponseBookingDTO>();
             try
             {
-                ClaimsPrincipal claimUser = HttpContext.User;
 
-                string idUsuario = claimUser.Claims
-                    .Where(c => c.Type == ClaimTypes.NameIdentifier)
-                    .Select(c => c.Value).SingleOrDefault();
-
-                data.Movement.IdUsuario = int.Parse(idUsuario);
-
-                Movimiento movement_created = await _movimientoService.Registrar(_mapper.Map<Movimiento>(data.Movement));
-
-
-                var code = 0;
-
-                Establishment establishment_Found = await _establishmentService.getEstablishmentById(data.Book.EstablishmentId);
-
-                ICollection<DetailBookDTO> listDetail = new List<DetailBookDTO>();
-
-                foreach (GuestDTO guestDTO in data.Guests)
+                Task<bool> task = _bookingService.CheckBookings(data.Guests[0].Document, data.Guests[0].CheckIn, data.Guests[0].CheckOut);
+                await task;
+                if (!task.Result)
                 {
-                    DetailBookDTO detailBook = new DetailBookDTO();
 
+                    ClaimsPrincipal claimUser = HttpContext.User;
+                    string idUsuario = claimUser.Claims
+                        .Where(c => c.Type == ClaimTypes.NameIdentifier)
+                        .Select(c => c.Value).SingleOrDefault();
 
-                    Guest guest_creado = await _guestService.Crear(_mapper.Map<Guest>(guestDTO));
+                    data.Movement.IdUsuario = int.Parse(idUsuario);
 
-                    detailBook.IdGuest = guest_creado.IdGuest;
-                    detailBook.IdRoom = guestDTO.RoomId;
-                    //detailBook.IdBook = book_created.IdBook;
-                    detailBook.Total = movement_created.Total;
+                    Movimiento movement_created = await _movimientoService.Registrar(_mapper.Map<Movimiento>(data.Movement));
 
-                    listDetail.Add(detailBook);
+                    var code = 0;
 
-                    var client = new HttpClient();
+                    Establishment establishment_Found = await _establishmentService.getEstablishmentById(data.Book.EstablishmentId);
 
-                    //var responseContent = string.Empty;
+                    ICollection<DetailBookDTO> listDetail = new List<DetailBookDTO>();
 
-                    if (_apiConfigs.flagSendApiMinisterio == "1")
+                    foreach (GuestDTO guestDTO in data.Guests)
                     {
+                        DetailBookDTO detailBook = new DetailBookDTO();
 
 
-                        if (!guest_creado.IsMain && code > 1)
-                        {
-                            var url = "https://pms.mincit.gov.co/two/";
-                            var content = new StringContent(
-                                       JsonSerializer.Serialize(new
-                                       {
-                                           tipo_identificacion = guest_creado.DocumentType,
-                                           numero_identificacion = guest_creado.Document,
-                                           nombres = guest_creado.Name,
-                                           apellidos = guest_creado.LastName,
-                                           cuidad_residencia = guest_creado.RecidenceCity,
-                                           cuidad_procedencia = guest_creado.OriginCity,
-                                           numero_habitacion = guestDTO.Room,
-                                           check_in = guestDTO.CheckIn.ToString("yyyy-MM-dd"),
-                                           check_out = guestDTO.CheckOut.ToString("yyyy-MM-dd"),
-                                           padre = code.ToString()
-                                       }),
-                                       Encoding.UTF8,
-                                       "application/json"
-                                   );
+                        Guest guest_creado = await _guestService.Crear(_mapper.Map<Guest>(guestDTO));
 
-                            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                        detailBook.IdGuest = guest_creado.IdGuest;
+                        detailBook.IdRoom = guestDTO.RoomId;
+                        //detailBook.IdBook = book_created.IdBook;
+                        detailBook.Total = movement_created.Total;
 
-                            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("token", " " + establishment_Found.Token);
+                        listDetail.Add(detailBook);
 
-                            var response = await client.PostAsync(url, content);
+                        var client = new HttpClient();
 
-                            var responseContent = await response.Content.ReadAsStringAsync();
-                            //statuscode 201 is ok
-                            var responseObject = JsonSerializer.Deserialize<ResponseMCITDTO>(responseContent);
+                        //var responseContent = string.Empty;
 
-                            guest_creado.IdMainGuest = code;
-
-                            Guest producto_editado = await _guestService.Editar(guest_creado);
-
-                        }
-                        else
+                        if (_apiConfigs.flagSendApiMinisterio == "1")
                         {
 
-                            var url = "https://pms.mincit.gov.co/one/";
 
-                            var content = new StringContent(
-                                        JsonSerializer.Serialize(new
-                                        {
-                                            tipo_identificacion = guest_creado.DocumentType,
-                                            numero_identificacion = guest_creado.Document,
-                                            nombres = guest_creado.Name,
-                                            apellidos = guest_creado.LastName,
-                                            cuidad_residencia = guest_creado.RecidenceCity,
-                                            cuidad_procedencia = guest_creado.OriginCity,
-                                            numero_habitacion = guestDTO.Room,
-                                            motivo = data.Book.Reason,
-                                            numero_acompanantes = guest_creado.NumberCompanions.ToString(),
-                                            check_in = guestDTO.CheckIn.ToString("yyyy-MM-dd"),
-                                            check_out = guestDTO.CheckOut.ToString("yyyy-MM-dd"),
-                                            tipo_acomodacion = establishment_Found.EstablishmentType,
-                                            costo = movement_created.Total.ToString(),
-                                            nombre_establecimiento = establishment_Found.EstablishmentName,
-                                            rnt_establecimiento = establishment_Found.Rnt,
+                            if (!guest_creado.IsMain && code > 1)
+                            {
+                                var url = "https://pms.mincit.gov.co/two/";
+                                var content = new StringContent(
+                                           JsonSerializer.Serialize(new
+                                           {
+                                               tipo_identificacion = guest_creado.DocumentType,
+                                               numero_identificacion = guest_creado.Document,
+                                               nombres = guest_creado.Name,
+                                               apellidos = guest_creado.LastName,
+                                               cuidad_residencia = guest_creado.RecidenceCity,
+                                               cuidad_procedencia = guest_creado.OriginCity,
+                                               numero_habitacion = guestDTO.Room,
+                                               check_in = guestDTO.CheckIn.ToString("yyyy-MM-dd"),
+                                               check_out = guestDTO.CheckOut.ToString("yyyy-MM-dd"),
+                                               padre = code.ToString()
+                                           }),
+                                           Encoding.UTF8,
+                                           "application/json"
+                                       );
 
-                                        }),
-                                        Encoding.UTF8,
-                                        "application/json"
-                                    );
+                                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-                            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("token", " " + establishment_Found.Token);
 
-                            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("token", " " + establishment_Found.Token);
+                                var response = await client.PostAsync(url, content);
 
-                            var response = await client.PostAsync(url, content);
+                                var responseContent = await response.Content.ReadAsStringAsync();
+                                //statuscode 201 is ok
+                                var responseObject = JsonSerializer.Deserialize<ResponseMCITDTO>(responseContent);
 
-                            var responseContent = await response.Content.ReadAsStringAsync();
-                            var responseObject = JsonSerializer.Deserialize<ResponseMCITDTO>(responseContent);
-                            code = responseObject.code;
+                                guest_creado.IdMainGuest = code;
+
+                                Guest producto_editado = await _guestService.Editar(guest_creado);
+
+                            }
+                            else
+                            {
+
+                                var url = "https://pms.mincit.gov.co/one/";
+
+                                var content = new StringContent(
+                                            JsonSerializer.Serialize(new
+                                            {
+                                                tipo_identificacion = guest_creado.DocumentType,
+                                                numero_identificacion = guest_creado.Document,
+                                                nombres = guest_creado.Name,
+                                                apellidos = guest_creado.LastName,
+                                                cuidad_residencia = guest_creado.RecidenceCity,
+                                                cuidad_procedencia = guest_creado.OriginCity,
+                                                numero_habitacion = guestDTO.Room,
+                                                motivo = data.Book.Reason,
+                                                numero_acompanantes = guest_creado.NumberCompanions.ToString(),
+                                                check_in = guestDTO.CheckIn.ToString("yyyy-MM-dd"),
+                                                check_out = guestDTO.CheckOut.ToString("yyyy-MM-dd"),
+                                                tipo_acomodacion = establishment_Found.EstablishmentType,
+                                                costo = movement_created.Total.ToString(),
+                                                nombre_establecimiento = establishment_Found.EstablishmentName,
+                                                rnt_establecimiento = establishment_Found.Rnt,
+
+                                            }),
+                                            Encoding.UTF8,
+                                            "application/json"
+                                        );
+
+                                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("token", " " + establishment_Found.Token);
+
+                                var response = await client.PostAsync(url, content);
+
+                                var responseContent = await response.Content.ReadAsStringAsync();
+                                var responseObject = JsonSerializer.Deserialize<ResponseMCITDTO>(responseContent);
+                                code = responseObject.code;
 
 
 
+                            }
                         }
+
+                        //if (responseObject.code)
+                        //{
+                        //    return StatusCode(StatusCodes.Status200OK, genericResponse);
+                        //}
+                        //else
+                        //{
+                        //    return StatusCode(StatusCodes.Status500InternalServerError, genericResponse);
+                        //}
+
                     }
 
-                    //if (responseObject.code)
-                    //{
-                    //    return StatusCode(StatusCodes.Status200OK, genericResponse);
-                    //}
-                    //else
-                    //{
-                    //    return StatusCode(StatusCodes.Status500InternalServerError, genericResponse);
-                    //}
+                    data.Book.IdMovimiento = movement_created.IdMovimiento;
+                    data.Book.DetailBook = listDetail;
+
+                    Book book_created = await _bookingService.Save(_mapper.Map<Book>(data.Book));
+
+                    data.Book = _mapper.Map<BookDTO>(book_created);
+                    data.Movement = _mapper.Map<MovimientoDTO>(movement_created);
+                    //data.Guests = _mapper.Map<GuestDTO>(movement_created);
+                    //modelo = _mapper.Map<BookDTO>(book_created);
+
+                    genericResponse.Estado = true;
+                    genericResponse.Objeto = data;
 
                 }
-
-                data.Book.IdMovimiento = movement_created.IdMovimiento;
-                data.Book.DetailBook = listDetail;
-
-                Book book_created = await _bookingService.Save(_mapper.Map<Book>(data.Book));
-
-                data.Book = _mapper.Map<BookDTO>(book_created);
-                data.Movement = _mapper.Map<MovimientoDTO>(movement_created);
-                //data.Guests = _mapper.Map<GuestDTO>(movement_created);
-                //modelo = _mapper.Map<BookDTO>(book_created);
-
-                genericResponse.Estado = true;
-                genericResponse.Objeto = data;
+                else
+                {
+                    genericResponse.Estado = false;
+                    genericResponse.Mensaje = "El huesped ya cuenta con reservas en fechas dadas";
+                }
 
             }
             catch (Exception ex)

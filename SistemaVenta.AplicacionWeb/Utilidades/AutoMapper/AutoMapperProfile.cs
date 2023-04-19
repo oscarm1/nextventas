@@ -127,11 +127,15 @@ namespace SistemaVenta.AplicacionWeb.Utilidades.AutoMapper
             CreateMap<Guest, GuestDTO>()
                 .ForMember(destino => destino.IsMain,
                     opt => opt.MapFrom(origen => origen.IsMain == true ? 1 : 0));
+                    //            .ForMember(destino => destino.CreationDate,
+                    //opt => opt.MapFrom(origen => origen.CreationDate.Value.ToString("dd/MM/yyyy")));
 
 
             CreateMap<GuestDTO, Guest>()
                 .ForMember(destino => destino.IsMain,
                     opt => opt.MapFrom(origen => origen.IsMain == 1 ? true : false));
+                    //                            .ForMember(destino => destino.CreationDate,
+                    //opt => opt.MapFrom(origen => origen.CreationDate.ToString("dd/MM/yyyy")));
 
             #endregion
 
@@ -175,17 +179,17 @@ namespace SistemaVenta.AplicacionWeb.Utilidades.AutoMapper
             #endregion
 
             #region DetailBook
-            CreateMap<DetailBook, DetailBookDTO>()
-                .ForMember(destino => destino.Price,
-                    opt => opt.MapFrom(origen => Convert.ToString(origen.Price.Value, new CultureInfo("es-CO"))))
-                .ForMember(destino => destino.Total,
-                    opt => opt.MapFrom(origen => Convert.ToString(origen.Total.Value, new CultureInfo("es-CO"))));
+            CreateMap<DetailBook, DetailBookDTO>().ReverseMap();
+            //.ForMember(destino => destino.Price,
+            //    opt => opt.MapFrom(origen => Convert.ToString(origen.Price.Value, new CultureInfo("es-CO"))))
+            //.ForMember(destino => destino.Total,
+            //    opt => opt.MapFrom(origen => Convert.ToString(origen.Total.Value, new CultureInfo("es-CO"))));
 
-            CreateMap<DetailBookDTO, DetailBook>()
-                .ForMember(destino => destino.Price,
-                    opt => opt.MapFrom(origen => Convert.ToDecimal(origen.Price, new CultureInfo("es-CO"))))
-                .ForMember(destino => destino.Total,
-                    opt => opt.MapFrom(origen => Convert.ToDecimal(origen.Total, new CultureInfo("es-CO"))));
+            CreateMap<DetailBookDTO, DetailBook>().ReverseMap();
+            //.ForMember(destino => destino.Price,
+            //    opt => opt.MapFrom(origen => Convert.ToDecimal(origen.Price, new CultureInfo("es-CO"))))
+            //.ForMember(destino => destino.Total,
+            //    opt => opt.MapFrom(origen => Convert.ToDecimal(origen.Total, new CultureInfo("es-CO"))));
 
             #endregion
 

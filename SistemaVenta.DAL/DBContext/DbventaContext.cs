@@ -100,20 +100,12 @@ public partial class DbventaContext : DbContext
 
             entity.Property(e => e.IdDetalleMovimiento).HasColumnName("idDetalleMovimiento");
             entity.Property(e => e.Cantidad).HasColumnName("cantidad");
-            // entity.Property(e => e.CategoriaProducto)
-            //.HasMaxLength(100)
-            //.IsUnicode(false)
-            //.HasColumnName("categoriaProducto");
             entity.Property(e => e.DescripcionProducto)
                 .HasMaxLength(100)
                 .IsUnicode(false)
                 .HasColumnName("descripcionProducto");
             entity.Property(e => e.IdProducto).HasColumnName("idProducto");
             entity.Property(e => e.IdMovimiento).HasColumnName("idMovimiento");
-            //entity.Property(e => e.MarcaProducto)
-            //.HasMaxLength(100)
-            //.IsUnicode(false)
-            //.HasColumnName("marcaProducto");
             entity.Property(e => e.Precio)
                 .HasColumnType("decimal(10, 2)")
                 .HasColumnName("precio");
@@ -135,27 +127,9 @@ public partial class DbventaContext : DbContext
             entity.HasKey(e => e.IdDetailBook).HasName("PK__DetalleB__BFE2843FB3D3EFB5");
 
             entity.Property(e => e.IdDetailBook).HasColumnName("idDetailBook");
-            //entity.Property(e => e.Cantidad).HasColumnName("cantidad");
-            // entity.Property(e => e.CategoriaProducto)
-            //.HasMaxLength(100)
-            //.IsUnicode(false)
-            //.HasColumnName("categoriaProducto");
-            //entity.Property(e => e.DescripcionProducto)
-            //    .HasMaxLength(100)
-            //    .IsUnicode(false)
-            //    .HasColumnName("descripcionProducto");
             entity.Property(e => e.IdRoom).HasColumnName("idRoom");
             entity.Property(e => e.IdBook).HasColumnName("idBook");
-            //entity.Property(e => e.MarcaProducto)
-            //.HasMaxLength(100)
-            //.IsUnicode(false)
-            //.HasColumnName("marcaProducto");
-            entity.Property(e => e.Price)
-                .HasColumnType("decimal(10, 2)")
-                .HasColumnName("precio");
-            entity.Property(e => e.Total)
-                .HasColumnType("decimal(10, 2)")
-                .HasColumnName("total");
+            entity.Property(e => e.IdGuest).HasColumnName("idGuest");
 
             entity.HasOne(d => d.IdRoomNavigation).WithMany(p => p.DetailBook)
                 .HasForeignKey(d => d.IdRoom)
@@ -167,7 +141,7 @@ public partial class DbventaContext : DbContext
 
             entity.HasOne(d => d.IdBookNavigation).WithMany(p => p.DetailBook)
                 .HasForeignKey(d => d.IdBook)
-                .HasConstraintName("FK__DetailBo__idBoo__440B1D61");
+                .HasConstraintName("FK__DetailBo__idBoo");
         });
 
         modelBuilder.Entity<Menu>(entity =>
@@ -424,10 +398,6 @@ public partial class DbventaContext : DbContext
             entity.ToTable("Proveedor");
 
             entity.Property(e => e.IdProveedor).HasColumnName("idProveedor");
-            //entity.Property(e => e.Clave)
-            //    .HasMaxLength(100)
-            //    .IsUnicode(false)
-            //    .HasColumnName("clave");
             entity.Property(e => e.Correo)
                 .HasMaxLength(50)
                 .IsUnicode(false)
@@ -437,27 +407,14 @@ public partial class DbventaContext : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")
                 .HasColumnName("fechaRegistro");
-            // entity.Property(e => e.IdRol).HasColumnName("idRol");
             entity.Property(e => e.Nombre)
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("nombre");
-            //entity.Property(e => e.NombreFoto)
-            //    .HasMaxLength(100)
-            //    .IsUnicode(false)
-            //    .HasColumnName("nombreFoto");
             entity.Property(e => e.Telefono)
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("telefono");
-            //entity.Property(e => e.UrlFoto)
-            //    .HasMaxLength(500)
-            //    .IsUnicode(false)
-            //    .HasColumnName("urlFoto");
-
-            //entity.HasOne(d => d.IdRolNavigation).WithMany(p => p.Usuarios)
-            //    .HasForeignKey(d => d.IdRol)
-            //    .HasConstraintName("FK__Usuario__idRol__300424B4");
         });
         modelBuilder.Entity<Movimiento>(entity =>
         {
@@ -504,14 +461,73 @@ public partial class DbventaContext : DbContext
 
         });
 
+        modelBuilder.Entity<Guest>(entity =>
+        {
+            entity.HasKey(e => e.IdGuest).HasName("PK_Guest");
 
-        OnModelCreatingPartial(modelBuilder);
-        modelBuilder.Entity<Guest>()
-            .HasKey(g => g.IdGuest);
+            entity.ToTable("Guest");
 
-        OnModelCreatingPartial(modelBuilder);
-        modelBuilder.Entity<Book>()
-            .HasKey(gr => gr.IdBook);
+            entity.Property(e => e.IdGuest).HasColumnName("idGuest");
+            entity.Property(e => e.Email)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("email");
+            entity.Property(e => e.CreationDate)
+               .HasDefaultValueSql("(getdate())")
+               .HasColumnType("datetime")
+               .HasColumnName("creationDate");
+            entity.Property(e => e.DocumentType).HasColumnName("documentType");
+            entity.Property(e => e.OriginCity).HasColumnName("originCity");
+            entity.Property(e => e.RecidenceCity).HasColumnName("recidenceCity");
+            entity.Property(e => e.NumberCompanions).HasColumnName("numberCompanions");
+            entity.Property(e => e.Nationality).HasColumnName("nationality");
+            entity.Property(e => e.OriginCountry).HasColumnName("originCountry");
+            entity.Property(e => e.IdMainGuest).HasColumnName("idMainGuest");
+            entity.Property(e => e.IsMain).HasColumnName("isMain");
+            entity.Property(e => e.Name)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("name");
+            entity.Property(e => e.LastName)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("lastName");
+            entity.Property(e => e.PhoneNumber)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("phoneNumber");
+            entity.Property(e => e.Document)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("document");
+        });
+
+
+
+        modelBuilder.Entity<Book>(entity =>
+        {
+            entity.HasKey(e => e.IdBook).HasName("PK__Book__077D56148B22AC5G");
+
+            entity.Property(e => e.IdBook).HasColumnName("idBook");
+            entity.Property(e => e.CreationDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .HasColumnName("creationDate");
+            entity.Property(e => e.CheckIn)
+                .HasColumnType("datetime")
+                .HasColumnName("checkIn");
+            entity.Property(e => e.CheckOut)
+                .HasColumnType("datetime")
+                .HasColumnName("checkOut");
+            // entity.Property(e => e.IdUsuario).HasColumnName("idUsuario");
+            entity.Property(e => e.IdMovimiento).HasColumnName("idMovimiento");
+            entity.Property(e => e.Reason).HasColumnName("reason");
+            entity.Property(e => e.IdEstablishment).HasColumnName("idEstablishment");
+            entity.HasOne(d => d.IdMovimientoNavigation).WithMany(p => p.Book)
+                .HasForeignKey(d => d.IdMovimiento)
+                .HasConstraintName("FK__Movimiento__idMovimi__3F466844");
+        });
+
 
         OnModelCreatingPartial(modelBuilder);
         modelBuilder.Entity<Establishment>()
@@ -624,8 +640,6 @@ public partial class DbventaContext : DbContext
             .HasOne(gr => gr.IdPlanNavigation)
             .WithMany(r => r.ParamPlans)
             .HasForeignKey(gr => gr.IdPlan);
-
     }
-
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }

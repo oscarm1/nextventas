@@ -12,8 +12,8 @@ using SistemaVenta.DAL.DBContext;
 namespace nextadvisordotnet.DAL.Migrations
 {
     [DbContext(typeof(DbventaContext))]
-    [Migration("20230415200000_migration9")]
-    partial class migration9
+    [Migration("20230419014225_firstmig2")]
+    partial class firstmig2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -39,15 +39,12 @@ namespace nextadvisordotnet.DAL.Migrations
                         .HasColumnName("idBook");
 
                     b.Property<int>("IdGuest")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("idGuest");
 
                     b.Property<int>("IdRoom")
                         .HasColumnType("int")
                         .HasColumnName("idRoom");
-
-                    b.Property<decimal?>("Price")
-                        .HasColumnType("decimal(10, 2)")
-                        .HasColumnName("precio");
 
                     b.Property<decimal?>("Total")
                         .HasColumnType("decimal(10, 2)")
@@ -69,41 +66,45 @@ namespace nextadvisordotnet.DAL.Migrations
                 {
                     b.Property<int>("IdBook")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("idBook");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdBook"));
 
                     b.Property<DateTime>("CheckIn")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime")
+                        .HasColumnName("checkIn");
 
                     b.Property<DateTime>("CheckOut")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime")
+                        .HasColumnName("checkOut");
 
                     b.Property<DateTime>("CreationDate")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasColumnName("creationDate")
+                        .HasDefaultValueSql("(getdate())");
 
-                    b.Property<int>("EstablishmentId")
-                        .HasColumnType("int");
+                    b.Property<int>("IdEstablishment")
+                        .HasColumnType("int")
+                        .HasColumnName("idEstablishment");
 
                     b.Property<int?>("IdMovimiento")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("idMovimiento");
 
-                    b.Property<int?>("IdMovimientoNavigationIdMovimiento")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("IdUsuario")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("ModificationDate")
+                    b.Property<DateTime?>("ModificationDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Reason")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("reason");
 
-                    b.HasKey("IdBook");
+                    b.HasKey("IdBook")
+                        .HasName("PK__Book__077D56148B22AC5G");
 
-                    b.HasIndex("IdMovimientoNavigationIdMovimiento");
+                    b.HasIndex("IdMovimiento");
 
                     b.ToTable("Books");
                 });
@@ -373,64 +374,93 @@ namespace nextadvisordotnet.DAL.Migrations
                 {
                     b.Property<int>("IdGuest")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("idGuest");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdGuest"));
 
-                    b.Property<DateTime>("CreationDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime?>("CreationDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasColumnName("creationDate")
+                        .HasDefaultValueSql("(getdate())");
 
                     b.Property<string>("Document")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("document");
 
                     b.Property<string>("DocumentType")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("documentType");
 
                     b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("email");
 
                     b.Property<int?>("IdMainGuest")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("idMainGuest");
 
                     b.Property<bool>("IsMain")
-                        .HasColumnType("bit");
+                        .HasColumnType("bit")
+                        .HasColumnName("isMain");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("lastName");
 
-                    b.Property<DateTime>("ModificationDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime?>("ModificationDate")
+                        .HasColumnType("datetime")
+                        .HasColumnName("modificationDate");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("name");
 
                     b.Property<string>("Nationality")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("nationality");
 
                     b.Property<int>("NumberCompanions")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("numberCompanions");
 
                     b.Property<string>("OriginCity")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("originCity");
 
                     b.Property<string>("OriginCountry")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("originCountry");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("phoneNumber");
 
                     b.Property<string>("RecidenceCity")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("recidenceCity");
 
-                    b.HasKey("IdGuest");
+                    b.HasKey("IdGuest")
+                        .HasName("PK_Guest");
 
-                    b.ToTable("Guests");
+                    b.ToTable("Guest", (string)null);
                 });
 
             modelBuilder.Entity("SistemaVenta.Entity.Menu", b =>
@@ -1212,7 +1242,7 @@ namespace nextadvisordotnet.DAL.Migrations
                         .HasForeignKey("IdBook")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK__DetailBo__idBoo__440B1D61");
+                        .HasConstraintName("FK__DetailBo__idBoo");
 
                     b.HasOne("SistemaVenta.Entity.Guest", "IdGuestNavigation")
                         .WithMany("DetailBook")
@@ -1238,8 +1268,9 @@ namespace nextadvisordotnet.DAL.Migrations
             modelBuilder.Entity("SistemaVenta.Entity.Book", b =>
                 {
                     b.HasOne("SistemaVenta.Entity.Movimiento", "IdMovimientoNavigation")
-                        .WithMany()
-                        .HasForeignKey("IdMovimientoNavigationIdMovimiento");
+                        .WithMany("Book")
+                        .HasForeignKey("IdMovimiento")
+                        .HasConstraintName("FK__Movimiento__idMovimi__3F466844");
 
                     b.Navigation("IdMovimientoNavigation");
                 });
@@ -1462,6 +1493,8 @@ namespace nextadvisordotnet.DAL.Migrations
 
             modelBuilder.Entity("SistemaVenta.Entity.Movimiento", b =>
                 {
+                    b.Navigation("Book");
+
                     b.Navigation("DetalleMovimiento");
                 });
 

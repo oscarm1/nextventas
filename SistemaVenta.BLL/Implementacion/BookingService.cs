@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -46,7 +47,18 @@ namespace SistemaVenta.BLL.Implementacion
 
             return query.Include(c => c.IdCategoriaNavigation).ToList();
         }
+        public async Task<bool> CheckBookings(string document, DateTime ci, DateTime co)
+        {
+            try
+            {
+                return await _repositorioBooking.CheckBookings(document, ci, co);
+            }
+            catch (Exception)
+            {
 
+                throw;
+            }
+        }
         public async Task<Book> Save(Book entidad)
         {
 

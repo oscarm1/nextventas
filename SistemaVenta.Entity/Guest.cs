@@ -20,8 +20,7 @@ public partial class Guest
     public string? OriginCountry { get; set; }
     public int? IdMainGuest { get; set; }
     public bool IsMain { get; set; }
-    public DateTime CreationDate { get; set; }
-    public DateTime ModificationDate { get; set; }
+    public DateTime? CreationDate { get; set; }
     public virtual ICollection<DetailBook> DetailBook { get; } = new List<DetailBook>();
 
 }

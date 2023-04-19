@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace nextadvisordotnet.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class migration1 : Migration
+    public partial class firstmig : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -79,30 +79,30 @@ namespace nextadvisordotnet.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Guests",
+                name: "Guest",
                 columns: table => new
                 {
-                    IdGuest = table.Column<int>(type: "int", nullable: false)
+                    idGuest = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    DocumentType = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Document = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    OriginCity = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RecidenceCity = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    NumberCompanions = table.Column<int>(type: "int", nullable: false),
-                    Nationality = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OriginCountry = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IdMainGuest = table.Column<int>(type: "int", nullable: true),
-                    IsMain = table.Column<bool>(type: "bit", nullable: false),
-                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ModificationDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    documentType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    document = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false),
+                    originCity = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    recidenceCity = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    numberCompanions = table.Column<int>(type: "int", nullable: false),
+                    nationality = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    name = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false),
+                    lastName = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false),
+                    phoneNumber = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
+                    email = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
+                    originCountry = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    idMainGuest = table.Column<int>(type: "int", nullable: true),
+                    isMain = table.Column<bool>(type: "bit", nullable: false),
+                    creationDate = table.Column<DateTime>(type: "datetime", nullable: false, defaultValueSql: "(getdate())"),
+                    modificationDate = table.Column<DateTime>(type: "datetime", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Guests", x => x.IdGuest);
+                    table.PrimaryKey("PK_Guest", x => x.idGuest);
                 });
 
             migrationBuilder.CreateTable(
@@ -241,13 +241,16 @@ namespace nextadvisordotnet.DAL.Migrations
                     NIT = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IdCompany = table.Column<int>(type: "int", nullable: false),
                     EstablishmentName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     EstablishmentType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Contact = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Token = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Rnt = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    isActive = table.Column<bool>(type: "bit", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: true),
+                    NameImage = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UrlImage = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ModificationDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -263,6 +266,29 @@ namespace nextadvisordotnet.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ParamPlans",
+                columns: table => new
+                {
+                    IdParamPlan = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    IdPlan = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Value = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ModificationDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ParamPlans", x => x.IdParamPlan);
+                    table.ForeignKey(
+                        name: "FK_ParamPlans_Plans_IdPlan",
+                        column: x => x.IdPlan,
+                        principalTable: "Plans",
+                        principalColumn: "IdPlan",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Subscriptions",
                 columns: table => new
                 {
@@ -270,10 +296,14 @@ namespace nextadvisordotnet.DAL.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     IdCompany = table.Column<int>(type: "int", nullable: false),
                     IdPlan = table.Column<int>(type: "int", nullable: false),
+                    PaymentMethod = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SubscriptionStatus = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PaymentReceipt = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IdUsuario = table.Column<int>(type: "int", nullable: true),
+                    PaymentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DateIni = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DateFin = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ModificationDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    ExpiryDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ModificationDate = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -399,8 +429,8 @@ namespace nextadvisordotnet.DAL.Migrations
                     CategoryName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Capacity = table.Column<int>(type: "int", nullable: true),
-                    NameImage = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UrlImage = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NameImage = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UrlImage = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     isActive = table.Column<bool>(type: "bit", nullable: true),
@@ -503,24 +533,22 @@ namespace nextadvisordotnet.DAL.Migrations
                 name: "Books",
                 columns: table => new
                 {
-                    IdBook = table.Column<int>(type: "int", nullable: false)
+                    idBook = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    IdMovimiento = table.Column<int>(type: "int", nullable: true),
-                    Reason = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CheckIn = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CheckOut = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IdUsuario = table.Column<int>(type: "int", nullable: true),
-                    EstablishmentId = table.Column<int>(type: "int", nullable: false),
-                    ModificationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IdMovimientoNavigationIdMovimiento = table.Column<int>(type: "int", nullable: true)
+                    idMovimiento = table.Column<int>(type: "int", nullable: true),
+                    reason = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    checkIn = table.Column<DateTime>(type: "datetime", nullable: false),
+                    checkOut = table.Column<DateTime>(type: "datetime", nullable: false),
+                    idEstablishment = table.Column<int>(type: "int", nullable: false),
+                    ModificationDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    creationDate = table.Column<DateTime>(type: "datetime", nullable: false, defaultValueSql: "(getdate())")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Books", x => x.IdBook);
+                    table.PrimaryKey("PK__Book__077D56148B22AC5G", x => x.idBook);
                     table.ForeignKey(
-                        name: "FK_Books_Movimiento_IdMovimientoNavigationIdMovimiento",
-                        column: x => x.IdMovimientoNavigationIdMovimiento,
+                        name: "FK__Movimiento__idMovimi__3F466844",
+                        column: x => x.idMovimiento,
                         principalTable: "Movimiento",
                         principalColumn: "idMovimiento");
                 });
@@ -562,8 +590,7 @@ namespace nextadvisordotnet.DAL.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     idBook = table.Column<int>(type: "int", nullable: false),
                     idRoom = table.Column<int>(type: "int", nullable: false),
-                    IdGuest = table.Column<int>(type: "int", nullable: false),
-                    precio = table.Column<decimal>(type: "decimal(10,2)", nullable: true),
+                    idGuest = table.Column<int>(type: "int", nullable: false),
                     total = table.Column<decimal>(type: "decimal(10,2)", nullable: true)
                 },
                 constraints: table =>
@@ -571,9 +598,9 @@ namespace nextadvisordotnet.DAL.Migrations
                     table.PrimaryKey("PK__DetalleB__BFE2843FB3D3EFB5", x => x.idDetailBook);
                     table.ForeignKey(
                         name: "FK_DetailBook_Guest",
-                        column: x => x.IdGuest,
-                        principalTable: "Guests",
-                        principalColumn: "IdGuest",
+                        column: x => x.idGuest,
+                        principalTable: "Guest",
+                        principalColumn: "idGuest",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_DetailBook_Room",
@@ -582,17 +609,17 @@ namespace nextadvisordotnet.DAL.Migrations
                         principalColumn: "IdRoom",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK__DetailBo__idBoo__440B1D61",
+                        name: "FK__DetailBo__idBoo",
                         column: x => x.idBook,
                         principalTable: "Books",
-                        principalColumn: "IdBook",
+                        principalColumn: "idBook",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Books_IdMovimientoNavigationIdMovimiento",
+                name: "IX_Books_idMovimiento",
                 table: "Books",
-                column: "IdMovimientoNavigationIdMovimiento");
+                column: "idMovimiento");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DetailBook_idBook",
@@ -600,9 +627,9 @@ namespace nextadvisordotnet.DAL.Migrations
                 column: "idBook");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DetailBook_IdGuest",
+                name: "IX_DetailBook_idGuest",
                 table: "DetailBook",
-                column: "IdGuest");
+                column: "idGuest");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DetailBook_idRoom",
@@ -643,6 +670,11 @@ namespace nextadvisordotnet.DAL.Migrations
                 name: "IX_Movimiento_idUsuario",
                 table: "Movimiento",
                 column: "idUsuario");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ParamPlans_IdPlan",
+                table: "ParamPlans",
+                column: "IdPlan");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Producto_idCategoria",
@@ -727,6 +759,9 @@ namespace nextadvisordotnet.DAL.Migrations
                 name: "NumeroCorrelativo");
 
             migrationBuilder.DropTable(
+                name: "ParamPlans");
+
+            migrationBuilder.DropTable(
                 name: "RolMenu");
 
             migrationBuilder.DropTable(
@@ -736,7 +771,7 @@ namespace nextadvisordotnet.DAL.Migrations
                 name: "Users");
 
             migrationBuilder.DropTable(
-                name: "Guests");
+                name: "Guest");
 
             migrationBuilder.DropTable(
                 name: "Rooms");

@@ -33,4 +33,5 @@ public partial class Movimiento
 
     public virtual Usuario? IdUsuarioNavigation { get; set; }
     public virtual Proveedor? IdProveedorNavigation { get; set; }
+    public virtual ICollection<Book>? Book { get; set; }
 }

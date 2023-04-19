@@ -11,9 +11,8 @@ public partial class Book
     public string Reason { get; set; }
     public DateTime CheckIn { get; set; }
     public DateTime CheckOut { get; set; }
-    public int? IdUsuario { get; set; }
-    public int EstablishmentId { get; set; }
-    public DateTime ModificationDate { get; set; }
+    public int IdEstablishment { get; set; }
+    public DateTime? ModificationDate { get; set; }
     public DateTime CreationDate { get; set; }
     public virtual ICollection<DetailBook>? DetailBook { get; } = new List<DetailBook>();
     public virtual Movimiento? IdMovimientoNavigation { get; set; }
