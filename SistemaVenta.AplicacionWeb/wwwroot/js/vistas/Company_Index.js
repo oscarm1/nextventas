@@ -17,7 +17,7 @@
                 $("#txtCorreo").val(o.email)
                 $("#txtDireccion").val(o.address)
                 $("#txTelefono").val(o.phoneNumber)
-                $("#txtImpuesto").val(o.task)
+                $("#txtImpuesto").val(o.tax)
                 $("#txtSimboloMoneda").val(o.currency)
                 $("#imgLogo").attr("src", o.urlLogo)
             } else {
@@ -45,7 +45,7 @@ $("#btnGuardarCambios").click(function () {
         email: $("#txtCorreo").val(),
         address: $("#txtDireccion").val(),
         phoneNumber: $("#txTelefono").val(),
-        task: $("#txtImpuesto").val(),
+        tax: $("#txtImpuesto").val(),
         currency: $("#txtSimboloMoneda").val(),
     }
 

@@ -82,7 +82,7 @@ namespace SistemaVenta.AplicacionWeb.Utilidades.AutoMapper
                 .ForMember(destino => destino.CategoryName,
                     opt => opt.MapFrom(origen => origen.IdCategoriaNavigation.Descripcion))
                 .ForMember(destino => destino.Price,
-                    opt => opt.MapFrom(origen => Convert.ToString(origen.Price.Value, new CultureInfo("es-CO"))));
+                    opt => opt.MapFrom(origen => origen.Price.Value));
 
             CreateMap<RoomDTO, Room>()
                 .ForMember(destino => destino.isActive,
