@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace nextadvisordotnet.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class firstmig : Migration
+    public partial class first : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -97,8 +97,7 @@ namespace nextadvisordotnet.DAL.Migrations
                     originCountry = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     idMainGuest = table.Column<int>(type: "int", nullable: true),
                     isMain = table.Column<bool>(type: "bit", nullable: false),
-                    creationDate = table.Column<DateTime>(type: "datetime", nullable: false, defaultValueSql: "(getdate())"),
-                    modificationDate = table.Column<DateTime>(type: "datetime", nullable: false)
+                    creationDate = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())")
                 },
                 constraints: table =>
                 {
@@ -260,6 +259,37 @@ namespace nextadvisordotnet.DAL.Migrations
                     table.ForeignKey(
                         name: "FK_Establishments_Companies_IdCompany",
                         column: x => x.IdCompany,
+                        principalTable: "Companies",
+                        principalColumn: "IdCompany",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    IdUser = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IdCard = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IdCompany = table.Column<int>(type: "int", nullable: false),
+                    CompanyIdCompany = table.Column<int>(type: "int", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Username = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ResetPasswordToken = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ResetPasswordExpires = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModificationDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.IdUser);
+                    table.ForeignKey(
+                        name: "FK_Users_Companies_CompanyIdCompany",
+                        column: x => x.CompanyIdCompany,
                         principalTable: "Companies",
                         principalColumn: "IdCompany",
                         onDelete: ReferentialAction.Cascade);
@@ -432,8 +462,8 @@ namespace nextadvisordotnet.DAL.Migrations
                     NameImage = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UrlImage = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    isActive = table.Column<bool>(type: "bit", nullable: true),
+                    Status = table.Column<bool>(type: "bit", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: true),
                     CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ModificationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IdCategoriaNavigationIdCategoria = table.Column<int>(type: "int", nullable: true)
@@ -452,43 +482,6 @@ namespace nextadvisordotnet.DAL.Migrations
                         principalTable: "Establishments",
                         principalColumn: "IdEstablishment",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Users",
-                columns: table => new
-                {
-                    IdUser = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IdCard = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IdCompany = table.Column<int>(type: "int", nullable: false),
-                    CompanyIdCompany = table.Column<int>(type: "int", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Username = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ResetPasswordToken = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ResetPasswordExpires = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ModificationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    EstablishmentIdEstablishment = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Users", x => x.IdUser);
-                    table.ForeignKey(
-                        name: "FK_Users_Companies_CompanyIdCompany",
-                        column: x => x.CompanyIdCompany,
-                        principalTable: "Companies",
-                        principalColumn: "IdCompany",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Users_Establishments_EstablishmentIdEstablishment",
-                        column: x => x.EstablishmentIdEstablishment,
-                        principalTable: "Establishments",
-                        principalColumn: "IdEstablishment");
                 });
 
             migrationBuilder.CreateTable(
@@ -590,8 +583,7 @@ namespace nextadvisordotnet.DAL.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     idBook = table.Column<int>(type: "int", nullable: false),
                     idRoom = table.Column<int>(type: "int", nullable: false),
-                    idGuest = table.Column<int>(type: "int", nullable: false),
-                    total = table.Column<decimal>(type: "decimal(10,2)", nullable: true)
+                    idGuest = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -720,11 +712,6 @@ namespace nextadvisordotnet.DAL.Migrations
                 name: "IX_Users_CompanyIdCompany",
                 table: "Users",
                 column: "CompanyIdCompany");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Users_EstablishmentIdEstablishment",
-                table: "Users",
-                column: "EstablishmentIdEstablishment");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Usuario_IdCompany",

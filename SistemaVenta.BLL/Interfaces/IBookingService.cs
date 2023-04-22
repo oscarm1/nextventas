@@ -11,7 +11,7 @@ namespace SistemaVenta.BLL.Interfaces
     public interface IBookingService
     {
         Task<List<Establishment>> ObtainEstablishments(string busqueda);
-        Task<List<Room>> ObtainRooms(string busqueda);
+        Task<List<Room>> ObtainRooms(string busqueda, DateTime ci, DateTime co);
         Task<bool> CheckBookings(string document,DateTime ci, DateTime co);
         Task<Book> Save(Book entidad);
 

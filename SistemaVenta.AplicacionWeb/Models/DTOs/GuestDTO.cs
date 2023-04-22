@@ -18,8 +18,8 @@
         public int? IsMain { get; set; }
         public int RoomId { get; set; }
         public string Room { get; set; }
-        public DateTime CheckIn { get; set; }
-        public DateTime CheckOut { get; set; }
+        //public DateTime CheckIn { get; set; }
+        //public DateTime CheckOut { get; set; }
         //public DateTime CreationDate { get; set; }
         //public DateTime ModificationDate { get; set; }
     }

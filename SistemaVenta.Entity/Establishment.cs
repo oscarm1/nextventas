@@ -24,5 +24,5 @@ public partial class Establishment
     public DateTime ModificationDate { get; set; }
     public Company Company { get; set; }
     public List<Room> Rooms { get; set; }
-    public List<User> Users { get; set; }
+   // public List<User> Users { get; set; }
 }

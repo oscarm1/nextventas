@@ -60,10 +60,10 @@ namespace SistemaVenta.AplicacionWeb.Controllers
             return StatusCode(StatusCodes.Status200OK, lista);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetRooms(string busqueda)
+        [HttpPost]
+        public async Task<IActionResult> GetRooms([FromBody] RequestRoomsBookingDTO data)
         {
-            List<RoomDTO> lista = _mapper.Map<List<RoomDTO>>(await _bookingService.ObtainRooms(busqueda));
+            List<RoomDTO> lista = _mapper.Map<List<RoomDTO>>(await _bookingService.ObtainRooms(data.IdEstablishment, data.CheckIn, data.CheckOut));
             return StatusCode(StatusCodes.Status200OK, lista);
         }
 
@@ -74,7 +74,7 @@ namespace SistemaVenta.AplicacionWeb.Controllers
             try
             {
 
-                Task<bool> task = _bookingService.CheckBookings(data.Guests[0].Document, data.Guests[0].CheckIn, data.Guests[0].CheckOut);
+                Task<bool> task = _bookingService.CheckBookings(data.Guests[0].Document, data.Book.CheckIn, data.Book.CheckOut);
                 await task;
                 if (!task.Result)
                 {
@@ -90,7 +90,7 @@ namespace SistemaVenta.AplicacionWeb.Controllers
 
                     var code = 0;
 
-                    Establishment establishment_Found = await _establishmentService.getEstablishmentById(data.Book.EstablishmentId);
+                    Establishment establishment_Found = await _establishmentService.getEstablishmentById(data.Book.IdEstablishment);
 
                     ICollection<DetailBookDTO> listDetail = new List<DetailBookDTO>();
 
@@ -129,8 +129,8 @@ namespace SistemaVenta.AplicacionWeb.Controllers
                                                cuidad_residencia = guest_creado.RecidenceCity,
                                                cuidad_procedencia = guest_creado.OriginCity,
                                                numero_habitacion = guestDTO.Room,
-                                               check_in = guestDTO.CheckIn.ToString("yyyy-MM-dd"),
-                                               check_out = guestDTO.CheckOut.ToString("yyyy-MM-dd"),
+                                               check_in = data.Book.CheckIn.ToString("yyyy-MM-dd"),
+                                               check_out = data.Book.CheckOut.ToString("yyyy-MM-dd"),
                                                padre = code.ToString()
                                            }),
                                            Encoding.UTF8,
@@ -169,8 +169,8 @@ namespace SistemaVenta.AplicacionWeb.Controllers
                                                 numero_habitacion = guestDTO.Room,
                                                 motivo = data.Book.Reason,
                                                 numero_acompanantes = guest_creado.NumberCompanions.ToString(),
-                                                check_in = guestDTO.CheckIn.ToString("yyyy-MM-dd"),
-                                                check_out = guestDTO.CheckOut.ToString("yyyy-MM-dd"),
+                                                check_in = data.Book.CheckIn.ToString("yyyy-MM-dd"),
+                                                check_out = data.Book.CheckOut.ToString("yyyy-MM-dd"),
                                                 tipo_acomodacion = establishment_Found.EstablishmentType,
                                                 costo = movement_created.Total.ToString(),
                                                 nombre_establecimiento = establishment_Found.EstablishmentName,

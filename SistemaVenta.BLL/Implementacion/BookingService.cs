@@ -30,22 +30,28 @@ namespace SistemaVenta.BLL.Implementacion
         public async Task<List<Establishment>> ObtainEstablishments(string busqueda)
         {
             IQueryable<Establishment> query = await _repositorioEstablishment.Consultar(
-                p => p.IsActive == true && 
-               // p.Stock > 0 && 
+                p => p.IsActive == true &&
                 string.Concat(p.NIT, p.EstablishmentName, p.Contact).Contains(busqueda)
                 );
 
             return query.ToList();
         }
 
-        public async Task<List<Room>> ObtainRooms(string busqueda)
+        public async Task<List<Room>> ObtainRooms(string busqueda, DateTime checkIn, DateTime checkOut)
         {
-            IQueryable<Room> query = await _repositorioRoom.Consultar(
-                p => p.isActive == true &&
-                p.IdEstablishment == Int32.Parse(busqueda)
-                );
+            var rooms = await _repositorioRoom.Consultar(p =>
+                p.IsActive == true &&
+                p.Status == true &&
+                p.IdEstablishment == Int32.Parse(busqueda) &&
+                !p.DetailBook.Any(d =>
+                    (checkIn >= d.IdBookNavigation.CheckIn && checkIn < d.IdBookNavigation.CheckOut) ||
+                    (checkOut > d.IdBookNavigation.CheckIn && checkOut <= d.IdBookNavigation.CheckOut) ||
+                    (checkIn <= d.IdBookNavigation.CheckIn && checkOut >= d.IdBookNavigation.CheckOut)
+                )
+            );
 
-            return query.Include(c => c.IdCategoriaNavigation).ToList();
+
+           return rooms.ToList();
         }
         public async Task<bool> CheckBookings(string document, DateTime ci, DateTime co)
         {

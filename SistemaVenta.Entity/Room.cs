@@ -18,8 +18,8 @@ public partial class Room
     public string NameImage { get; set; }
     public string UrlImage { get; set; }
     public decimal? Price { get; set; }
-    public string? Status { get; set; }
-    public bool? isActive { get; set; }
+    public bool? Status { get; set; }
+    public bool? IsActive { get; set; }
     public DateTime CreationDate { get; set; }
     public DateTime ModificationDate { get; set; }
     public virtual Categoria? IdCategoriaNavigation { get; set; }

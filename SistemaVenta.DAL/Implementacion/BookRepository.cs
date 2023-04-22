@@ -55,9 +55,9 @@ namespace SistemaVenta.DAL.Implementacion
                         Room roomEncontrado = new Room();
                         roomEncontrado = _dbContext.Rooms.Where(p => p.IdRoom == itemDV).First();
 
-                        if (roomEncontrado.Status == "available")
+                        if (roomEncontrado.Status == true)
                         {
-                            roomEncontrado.Status = "unavailable";
+                            roomEncontrado.Status = false;
                         }
 
                         _dbContext.Rooms.Update(roomEncontrado);

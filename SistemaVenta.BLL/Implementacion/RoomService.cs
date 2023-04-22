@@ -86,7 +86,7 @@ namespace SistemaVenta.BLL.Implementacion
                 room_para_editar.Description = entidad.Description;
                 room_para_editar.IdCategoria = entidad.IdCategoria;
                 room_para_editar.Price = entidad.Price;
-                room_para_editar.isActive = entidad.isActive;
+                room_para_editar.IsActive = entidad.IsActive;
 
 
                 if (imagen != null)

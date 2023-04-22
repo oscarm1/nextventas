@@ -12,8 +12,8 @@ using SistemaVenta.DAL.DBContext;
 namespace nextadvisordotnet.DAL.Migrations
 {
     [DbContext(typeof(DbventaContext))]
-    [Migration("20230419000001_firstmig")]
-    partial class firstmig
+    [Migration("20230421204631_first")]
+    partial class first
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -45,10 +45,6 @@ namespace nextadvisordotnet.DAL.Migrations
                     b.Property<int>("IdRoom")
                         .HasColumnType("int")
                         .HasColumnName("idRoom");
-
-                    b.Property<decimal?>("Total")
-                        .HasColumnType("decimal(10, 2)")
-                        .HasColumnName("total");
 
                     b.HasKey("IdDetailBook")
                         .HasName("PK__DetalleB__BFE2843FB3D3EFB5");
@@ -379,7 +375,7 @@ namespace nextadvisordotnet.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdGuest"));
 
-                    b.Property<DateTime>("CreationDate")
+                    b.Property<DateTime?>("CreationDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
                         .HasColumnName("creationDate")
@@ -417,10 +413,6 @@ namespace nextadvisordotnet.DAL.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(50)")
                         .HasColumnName("lastName");
-
-                    b.Property<DateTime>("ModificationDate")
-                        .HasColumnType("datetime")
-                        .HasColumnName("modificationDate");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -981,6 +973,9 @@ namespace nextadvisordotnet.DAL.Migrations
                     b.Property<int>("IdGuest")
                         .HasColumnType("int");
 
+                    b.Property<bool?>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("ModificationDate")
                         .HasColumnType("datetime2");
 
@@ -995,15 +990,12 @@ namespace nextadvisordotnet.DAL.Migrations
                     b.Property<decimal?>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("Status")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool?>("Status")
+                        .HasColumnType("bit");
 
                     b.Property<string>("UrlImage")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool?>("isActive")
-                        .HasColumnType("bit");
 
                     b.HasKey("IdRoom");
 
@@ -1115,9 +1107,6 @@ namespace nextadvisordotnet.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("EstablishmentIdEstablishment")
-                        .HasColumnType("int");
-
                     b.Property<int>("IdCard")
                         .HasColumnType("int");
 
@@ -1157,8 +1146,6 @@ namespace nextadvisordotnet.DAL.Migrations
                     b.HasKey("IdUser");
 
                     b.HasIndex("CompanyIdCompany");
-
-                    b.HasIndex("EstablishmentIdEstablishment");
 
                     b.ToTable("Users");
                 });
@@ -1428,10 +1415,6 @@ namespace nextadvisordotnet.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SistemaVenta.Entity.Establishment", null)
-                        .WithMany("Users")
-                        .HasForeignKey("EstablishmentIdEstablishment");
-
                     b.Navigation("Company");
                 });
 
@@ -1475,8 +1458,6 @@ namespace nextadvisordotnet.DAL.Migrations
             modelBuilder.Entity("SistemaVenta.Entity.Establishment", b =>
                 {
                     b.Navigation("Rooms");
-
-                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("SistemaVenta.Entity.Guest", b =>

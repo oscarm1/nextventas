@@ -78,14 +78,14 @@ namespace SistemaVenta.AplicacionWeb.Utilidades.AutoMapper
             #region Room
             CreateMap<Room, RoomDTO>()
                 .ForMember(destino => destino.isActive,
-                    opt => opt.MapFrom(origen => origen.isActive == true ? 1 : 0))
+                    opt => opt.MapFrom(origen => origen.IsActive == true ? 1 : 0))
                 .ForMember(destino => destino.CategoryName,
                     opt => opt.MapFrom(origen => origen.IdCategoriaNavigation.Descripcion))
                 .ForMember(destino => destino.Price,
                     opt => opt.MapFrom(origen => origen.Price.Value));
 
             CreateMap<RoomDTO, Room>()
-                .ForMember(destino => destino.isActive,
+                .ForMember(destino => destino.IsActive,
                     opt => opt.MapFrom(origen => origen.isActive == 1 ? true : false))
                 .ForMember(destino => destino.IdCategoriaNavigation,
                     opt => opt.Ignore())

@@ -5,156 +5,100 @@ let establishmentParaPedido = [];
 $(document).ready(function () {
 
     ////***** establishmentes
-
-    $("#cboSearchEstablishment").select2({
-        ajax: {
-            url: "/Booking/GetEstablishment",
-            dataType: 'json',
-            contentType: "application/json; charset=utf-8",
-            delay: 250,
-            data: function (params) {
-                return {
-                    busqueda: params.term
-                };
-            },
-            processResults: function (data) {
-                return {
-                    results: data.map((item) => (
-                        {
-                            id: item.idEstablishment,
-                            nit: item.nit,
-                            name: item.establishmentName,
-                            contact: item.contact,
-                            phone: item.phoneNumber,
-                            email: item.email
-                        }
-
-                    ))
-                };
+    $(function () {
+        $('input[name="daterange"]').daterangepicker({
+            "autoApply": true,
+            "opens": "left",
+            "locale": {
+                "format": "YYYY-MM-DD",
+                "separator": " - ",
+                "applyLabel": "Aplicar",
+                "cancelLabel": "Cancelar",
+                "fromLabel": "Desde",
+                "toLabel": "Hasta",
+                "customRangeLabel": "Personalizado",
+                "daysOfWeek": [
+                    "Do",
+                    "Lu",
+                    "Ma",
+                    "Mi",
+                    "Ju",
+                    "Vi",
+                    "Sa"
+                ],
+                "monthNames": [
+                    "Enero",
+                    "Febrero",
+                    "Marzo",
+                    "Abril",
+                    "Mayo",
+                    "Junio",
+                    "Julio",
+                    "Agosto",
+                    "Septiembre",
+                    "Octubre",
+                    "Noviembre",
+                    "Diciembre"
+                ],
+                "firstDay": 1
             }
-        },
-        language: 'es',
-        placeholder: 'Buscar Establecimiento',
-        minimumInputLength: 1,
-        templateResult: formatoResultadoEstablishment,
+        });
+
+        $('input[name="daterange"]').on('apply.daterangepicker', function (ev, picker) {
+            // Obtener fechas seleccionadas
+            var startDate = picker.startDate.format('YYYY-MM-DD');
+            var endDate = picker.endDate.format('YYYY-MM-DD');
+
+            // Imprimir fechas seleccionadas en consola
+            console.log('Fecha de inicio: ' + startDate);
+            console.log('Fecha de fin: ' + endDate);
+        });
+
+        $('input[name="daterange"]').attr("placeholder", "Ingrese fechas de entrada y salida");
     });
 
-    function formatoResultadoEstablishment(data) {
-        if (data.loading) {
-            return data.text;
-        }
-
-        var contenedor = $(
-            `<table width="100%">
-                <tr>
-                    <td>
-                        <td style="width:60px">
-                            <img style="height:60px;width:60px; margin-right:20px" src="${data.urlImagen}" />
-                        </td>
-                        <p style="font-weight:bold; margin:2px">${data.name}</p
-                        <p style="margin:2px">${data.contact}</p>
-                    </td>
-                </tr>
-            </table>`
-        );
-
-        return contenedor;
-    }
-
-    $(document).on("select2:open", function () {
-        document.querySelector(".select2-search__field").focus();
-    })
-
-    $("#cboSearchEstablishment").on("select2:select", function (e) {
-        const data = e.params.data;
-
-        let establishment_encontrado = establishmentParaPedido.filter(P => P.idEstablishment == data.id)
-        if (establishment_encontrado.length > 0) {
-            $("#cboSearchEstablishment").val("").trigger("change")
-            toastr.warning("", "El establecimiento ya fue agregado");
-            return false;
-        }
-
-        swal({
-
-            title: data.name,
-            text: data.name,
-            imageUrl: data.urlImage,//todo it have to adjust
-            showCancelButton: true,
-            type: "input",
-            closeOnConf‌irm: false,
-            inputPlaceholder: "Digite Numero de Reserva"
-        },
-            function (valor) {
-
-                if (valor === false) { return false }
-                if (valor === "") {
-                    toastr.warning("", "Nesecita ingresar N. Reserva");
-                    return false;
-                }
-                if (isNaN(parseInt(valor))) {
-                    toastr.warning("", "Debe ingresar N. Reserva");
-                    return false;
-                }
-
-                var val = valor;
-
-                let establishment = {
-                    idEstablishment: data.id,
-                    nitEstablishment: data.nit,
-                    nombreEstablishment: data.name,
-                    descripcionEstablishment: data.contact,
-                    cantidad: val,
-                    //precio: data.precio.toString(),
-                    //total: (parseFloat(valor)*data.precio).toString()
-                }
-
-                establishmentParaPedido.push(establishment);
-
-                mostrarEstablishment_Precios();
-                $("#cboSearchEstablishment").val("").trigger("change");
-                swal.close();
-
-                if (data.nit != null) {
-
-                    $.ajax({
-                        url: '/Booking/GetRooms',
-                        type: 'GET',
-                        data: {
-                            busqueda: data.id
-                        },
-                        success: function (data) {
-
-                            mostrarRoom_Precios(data);
-                        },
-                        error: function (error) {
-                            console.log(error);
-                        }
-                    });
-                }
+    fetch("/Establishment/List")
+        .then(response => {
+            return response.ok ? response.json() : Promise.reject(response);
+        })
+        .then(responseJson => {
+            if (responseJson.data.length > 0) {
+                responseJson.data.forEach((item) => {
+                    $("#cboSearchEstablishment").append(
+                        $("<option>").val(item.idEstablishment).text(item.establishmentName)
+                    )
+                })
             }
-        );
-
-    })
-
-    function mostrarEstablishment_Precios() {
-
-        $("#tbEstablishment tbody").html("")
-
-        establishmentParaPedido.forEach((item) => {
-            $("#tbEstablishment tbody").append(
-                $("<tr>").attr("id", item.idEstablishment).append(
-                    // $("<tr>").append(
-                    $("<td>").text(item.nitEstablishment),
-                    $("<td>").text(item.nombreEstablishment),
-                    $("<td>").text(item.descripcionEstablishment),
-                    $("<td>").text(item.cantidad),
-
-                )
-            )
         })
 
-    }
+    $('#btnNextRoom').on('click', function () {
+
+        var dateRange = $('input[name="daterange"]').val();
+        var dates = dateRange.split(" - ");
+        var checkin = dates[0];
+        var checkout = dates[1];
+
+        var RequestRooms = {};
+
+        RequestRooms.IdEstablishment = $("#cboSearchEstablishment").val();
+        RequestRooms.CheckIn = checkin;
+        RequestRooms.CheckOut = checkout;
+
+        $.ajax({
+            url: '/Booking/GetRooms',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(RequestRooms),
+            success: function (data) {
+                mostrarRoom_Precios(data);
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    })
+
+    //});
 
     ////******** fin establishment
 
@@ -237,28 +181,41 @@ function mostrarRoom_Precios(Data) {
                 $("<td>").text(item.capacity),
                 $("<td>").append($("<input>").addClass("form-control input-price").val(item.price).prop('readonly', true)),
                 $("<td>").append($("<input>").addClass("form-control input-cantidad")),
-                $("<td>").append($("<input>").addClass("form-control input-subtotal").val(0).prop('readonly', true)),
-                $("<td>").append(
-                    $("<button>").addClass("btn btn-success btn-ok").append(
-                        $("<i>").addClass("fa-badge-check")
-                    ).data("idRoom", item.idRoom),
-                ),
+                //$("<td>").append($("<input>").addClass("form-control input-subtotal").val(0).prop('readonly', true)),
+                //$("<td>").append(
+                //    $("<button>").addClass("btn btn-success btn-ok").append(
+                //        $("<i>").addClass("fa-badge-check")
+                //    ).data("idRoom", item.idRoom),
+                //),
             )
         )
     });
 
     // Escuchar cambios en los inputs de cantidad y precio
-    $(".input-cantidad, .input-price").on("change", function () {
-        actualizarTotal();
+    //$(".input-cantidad, .input-price").on("change", function () {
+    $('#CheckIn, #CheckOut').change(function () {
+        var checkIn = new Date($("#CheckIn").val());
+        var checkOut = new Date($("#CheckOut").val());
+
+        if (checkIn && checkOut && checkIn < checkOut) {
+            actualizarTotal(checkIn, checkOut);
+        }
     });
 
     let rooms = [];
 
-    $(document).on("click", "button.btn-ok", function () {
+    $('#btnPrevEstablishment').click(function () {
+
+        $("#collapseEstablishment").collapse('show');
+        $("#collapseRoom").collapse('hide');
+        $("#collapseGuest").collapse('hide');
+
+    })
+
+    $('#btnNextGuest').click(function () {
 
         $("#collapseRoom").collapse('hide');
         $("#collapseGuest").collapse('show');
-
 
         let cantidadTot = 0;
 
@@ -288,6 +245,13 @@ function mostrarRoom_Precios(Data) {
         });
 
         $("#NumberCompanions").val(cantidadTot - 1).prop('readonly', true);
+
+    })
+
+    $('#btnPrevRoom').click(function () {
+
+        $("#collapseRoom").collapse('show');
+        $("#collapseGuest").collapse('hide');
 
     })
 
@@ -345,32 +309,24 @@ function mostrarRoom_Precios(Data) {
                <label for="OriginCity" class="form-label">Ciudad de Procedencia</label>
                <input type="text" class="form-control" id="OriginCity">
             </div>
-            <div class="col-md-6">
-              <label for="CheckIn" class="form-label">Fecha de Check-In</label>
-               <input type="date" class="form-control" id="CheckIn">
-             </div>
-            <div class="col-md-6">
-                <label for="CheckOut" class="form-label">Fecha de Check-Out</label>
-                <input type="date" class="form-control" id="CheckOut">
-            </div>
                 <input type="hidden" id="IsMain" value="0">
           </form>
         </div>`);
 
             $("#masterDetail").append(nuevoForm);
         }
-
-        var botonFinalizar = $("<div class='text-center mb-4'><button type='submit' class='btn btn-primary btn-lg btnSendData'>Finalizar</button></div>");
-        $("#masterDetail").children().last().find(".card-body").append(botonFinalizar);
+        //var botonFinalizar = $("<div class='text-center mb-4'><button type='submit' class='btn btn-primary btn-lg btnSendData'>Finalizar</button></div>");
+        //$("#masterDetail").children().last().find(".card-body").append(botonFinalizar);
 
     });
 
-    function actualizarTotal() {
+    function actualizarTotal(checkIn, checkOut) {
         let subtotal2 = 0;
         $(".input-cantidad, .input-price").each(function () {
             const cantidad = parseFloat($(this).closest("tr").find(".input-cantidad").val());
             const precio = parseFloat($(this).closest("tr").find(".input-price").val());
             const subtotal = cantidad * precio;
+
 
             if (isNaN(subtotal)) {
                 const prov = 0;
@@ -381,7 +337,10 @@ function mostrarRoom_Precios(Data) {
             }
         });
 
-        const tott = subtotal2 / 2
+        var diffTime = checkOut.getTime() - checkIn.getTime();
+        var daysBook = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        const tott = (subtotal2 / 2) * daysBook;
 
         subTotal = tott / (1 + porcentaje);
         igv = tott - subTotal;
@@ -394,12 +353,30 @@ function mostrarRoom_Precios(Data) {
 
 // Agregar la validación de campos obligatorios a los formularios dinámicos
 
-$(document).on("click", ".btnSendData", function (e) {
 
-    e.preventDefault();
+$(".btnSendData").click(function (e) {
 
+    swal({
+        title: 'Estas seguro de enviar la reserva?',
+        text: "Confirmacion",
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Si, Enviar!'
+    },
+        function (respuesta) {
+            if (respuesta) {
+                sendData();
+            }
+        });
+
+})
+
+function sendData() {
+
+    //e.preventDefault();
     var formValid = true;
-    // var guest = {};
 
     $("#collapseGuest, .collapseCompanion").each(function (index) {
         var $form = $(this).find("form");
@@ -445,9 +422,11 @@ $(document).on("click", ".btnSendData", function (e) {
     var book = {};
 
     book.Reason = $("#Reason").val();
+    //book.CheckIn = $("#CheckIn").val();
+    //book.CheckOut = $("#CheckOut").val();
     book.CheckIn = $("#CheckIn").val();
     book.CheckOut = $("#CheckOut").val();
-    book.EstablishmentId = $("#tbEstablishment tbody tr:first").attr("id");
+    book.IdEstablishment = $("#tbEstablishment tbody tr:first").attr("id");
 
     $("#masterDetail, .collapseCompanion").each(function (index) {
 
@@ -465,8 +444,8 @@ $(document).on("click", ".btnSendData", function (e) {
         guest.RecidenceCity = $form.find("#RecidenceCity").val();
         guest.OriginCity = $form.find("#OriginCity").val();
         guest.NumberCompanions = $form.find("#NumberCompanions").val();
-        guest.CheckIn = $form.find("#CheckIn").val();
-        guest.CheckOut = $form.find("#CheckOut").val();
+        //guest.CheckIn = $form.find("#CheckIn").val();
+        //guest.CheckOut = $form.find("#CheckOut").val();
         guest.IsMain = $form.find("#IsMain").val();
 
         data.Guests.push(guest);
@@ -477,7 +456,7 @@ $(document).on("click", ".btnSendData", function (e) {
 
     console.log("data " + JSON.stringify(data));
 
-    $("#btnTerminarPedido").LoadingOverlay("show");
+    $(".sweet-alert .showSweetAlert .visible").LoadingOverlay("show");
 
     fetch("/Booking/SaveBook", {
         method: "POST",
@@ -485,7 +464,7 @@ $(document).on("click", ".btnSendData", function (e) {
         body: JSON.stringify(data),
     })
         .then(response => {
-            $("#btnTerminarPedido").LoadingOverlay("hide");
+            $(".sweet-alert .showSweetAlert .visible").LoadingOverlay("hide");
             return response.ok ? response.json() : Promise.reject(response);
         })
         .then(responseJson => {
@@ -504,7 +483,7 @@ $(document).on("click", ".btnSendData", function (e) {
 
                 $("#collapseGuest").collapse('hide');
                 $("#collapseRoom").collapse('hide');
-               // mostrarProducto_Precios(productosParaMovimiento);
+                // mostrarProducto_Precios(productosParaMovimiento);
                 limpiarEstablishment()
 
                 $("#txtDocumentoCliente").val("");
@@ -523,4 +502,4 @@ $(document).on("click", ".btnSendData", function (e) {
 
         })
 
-})
+}
