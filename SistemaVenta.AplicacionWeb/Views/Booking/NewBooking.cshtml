@@ -108,7 +108,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="row">
                 <div class="col-sm-12">
                     <div class="card shadow mb-4">
@@ -134,7 +133,7 @@
                                         <input type="text" class="form-control" id="Document">
                                     </div>
                                     <div class="col-md-2">
-                                        <label for="IdRoom" class="form-label">N. Habitación</label>
+                                        <label for="IdRoom" class="form-label">Habitación</label>
                                         <select class="form-select form-control input-room" id="IdRoom">
                                             <option selected>Elige...</option>
                                         </select>
@@ -168,14 +167,6 @@
                                         <label for="NumberCompanions" class="form-label">N. Acompañantes</label>
                                         <input type="text" class="form-control" id="NumberCompanions">
                                     </div>
-                                    @*<div class="col-md-6">
-                                <label for="CheckIn" class="form-label">Fecha de Check-In</label>
-                                <input type="date" class="form-control" id="CheckIn">
-                                </div>
-                                <div class="col-md-6">
-                                <label for="CheckOut" class="form-label">Fecha de Check-Out</label>
-                                <input type="date" class="form-control" id="CheckOut">
-                                </div>*@
                                     <input type="hidden" id="IsMain" value="1">
                                     <div class="col-12">
                                         <div class="form-check">
@@ -185,19 +176,18 @@
                                             </label>
                                         </div>
                                     </div>
-@*                                    <div class="col-12">
-                                        <button type="submit" class="btn btn-primary">Siguiente</button>
-                                    </div>*@
-                                    <div class="form-row justify-content-between">
-                                        <div class="form-group col-sm-2">
-                                            <button class="form-control form-control-sm btn btn-info btn-sm btn-next" id="btnPrevRoom">
-                                                <i class="fas fa-chevron-left"></i> Anterior
-                                            </button>
-                                        </div>
-                                        <div class="form-group col-sm-2">
-                                            <button type="submit" class="form-control form-control-sm btn btn-info btn-sm btn-next" id="btnNextCompanion">
-                                                <i class="fas fa-chevron-right"></i> Siguiente
-                                            </button>
+                                    <div class="col-12">
+                                        <div class="form-row justify-content-between">
+                                            <div class="form-group col-sm-2">
+                                                <button class="form-control form-control-sm btn btn-info btn-sm btn-next" id="btnPrevRooms">
+                                                    <i class="fas fa-chevron-left"></i> Anterior
+                                                </button>
+                                            </div>
+                                            <div class="form-group col-sm-2">
+                                                <button class="form-control form-control-sm btn btn-info btn-sm btn-next" type="submit" id="btnNextCompanions">
+                                                    <i class="fas fa-chevron-right"></i> Siguiente
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </form>
@@ -216,12 +206,35 @@
                                 <h6 class="m-0 font-weight-bold text-white">Detalle Reserva</h6>
                             </div>
                             <div class="card-body">
+@*                                <div class="text-center mb-3">
+                                    <div>
+                                        <img src="https://firebasestorage.googleapis.com/v0/b/turismo-om.appspot.com/o/establishments%2Fnameimg?alt=media&token=461c63c4-117e-44fa-93e3-8bf0a62c97bd" alt="Logo del establecimiento" style="width: 50%; display: block; margin: 0 auto;">
+                                    </div>
+                                </div>*@
                                 <div class="input-group input-group-sm mb-3">
                                     <div class="input-group-prepend">
                                         <label class="input-group-text" for="cboTipoDocumentoMovimiento">Tipo</label>
                                     </div>
                                     <select class="custom-select" id="cboTipoDocumentoMovimiento">
                                     </select>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="input-group input-group-sm mb-3">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">Entrada</span>
+                                            </div>
+                                            <input type="text" class="form-control" id="txtEntrada" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="input-group input-group-sm mb-3">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">Salida</span>
+                                            </div>
+                                            <input type="text" class="form-control" id="txtSalida" disabled>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="input-group input-group-sm mb-3">
                                     <div class="input-group-prepend">

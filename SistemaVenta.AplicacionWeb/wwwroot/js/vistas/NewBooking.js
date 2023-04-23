@@ -1,6 +1,8 @@
 ﻿let valorImpuesto = 0;
 let valorImpuesto2 = 0;
 let establishmentParaPedido = [];
+let checkIn;
+let checkOut;
 
 $(document).ready(function () {
 
@@ -46,12 +48,19 @@ $(document).ready(function () {
 
         $('input[name="daterange"]').on('apply.daterangepicker', function (ev, picker) {
             // Obtener fechas seleccionadas
-            var startDate = picker.startDate.format('YYYY-MM-DD');
-            var endDate = picker.endDate.format('YYYY-MM-DD');
+
+            checkIn = new Date(picker.startDate.format('YYYY-MM-DD'));
+            checkOut = new Date(picker.endDate.format('YYYY-MM-DD'));
+
+            //checkIn = new Date($("#CheckIn").val());
+            //checkOut = new Date($("#CheckOut").val());
+            //checkIn = picker.startDate.format('YYYY-MM-DD');
+            //checkOut = picker.endDate.format('YYYY-MM-DD');
+
 
             // Imprimir fechas seleccionadas en consola
-            console.log('Fecha de inicio: ' + startDate);
-            console.log('Fecha de fin: ' + endDate);
+            console.log('Fecha de inicio: ' + checkIn);
+            console.log('Fecha de fin: ' + checkOut);
         });
 
         $('input[name="daterange"]').attr("placeholder", "Ingrese fechas de entrada y salida");
@@ -70,37 +79,6 @@ $(document).ready(function () {
                 })
             }
         })
-
-    $('#btnNextRoom').on('click', function () {
-
-        var dateRange = $('input[name="daterange"]').val();
-        var dates = dateRange.split(" - ");
-        var checkin = dates[0];
-        var checkout = dates[1];
-
-        var RequestRooms = {};
-
-        RequestRooms.IdEstablishment = $("#cboSearchEstablishment").val();
-        RequestRooms.CheckIn = checkin;
-        RequestRooms.CheckOut = checkout;
-
-        $.ajax({
-            url: '/Booking/GetRooms',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(RequestRooms),
-            success: function (data) {
-                mostrarRoom_Precios(data);
-            },
-            error: function (error) {
-                console.log(error);
-            }
-        });
-    })
-
-    //});
-
-    ////******** fin establishment
 
     fetch("/Movimiento/ListaTipoDocumentoMovimiento")
         .then(response => {
@@ -125,7 +103,7 @@ $(document).ready(function () {
         .then(responseJson => {
             if (responseJson.estado) {
                 const d = responseJson.objeto;
-                console.log(d);
+                //  console.log(d);
                 $("#inputGroupSubTotal").text(`Sub Total - ${d.currency}`)
                 $("#inputGroupIGV").text(`IMP(${d.tax}%) - ${d.currency}`)
                 $("#inputGroupTotal").text(`Total - ${d.currency}`)
@@ -134,6 +112,32 @@ $(document).ready(function () {
         })
 })
 
+$('#btnNextRoom').on('click', function () {
+
+    var dateRange = $('input[name="daterange"]').val();
+    var dates = dateRange.split(" - ");
+    var checkin = dates[0];
+    var checkout = dates[1];
+
+    var RequestRooms = {};
+
+    RequestRooms.IdEstablishment = $("#cboSearchEstablishment").val();
+    RequestRooms.CheckIn = checkin;
+    RequestRooms.CheckOut = checkout;
+
+    $.ajax({
+        url: '/Booking/GetRooms',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(RequestRooms),
+        success: function (data) {
+            mostrarRoom_Precios(data);
+        },
+        error: function (error) {
+            console.log(error);
+        }
+    });
+})
 
 function limpiarEstablishment() {
 
@@ -160,15 +164,11 @@ $(document).on("select2:open", function () {
 let roomsParaMovimiento = [];
 
 function mostrarRoom_Precios(Data) {
-
     $("#collapseEstablishment").collapse('hide');
-
     $("#collapseRoom").collapse('show');
 
+
     let total = 0;
-    let igv = 0;
-    let subTotal = 0;
-    let porcentaje = valorImpuesto / 100;
 
     $("#tbRoom tbody").html("");
 
@@ -181,92 +181,114 @@ function mostrarRoom_Precios(Data) {
                 $("<td>").text(item.capacity),
                 $("<td>").append($("<input>").addClass("form-control input-price").val(item.price).prop('readonly', true)),
                 $("<td>").append($("<input>").addClass("form-control input-cantidad")),
-                //$("<td>").append($("<input>").addClass("form-control input-subtotal").val(0).prop('readonly', true)),
-                //$("<td>").append(
-                //    $("<button>").addClass("btn btn-success btn-ok").append(
-                //        $("<i>").addClass("fa-badge-check")
-                //    ).data("idRoom", item.idRoom),
-                //),
             )
         )
     });
 
+    //    var checkIn = new Date($("#CheckIn").val());
+    //    var checkOut = new Date($("#CheckOut").val());
+    actualizarTotal();
     // Escuchar cambios en los inputs de cantidad y precio
-    //$(".input-cantidad, .input-price").on("change", function () {
-    $('#CheckIn, #CheckOut').change(function () {
-        var checkIn = new Date($("#CheckIn").val());
-        var checkOut = new Date($("#CheckOut").val());
+    //$('#CheckIn, #CheckOut').change(function () {
 
-        if (checkIn && checkOut && checkIn < checkOut) {
-            actualizarTotal(checkIn, checkOut);
+    //    if (checkIn && checkOut && checkIn < checkOut) {
+    //        actualizarTotal(checkIn, checkOut);
+    //    }
+    //});
+}
+
+function actualizarTotal() {
+    let iva = 0;
+    let subTotal = 0;
+    let porcentaje = valorImpuesto / 100;
+    let subtotal2 = 0;
+
+    $(".input-cantidad, .input-price").each(function () {
+        const cantidad = parseFloat($(this).closest("tr").find(".input-cantidad").val());
+        const precio = parseFloat($(this).closest("tr").find(".input-price").val());
+        const subtotal = cantidad * precio;
+
+
+        if (isNaN(subtotal)) {
+            const prov = 0;
+            $(this).closest("tr").find(".input-subtotal").val(prov.toFixed(2));
+        } else {
+            subtotal2 = subtotal2 + subtotal;
+            $(this).closest("tr").find(".input-subtotal").val(subtotal.toFixed(2));
         }
     });
 
+    var diffTime = checkOut.getTime() - checkIn.getTime();
+    var daysBook = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    const tott = (subtotal2 / 2) * daysBook;
+
+    subTotal = tott / (1 + porcentaje);
+    iva = tott - subTotal;
+
+    var dateRange = $('input[name="daterange"]').val();
+    var dates = dateRange.split(" - ");
+    var ci = dates[0];
+    var co = dates[1];
+
+    $("#txtEntrada").val(ci);
+    $("#txtSalida").val(co);
+    $("#txtSubTotal").val(tott.toFixed(2));
+    $("#txtIGV").val(iva.toFixed(2));
+    $("#txtTotal").val(tott.toFixed(2));
+}
+
+
+$('#btnNextGuest').click(function () {
+    actualizarTotal();
+    $("#IdRoom").empty();
     let rooms = [];
 
-    $('#btnPrevEstablishment').click(function () {
+    $("#collapseEstablishment").collapse('hide');
+    $("#collapseRoom").collapse('hide');
+    $("#collapseGuest").collapse('show');
 
-        $("#collapseEstablishment").collapse('show');
-        $("#collapseRoom").collapse('hide');
-        $("#collapseGuest").collapse('hide');
-
-    })
-
-    $('#btnNextGuest').click(function () {
-
-        $("#collapseRoom").collapse('hide');
-        $("#collapseGuest").collapse('show');
-
-        let cantidadTot = 0;
+    let cantidadTot = 0;
 
 
-        $(".input-cantidad").each(function () {
+    $(".input-cantidad").each(function () {
 
-            let cantidad = 0;
-            const idRoom = parseFloat($(this).closest("tr").attr("id"));
-            const room = parseFloat($(this).closest("tr").find(".td-number").text());
-            cantidad = parseFloat($(this).closest("tr").find(".input-cantidad").val());
+        let cantidad = 0;
+        const idRoom = parseFloat($(this).closest("tr").attr("id"));
+        const room = parseFloat($(this).closest("tr").find(".td-number").text());
+        cantidad = parseFloat($(this).closest("tr").find(".input-cantidad").val());
 
-            if (cantidad >= 1) {
+        if (cantidad >= 1) {
 
-                const newRoom = { id: idRoom, room: room };
-                rooms.push(newRoom);
-                cantidadTot = cantidadTot + cantidad;
-            }
-        });
+            const newRoom = { id: idRoom, room: room };
+            rooms.push(newRoom);
+            cantidadTot = cantidadTot + cantidad;
+        }
+    });
 
-        console.log(rooms);
+    $.each(rooms, function (index, value) {
+        $('#IdRoom').append($('<option>', {
+            value: value.id,
+            text: value.room
+        }));
+    });
 
-        $.each(rooms, function (index, value) {
-            $('#IdRoom').append($('<option>', {
-                value: value.id,
-                text: value.room
-            }));
-        });
+    $("#NumberCompanions").val(cantidadTot - 1).prop('readonly', true);
 
-        $("#NumberCompanions").val(cantidadTot - 1).prop('readonly', true);
+})
 
-    })
+$("#collapseGuest button[type='submit']").click(function (e) {
+    e.preventDefault();
 
-    $('#btnPrevRoom').click(function () {
+    var numAcompanantes = parseInt($("#NumberCompanions").val());
 
-        $("#collapseRoom").collapse('show');
-        $("#collapseGuest").collapse('hide');
+    // Crear un formulario adicional para cada acompañante
+    for (var i = 1; i <= numAcompanantes; i++) {
+        // Crear un elemento div para cada formulario adicional
+        var nuevoForm = $("<div class='row childs'><div class= 'col-sm-12' >");
 
-    })
-
-    $("#collapseGuest button[type='submit']").click(function (e) {
-        e.preventDefault();
-
-        var numAcompanantes = parseInt($("#NumberCompanions").val());
-
-        // Crear un formulario adicional para cada acompañante
-        for (var i = 1; i <= numAcompanantes; i++) {
-            // Crear un elemento div para cada formulario adicional
-            var nuevoForm = $("<div class='row childs'><div class= 'col-sm-12' >");
-
-            // Agregar el formulario adicional dentro del elemento div
-            nuevoForm.append(`
+        // Agregar el formulario adicional dentro del elemento div
+        nuevoForm.append(`
 <div class='card shadow mb-4'><div class='card-header py-3 bg-gradient-info'><h6 class='m-0 font-weight-bold text-white'>Acompanante</h6>
         </div><div class="collapse show collapseCompanion">
         <div class="card-body">
@@ -286,13 +308,6 @@ function mostrarRoom_Precios(Data) {
               <label for="Document" class="form-label">N. Identificacion</label>
               <input type="text" class="form-control" id="Document">
             </div>
-            <div class="col-md-2">
-                <label for="IdRoom" class="form-label">N. Habitación</label>
-              <select class="form-select form-control input-room" id="IdRoom">
-                <option selected>Elige...</option>
-                ${rooms.map(room => `<option value="${room.id}">${room.room}</option>`).join("")}
-              </select>
-            </div >
             <div class="col-md-6">
               <label for="Name" class="form-label">Nombres</label>
               <input type="text" class="form-control" id="Name">
@@ -313,47 +328,31 @@ function mostrarRoom_Precios(Data) {
           </form>
         </div>`);
 
-            $("#masterDetail").append(nuevoForm);
-        }
-        //var botonFinalizar = $("<div class='text-center mb-4'><button type='submit' class='btn btn-primary btn-lg btnSendData'>Finalizar</button></div>");
-        //$("#masterDetail").children().last().find(".card-body").append(botonFinalizar);
-
-    });
-
-    function actualizarTotal(checkIn, checkOut) {
-        let subtotal2 = 0;
-        $(".input-cantidad, .input-price").each(function () {
-            const cantidad = parseFloat($(this).closest("tr").find(".input-cantidad").val());
-            const precio = parseFloat($(this).closest("tr").find(".input-price").val());
-            const subtotal = cantidad * precio;
-
-
-            if (isNaN(subtotal)) {
-                const prov = 0;
-                $(this).closest("tr").find(".input-subtotal").val(prov.toFixed(2));
-            } else {
-                subtotal2 = subtotal2 + subtotal;
-                $(this).closest("tr").find(".input-subtotal").val(subtotal.toFixed(2));
-            }
-        });
-
-        var diffTime = checkOut.getTime() - checkIn.getTime();
-        var daysBook = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-        const tott = (subtotal2 / 2) * daysBook;
-
-        subTotal = tott / (1 + porcentaje);
-        igv = tott - subTotal;
-
-        $("#txtSubTotal").val(tott.toFixed(2));
-        $("#txtIGV").val(igv.toFixed(2));
-        $("#txtTotal").val(tott.toFixed(2));
+        $("#masterDetail").append(nuevoForm);
     }
-}
+    //var botonFinalizar = $("<div class='text-center mb-4'><button type='submit' class='btn btn-primary btn-lg btnSendData'>Finalizar</button></div>");
+    //$("#masterDetail").children().last().find(".card-body").append(botonFinalizar);
+
+});
+
+$('#btnPrevRooms').click(function (e) {
+
+    e.preventDefault();
+
+    $("#collapseGuest").collapse('hide');
+    $("#collapseRoom").collapse('show');
+
+})
+
+$('#btnPrevEstablishment').click(function () {
+
+    $("#collapseEstablishment").collapse('show');
+    $("#collapseRoom").collapse('hide');
+    $("#collapseGuest").collapse('hide');
+
+})
 
 // Agregar la validación de campos obligatorios a los formularios dinámicos
-
-
 $(".btnSendData").click(function (e) {
 
     swal({
