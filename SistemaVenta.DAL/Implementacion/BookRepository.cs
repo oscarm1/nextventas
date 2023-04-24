@@ -50,20 +50,20 @@ namespace SistemaVenta.DAL.Implementacion
                     var tipoDoc = string.Empty;
                     List<int> distinctRoomIds = entidad.DetailBook.Select(r => r.IdRoom).Distinct().ToList();
 
-                    foreach (int itemDV in distinctRoomIds)
-                    {
-                        Room roomEncontrado = new Room();
-                        roomEncontrado = _dbContext.Rooms.Where(p => p.IdRoom == itemDV).First();
+                    //foreach (int itemDV in distinctRoomIds)
+                    //{
+                    //    Room roomEncontrado = new Room();
+                    //    roomEncontrado = _dbContext.Rooms.Where(p => p.IdRoom == itemDV).First();
 
-                        if (roomEncontrado.Status == true)
-                        {
-                            roomEncontrado.Status = false;
-                        }
+                    //    if (roomEncontrado.Status == true)
+                    //    {
+                    //        roomEncontrado.Status = false;
+                    //    }
 
-                        _dbContext.Rooms.Update(roomEncontrado);
-                    }
+                    //    _dbContext.Rooms.Update(roomEncontrado);
+                    //}
 
-                    await _dbContext.SaveChangesAsync();
+                    //await _dbContext.SaveChangesAsync();
 
                     entidad.CreationDate = DateTime.Now;
                     await _dbContext.Books.AddAsync(entidad);

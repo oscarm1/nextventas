@@ -1,82 +1,25 @@
 ﻿let valorImpuesto = 0;
 let valorImpuesto2 = 0;
-let establishmentParaPedido = [];
+let establishmentParaPedido = {};
 let checkIn;
 let checkOut;
+let urlLogo = "";
+let rooms = [];
 
 $(document).ready(function () {
 
-    ////***** establishmentes
-    $(function () {
-        $('input[name="daterange"]').daterangepicker({
-            "autoApply": true,
-            "opens": "left",
-            "locale": {
-                "format": "YYYY-MM-DD",
-                "separator": " - ",
-                "applyLabel": "Aplicar",
-                "cancelLabel": "Cancelar",
-                "fromLabel": "Desde",
-                "toLabel": "Hasta",
-                "customRangeLabel": "Personalizado",
-                "daysOfWeek": [
-                    "Do",
-                    "Lu",
-                    "Ma",
-                    "Mi",
-                    "Ju",
-                    "Vi",
-                    "Sa"
-                ],
-                "monthNames": [
-                    "Enero",
-                    "Febrero",
-                    "Marzo",
-                    "Abril",
-                    "Mayo",
-                    "Junio",
-                    "Julio",
-                    "Agosto",
-                    "Septiembre",
-                    "Octubre",
-                    "Noviembre",
-                    "Diciembre"
-                ],
-                "firstDay": 1
-            }
-        });
-
-        $('input[name="daterange"]').on('apply.daterangepicker', function (ev, picker) {
-            // Obtener fechas seleccionadas
-
-            checkIn = new Date(picker.startDate.format('YYYY-MM-DD'));
-            checkOut = new Date(picker.endDate.format('YYYY-MM-DD'));
-
-            //checkIn = new Date($("#CheckIn").val());
-            //checkOut = new Date($("#CheckOut").val());
-            //checkIn = picker.startDate.format('YYYY-MM-DD');
-            //checkOut = picker.endDate.format('YYYY-MM-DD');
-
-
-            // Imprimir fechas seleccionadas en consola
-            console.log('Fecha de inicio: ' + checkIn);
-            console.log('Fecha de fin: ' + checkOut);
-        });
-
-        $('input[name="daterange"]').attr("placeholder", "Ingrese fechas de entrada y salida");
-    });
-
-    fetch("/Establishment/List")
+    fetch("/Company/Obtener")
         .then(response => {
             return response.ok ? response.json() : Promise.reject(response);
         })
         .then(responseJson => {
-            if (responseJson.data.length > 0) {
-                responseJson.data.forEach((item) => {
-                    $("#cboSearchEstablishment").append(
-                        $("<option>").val(item.idEstablishment).text(item.establishmentName)
-                    )
-                })
+            if (responseJson.estado) {
+                const d = responseJson.objeto;
+                //  console.log(d);
+                $("#inputGroupSubTotal").text(`Sub Total - ${d.currency}`)
+                $("#inputGroupIGV").text(`IMP(${d.tax}%) - ${d.currency}`)
+                $("#inputGroupTotal").text(`Total - ${d.currency}`)
+                valorImpuesto = parseFloat(d.tax);
             }
         })
 
@@ -96,34 +39,68 @@ $(document).ready(function () {
             }
         })
 
-    fetch("/Company/Obtener")
+    $(function () {
+        $('input[name="daterange"]').daterangepicker({
+            "autoApply": true,
+            "opens": "left",
+            "locale": {
+                "format": "YYYY-MM-DD",
+                "separator": " - ",
+                "applyLabel": "Aplicar",
+                "cancelLabel": "Cancelar",
+                "fromLabel": "Desde",
+                "toLabel": "Hasta",
+                "customRangeLabel": "Personalizado",
+                "daysOfWeek": [
+                    "Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa"
+                ],
+                "monthNames": [
+                    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+                ],
+                "firstDay": 1
+            }
+        });
+        $('input[name="daterange"]').attr("placeholder", "Ingrese fechas de entrada y salida");
+        $('input[name="daterange"]').on('apply.daterangepicker', function (ev, picker) {
+
+            checkIn = new Date(picker.startDate.format('YYYY-MM-DD'));
+            checkOut = new Date(picker.endDate.format('YYYY-MM-DD'));
+        });
+    });
+
+    fetch("/Establishment/List")
         .then(response => {
             return response.ok ? response.json() : Promise.reject(response);
         })
         .then(responseJson => {
-            if (responseJson.estado) {
-                const d = responseJson.objeto;
-                //  console.log(d);
-                $("#inputGroupSubTotal").text(`Sub Total - ${d.currency}`)
-                $("#inputGroupIGV").text(`IMP(${d.tax}%) - ${d.currency}`)
-                $("#inputGroupTotal").text(`Total - ${d.currency}`)
-                valorImpuesto = parseFloat(d.tax);
+            if (responseJson.data.length > 0) {
+                responseJson.data.forEach((item) => {
+                    $("#cboSearchEstablishment").append(
+                        $("<option>").val(item.idEstablishment).text(item.establishmentName).data("additional-info", item.urlImage)
+                    )
+                })
             }
         })
 })
 
 $('#btnNextRoom').on('click', function () {
 
+    const additionalInfo = $("#cboSearchEstablishment option:selected");  //.data("additional-info");
+
+    establishmentParaPedido = {
+        idEstablishment: additionalInfo.val(),
+        urlImage: additionalInfo.data("additional-info"),
+        nombreEstablishment: additionalInfo.text(),
+    }
+
+    updateLogo(establishmentParaPedido.urlImage);
     var dateRange = $('input[name="daterange"]').val();
     var dates = dateRange.split(" - ");
-    var checkin = dates[0];
-    var checkout = dates[1];
-
     var RequestRooms = {};
 
-    RequestRooms.IdEstablishment = $("#cboSearchEstablishment").val();
-    RequestRooms.CheckIn = checkin;
-    RequestRooms.CheckOut = checkout;
+    RequestRooms.IdEstablishment = establishmentParaPedido.idEstablishment;
+    RequestRooms.CheckIn = dates[0];
+    RequestRooms.CheckOut = dates[1];
 
     $.ajax({
         url: '/Booking/GetRooms',
@@ -138,7 +115,10 @@ $('#btnNextRoom').on('click', function () {
         }
     });
 })
-
+function updateLogo(url) {
+    $('#imgLogoEstablishment').removeClass('d-none');
+    $('#imgLogoEstablishment img').attr('src', url);
+}
 function limpiarEstablishment() {
 
     $("#tbEstablishment tbody").html("")
@@ -166,10 +146,7 @@ let roomsParaMovimiento = [];
 function mostrarRoom_Precios(Data) {
     $("#collapseEstablishment").collapse('hide');
     $("#collapseRoom").collapse('show');
-
-
     let total = 0;
-
     $("#tbRoom tbody").html("");
 
     Data.forEach((item) => {
@@ -184,17 +161,7 @@ function mostrarRoom_Precios(Data) {
             )
         )
     });
-
-    //    var checkIn = new Date($("#CheckIn").val());
-    //    var checkOut = new Date($("#CheckOut").val());
     actualizarTotal();
-    // Escuchar cambios en los inputs de cantidad y precio
-    //$('#CheckIn, #CheckOut').change(function () {
-
-    //    if (checkIn && checkOut && checkIn < checkOut) {
-    //        actualizarTotal(checkIn, checkOut);
-    //    }
-    //});
 }
 
 function actualizarTotal() {
@@ -242,7 +209,6 @@ function actualizarTotal() {
 $('#btnNextGuest').click(function () {
     actualizarTotal();
     $("#IdRoom").empty();
-    let rooms = [];
 
     $("#collapseEstablishment").collapse('hide');
     $("#collapseRoom").collapse('hide');
@@ -308,6 +274,13 @@ $("#collapseGuest button[type='submit']").click(function (e) {
               <label for="Document" class="form-label">N. Identificacion</label>
               <input type="text" class="form-control" id="Document">
             </div>
+            <div class="col-md-2">
+                <label for="IdRoom" class="form-label">N. Habitación</label>
+              <select class="form-select form-control input-room" id="IdRoom">
+                <option selected>Elige...</option>
+                ${rooms.map(room => `<option value="${room.id}">${room.room}</option>`).join("")}
+              </select>
+            </div >
             <div class="col-md-6">
               <label for="Name" class="form-label">Nombres</label>
               <input type="text" class="form-control" id="Name">
@@ -416,16 +389,14 @@ function sendData() {
     movement.SubTotal = $("#txtSubTotal").val();
     movement.ImpuestoTotal = $("#txtIGV").val();
     movement.Total = $("#txtTotal").val();
-    movement.numeroDocumentoExterno = establishmentParaPedido[0].cantidad
+   // movement.numeroDocumentoExterno = establishmentParaPedido.cantidad
 
     var book = {};
 
     book.Reason = $("#Reason").val();
-    //book.CheckIn = $("#CheckIn").val();
-    //book.CheckOut = $("#CheckOut").val();
-    book.CheckIn = $("#CheckIn").val();
-    book.CheckOut = $("#CheckOut").val();
-    book.IdEstablishment = $("#tbEstablishment tbody tr:first").attr("id");
+    book.CheckIn = checkIn;
+    book.CheckOut = checkOut;
+    book.IdEstablishment = establishmentParaPedido.idEstablishment;
 
     $("#masterDetail, .collapseCompanion").each(function (index) {
 
@@ -453,7 +424,7 @@ function sendData() {
     data.Movement = movement;
     data.Book = book;
 
-    console.log("data " + JSON.stringify(data));
+   // console.log("data " + JSON.stringify(data));
 
     $(".sweet-alert .showSweetAlert .visible").LoadingOverlay("show");
 
@@ -481,9 +452,10 @@ function sendData() {
 
 
                 $("#collapseGuest").collapse('hide');
-                $("#collapseRoom").collapse('hide');
                 // mostrarProducto_Precios(productosParaMovimiento);
                 limpiarEstablishment()
+
+                $("#collapseRoom").collapse('hide');
 
                 $("#txtDocumentoCliente").val("");
                 $("#txtNombreCliente").val("");
@@ -492,7 +464,7 @@ function sendData() {
                 $("#txtIGV").val("");
                 $("#txtTotal").val("");
 
-                swal("Registrado", `Numero de Reserva:${responseJson.objeto.movement.numeroDocumentoExterno}  `, "success")
+                swal("Registrado", `Numero de Reserva:${responseJson.objeto.movement.NumeroMovimiento}  `, "success")
 
             } else {
                 swal("Error", responseJson.mensaje, "error")
