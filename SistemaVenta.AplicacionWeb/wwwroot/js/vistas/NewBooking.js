@@ -388,9 +388,10 @@ $(".btnSendData").click(function (e) {
             },
                 function (respuesta) {
                     if (respuesta) {
-                        $(".sweet-alert .showSweetAlert .visible").LoadingOverlay("show");
+                        $(".showSweetAlert").LoadingOverlay("show")
                         sendData();
                     }
+                    $(".showSweetAlert").LoadingOverlay("hide")
                 });
         }
     });
@@ -449,7 +450,7 @@ function sendData() {
         body: JSON.stringify(data),
     })
         .then(response => {
-            $(".sweet-alert .showSweetAlert .visible").LoadingOverlay("hide");
+            $(".showSweetAlert").LoadingOverlay("hide")
             return response.ok ? response.json() : Promise.reject(response);
         })
         .then(responseJson => {
@@ -479,7 +480,8 @@ function sendData() {
                 $("#txtIGV").val("");
                 $("#txtTotal").val("");
 
-                swal("Registrado", `Numero de Reserva:${responseJson.objeto.movement.NumeroMovimiento}  `, "success")
+                $(".sweet-alert  .showSweetAlert .visible").LoadingOverlay("hide")
+                swal("Registrado", `Numero de Reserva:${responseJson.objeto.movement.numeroMovimiento}  `, "success")
 
             } else {
                 swal("Error", responseJson.mensaje, "error")
