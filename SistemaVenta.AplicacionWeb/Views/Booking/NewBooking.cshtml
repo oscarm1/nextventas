@@ -48,13 +48,15 @@
                         </div>
                         <div class="collapse show" id="collapseEstablishment">
                             <div class="card-body">
-                                <div class="form-row">
+                                <div class="form-row d-flex align-items-end">
                                     <div class="form-group col-sm-6">
-                                        <input type="text" class="form-control form-control-sm" name="daterange" placeholder="Ingrese fechas de entrada y salida" value="" />
+                                        <label for="daterange">Fechas de entrada y salida:</label>
+                                        <input type="text" class="form-control form-control-sm" name="daterange" placeholder="Ingrese fechas de entrada y salida" value="" required />
                                     </div>
                                     <div class="form-group col-sm-4">
-                                        <select class="form-control form-control-sm" id="cboSearchEstablishment">
-                                            <option value="Ingrese Establecimiento"></option>
+                                        <label for="cboSearchEstablishment">Establecimiento:</label>
+                                        <select class="form-control form-control-sm" id="cboSearchEstablishment" required>
+                                            <option selected="Ingrese Establecimiento"></option>
                                         </select>
                                     </div>
                                     <div class="form-group col-sm-2">
@@ -119,7 +121,7 @@
                                 <form class="row g-3" id="frmMainGuest">
                                     <div class="col-md-4">
                                         <label for="DocumentType" class="form-label">Tipo Identificación</label>
-                                        <select id="DocumentType" class="form-select form-control">
+                                        <select id="DocumentType" class="form-select form-control" required>
                                             <option selected>Elige...</option>
                                             <option value="CC">CC</option>
                                             <option value="TI">TI</option>
@@ -130,33 +132,33 @@
                                     </div>
                                     <div class="col-md-6">
                                         <label for="Document" class="form-label">N. Identificación</label>
-                                        <input type="text" class="form-control" id="Document">
+                                        <input type="text" class="form-control" id="Document" required>
                                     </div>
                                     <div class="col-md-2">
                                         <label for="IdRoom" class="form-label">Habitación</label>
-                                        <select class="form-select form-control input-room" id="IdRoom">
+                                        <select class="form-select form-control input-room" id="IdRoom" required>
                                             <option selected>Elige...</option>
                                         </select>
                                     </div>
                                     <div class="col-md-6">
                                         <label for="Name" class="form-label">Nombres</label>
-                                        <input type="text" class="form-control" id="Name">
+                                        <input type="text" class="form-control" id="Name" required>
                                     </div>
                                     <div class="col-md-6">
                                         <label for="LastName" class="form-label">Apellidos</label>
-                                        <input type="text" class="form-control" id="LastName">
+                                        <input type="text" class="form-control" id="LastName" required>
                                     </div>
                                     <div class="col-md-6">
                                         <label for="RecidenceCity" class="form-label">Ciudad de Residencia</label>
-                                        <input type="text" class="form-control" id="RecidenceCity">
+                                        <input type="text" class="form-control" id="RecidenceCity" required>
                                     </div>
                                     <div class="col-md-6">
                                         <label for="OriginCity" class="form-label">Ciudad de Procedencia</label>
-                                        <input type="text" class="form-control" id="OriginCity">
+                                        <input type="text" class="form-control" id="OriginCity" required>
                                     </div>
                                     <div class="col-md-6">
                                         <label for="Reason" class="form-label">Motivo</label>
-                                        <select id="Reason" class="form-select form-control">
+                                        <select id="Reason" class="form-select form-control" required>
                                             <option selected>Elige...</option>
                                             <option value="Trabajo">Trabajo</option>
                                             <option value="Viaje">Viaje</option>
@@ -165,12 +167,12 @@
                                     </div>
                                     <div class="col-md-6">
                                         <label for="NumberCompanions" class="form-label">N. Acompañantes</label>
-                                        <input type="text" class="form-control" id="NumberCompanions">
+                                        <input type="text" class="form-control" id="NumberCompanions" required>
                                     </div>
                                     <input type="hidden" id="IsMain" value="1">
                                     <div class="col-12">
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="gridCheck">
+                                            <input class="form-check-input" type="checkbox" id="gridCheck" required>
                                             <label class="form-check-label" for="gridCheck">
                                                 Acepto Terminos y Condiciones
                                             </label>

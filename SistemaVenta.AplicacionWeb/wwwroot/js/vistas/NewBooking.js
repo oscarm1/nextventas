@@ -5,6 +5,7 @@ let checkIn;
 let checkOut;
 let urlLogo = "";
 let rooms = [];
+let formsCreated = 0;
 
 $(document).ready(function () {
 
@@ -15,7 +16,6 @@ $(document).ready(function () {
         .then(responseJson => {
             if (responseJson.estado) {
                 const d = responseJson.objeto;
-                //  console.log(d);
                 $("#inputGroupSubTotal").text(`Sub Total - ${d.currency}`)
                 $("#inputGroupIGV").text(`IMP(${d.tax}%) - ${d.currency}`)
                 $("#inputGroupTotal").text(`Total - ${d.currency}`)
@@ -85,7 +85,7 @@ $(document).ready(function () {
 
 $('#btnNextRoom').on('click', function () {
 
-    const additionalInfo = $("#cboSearchEstablishment option:selected");  //.data("additional-info");
+    const additionalInfo = $("#cboSearchEstablishment option:selected");
 
     establishmentParaPedido = {
         idEstablishment: additionalInfo.val(),
@@ -207,61 +207,76 @@ function actualizarTotal() {
 
 
 $('#btnNextGuest').click(function () {
-    actualizarTotal();
-    $("#IdRoom").empty();
+    var hasNumericValue = false;
+    $('#tbRoom tbody tr').each(function () {
+        var cantHuespedes = $(this).find('.input-cantidad').val();
 
-    $("#collapseEstablishment").collapse('hide');
-    $("#collapseRoom").collapse('hide');
-    $("#collapseGuest").collapse('show');
-
-    let cantidadTot = 0;
-
-
-    $(".input-cantidad").each(function () {
-
-        let cantidad = 0;
-        const idRoom = parseFloat($(this).closest("tr").attr("id"));
-        const room = parseFloat($(this).closest("tr").find(".td-number").text());
-        cantidad = parseFloat($(this).closest("tr").find(".input-cantidad").val());
-
-        if (cantidad >= 1) {
-
-            const newRoom = { id: idRoom, room: room };
-            rooms.push(newRoom);
-            cantidadTot = cantidadTot + cantidad;
+        if (!isNaN(parseInt(cantHuespedes))) {
+            hasNumericValue = true;
+            return false;
         }
     });
 
-    $.each(rooms, function (index, value) {
-        $('#IdRoom').append($('<option>', {
-            value: value.id,
-            text: value.room
-        }));
-    });
+    if (hasNumericValue) {
 
-    $("#NumberCompanions").val(cantidadTot - 1).prop('readonly', true);
+        actualizarTotal();
+        $("#IdRoom").empty();
 
+        $("#collapseEstablishment").collapse('hide');
+        $("#collapseRoom").collapse('hide');
+        $("#collapseGuest").collapse('show');
+
+        let cantidadTot = 0;
+
+        $(".input-cantidad").each(function () {
+
+            let cantidad = 0;
+            const idRoom = parseFloat($(this).closest("tr").attr("id"));
+            const room = parseFloat($(this).closest("tr").find(".td-number").text());
+            cantidad = parseFloat($(this).closest("tr").find(".input-cantidad").val());
+
+            if (cantidad >= 1) {
+
+                const newRoom = { id: idRoom, room: room };
+                rooms.push(newRoom);
+                cantidadTot = cantidadTot + cantidad;
+            }
+        });
+
+        $.each(rooms, function (index, value) {
+            $('#IdRoom').append($('<option>', {
+                value: value.id,
+                text: value.room
+            }));
+        });
+
+        $("#NumberCompanions").val(cantidadTot - 1).prop('readonly', true);
+    } else {
+        // ninguna fila tiene un valor numérico
+        alert('Debe ingresar la cantidad de huéspedes para al menos una habitación.');
+    }
 })
 
 $("#collapseGuest button[type='submit']").click(function (e) {
     e.preventDefault();
-
     var numAcompanantes = parseInt($("#NumberCompanions").val());
 
-    // Crear un formulario adicional para cada acompañante
-    for (var i = 1; i <= numAcompanantes; i++) {
-        // Crear un elemento div para cada formulario adicional
-        var nuevoForm = $("<div class='row childs'><div class= 'col-sm-12' >");
+    if (formsCreated < 1) {
 
-        // Agregar el formulario adicional dentro del elemento div
-        nuevoForm.append(`
+        // Crear un formulario adicional para cada acompañante
+        for (var i = 1; i <= numAcompanantes; i++) {
+            // Crear un elemento div para cada formulario adicional
+            var nuevoForm = $("<div class='row childs'><div class= 'col-sm-12' >");
+
+            // Agregar el formulario adicional dentro del elemento div
+            nuevoForm.append(`
 <div class='card shadow mb-4'><div class='card-header py-3 bg-gradient-info'><h6 class='m-0 font-weight-bold text-white'>Acompanante</h6>
         </div><div class="collapse show collapseCompanion">
         <div class="card-body">
           <form class="row g-3">
             <div class="col-md-4">
               <label for="DocumentType" class="form-label">Tipo Identificacion</label>
-              <select id="DocumentType" class="form-select form-control">
+              <select id="DocumentType" class="form-select form-control" required>
                 <option selected>Elige...</option>
                 <option value="CC">CC</option>
                 <option value="TI">TI</option>
@@ -272,37 +287,41 @@ $("#collapseGuest button[type='submit']").click(function (e) {
             </div>
             <div class="col-md-6">
               <label for="Document" class="form-label">N. Identificacion</label>
-              <input type="text" class="form-control" id="Document">
+              <input type="text" class="form-control" id="Document" required>
             </div>
             <div class="col-md-2">
                 <label for="IdRoom" class="form-label">N. Habitación</label>
-              <select class="form-select form-control input-room" id="IdRoom">
+              <select class="form-select form-control input-room" id="IdRoom" required>
                 <option selected>Elige...</option>
                 ${rooms.map(room => `<option value="${room.id}">${room.room}</option>`).join("")}
               </select>
             </div >
             <div class="col-md-6">
               <label for="Name" class="form-label">Nombres</label>
-              <input type="text" class="form-control" id="Name">
+              <input type="text" class="form-control" id="Name" required>
             </div>
             <div class="col-md-6">
               <label for="LastName" class="form-label">Apellidos</label>
-              <input type="text" class="form-control" id="LastName">
+              <input type="text" class="form-control" id="LastName" required>
             </div>
             <div class="col-md-6">
              <label for="RecidenceCity" class="form-label">Ciudad de Residencia</label>
-              <input type="text" class="form-control" id="RecidenceCity">
+              <input type="text" class="form-control" id="RecidenceCity" required>
               </div>
             <div class="col-md-6">
                <label for="OriginCity" class="form-label">Ciudad de Procedencia</label>
-               <input type="text" class="form-control" id="OriginCity">
+               <input type="text" class="form-control" id="OriginCity" required>
             </div>
                 <input type="hidden" id="IsMain" value="0">
           </form>
         </div>`);
 
-        $("#masterDetail").append(nuevoForm);
+            $("#masterDetail").append(nuevoForm);
+
+            formsCreated = i;
+        }
     }
+
     //var botonFinalizar = $("<div class='text-center mb-4'><button type='submit' class='btn btn-primary btn-lg btnSendData'>Finalizar</button></div>");
     //$("#masterDetail").children().last().find(".card-body").append(botonFinalizar);
 
@@ -325,31 +344,8 @@ $('#btnPrevEstablishment').click(function () {
 
 })
 
-// Agregar la validación de campos obligatorios a los formularios dinámicos
 $(".btnSendData").click(function (e) {
-
-    swal({
-        title: 'Estas seguro de enviar la reserva?',
-        text: "Confirmacion",
-        icon: 'info',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Si, Enviar!'
-    },
-        function (respuesta) {
-            if (respuesta) {
-                sendData();
-            }
-        });
-
-})
-
-function sendData() {
-
-    //e.preventDefault();
-    var formValid = true;
-
+    let formValid = true;
     $("#collapseGuest, .collapseCompanion").each(function (index) {
         var $form = $(this).find("form");
         var formId = $(this).attr("id");
@@ -357,12 +353,21 @@ function sendData() {
         if (formId !== "collapseGuest") {
             formName = "Acompañante " + (index);
         }
-        var formFields = ["#DocumentType", "#Document", "#inputRoom", "#inputName", "#Name", "#RecidenceCity", "#OriginCity", "#CheckIn", "#CheckOut", "#IsMain"];
+        var formFields = ["#DocumentType",
+            "#Document",
+            "#IdRoom",
+            "#Name",
+            "#LastName",
+            "#RecidenceCity",
+            "#OriginCity",
+            "#Reason",
+            "#NumberCompanions",
+            "#IsMain"];
 
         // Validar que todos los campos del formulario estén llenos
-        $form.find(formFields.join(",")).each(function () {
+        $form.find(formFields.join(",")).each(function (i) {
             if ($(this).val() === "") {
-                alert(formName + ": Por favor, complete todos los campos.");
+                alert(formName + ": Por favor, complete todos los campos." + i);
                 formValid = false;
                 return false;
             }
@@ -371,17 +376,33 @@ function sendData() {
         if (!formValid) {
             return false;
         }
+        else {
+            swal({
+                title: 'Estas seguro de enviar la reserva?',
+                text: "Confirmacion",
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Si, Enviar!'
+            },
+                function (respuesta) {
+                    if (respuesta) {
+                        $(".sweet-alert .showSweetAlert .visible").LoadingOverlay("show");
+                        sendData();
+                    }
+                });
+        }
     });
+})
 
-    //var formValues = [];
-
-    var data = {
+function sendData() {
+    let movement = {};
+    let data = {
         "Guests": [],
         "Book": {},
         "Movement": {}
     };
-
-    var movement = {};
 
     movement.IdTipoDocumentoMovimiento = $("#cboTipoDocumentoMovimiento").val();
     //movement.documentoCliente = $("#txtDocumentoCliente").val();
@@ -389,7 +410,7 @@ function sendData() {
     movement.SubTotal = $("#txtSubTotal").val();
     movement.ImpuestoTotal = $("#txtIGV").val();
     movement.Total = $("#txtTotal").val();
-   // movement.numeroDocumentoExterno = establishmentParaPedido.cantidad
+    // movement.numeroDocumentoExterno = establishmentParaPedido.cantidad
 
     var book = {};
 
@@ -404,7 +425,6 @@ function sendData() {
 
         var $form = $(this).find("form");
 
-
         guest.DocumentType = $form.find("#DocumentType").val();
         guest.Document = $form.find("#Document").val();
         guest.RoomId = $form.find("#IdRoom").val();
@@ -414,8 +434,6 @@ function sendData() {
         guest.RecidenceCity = $form.find("#RecidenceCity").val();
         guest.OriginCity = $form.find("#OriginCity").val();
         guest.NumberCompanions = $form.find("#NumberCompanions").val();
-        //guest.CheckIn = $form.find("#CheckIn").val();
-        //guest.CheckOut = $form.find("#CheckOut").val();
         guest.IsMain = $form.find("#IsMain").val();
 
         data.Guests.push(guest);
@@ -423,10 +441,7 @@ function sendData() {
 
     data.Movement = movement;
     data.Book = book;
-
-   // console.log("data " + JSON.stringify(data));
-
-    $(".sweet-alert .showSweetAlert .visible").LoadingOverlay("show");
+    // console.log("data " + JSON.stringify(data));
 
     fetch("/Booking/SaveBook", {
         method: "POST",
@@ -470,7 +485,5 @@ function sendData() {
                 swal("Error", responseJson.mensaje, "error")
 
             }
-
         })
-
 }
