@@ -207,6 +207,7 @@ function actualizarTotal() {
 
 
 $('#btnNextGuest').click(function () {
+    formsCreated = 0;
     var hasNumericValue = false;
     $('#tbRoom tbody tr').each(function () {
         var cantHuespedes = $(this).find('.input-cantidad').val();
@@ -251,6 +252,9 @@ $('#btnNextGuest').click(function () {
         });
 
         $("#NumberCompanions").val(cantidadTot - 1).prop('readonly', true);
+
+        $("#btnNextCompanions").toggleClass('disabled', cantidadTot - 1 == 0);
+
     } else {
         // ninguna fila tiene un valor numérico
         alert('Debe ingresar la cantidad de huéspedes para al menos una habitación.');
@@ -321,6 +325,10 @@ $("#collapseGuest button[type='submit']").click(function (e) {
             formsCreated = i;
         }
     }
+    else {
+        $(".childs .col-sm-12").empty();
+
+    }
 
     //var botonFinalizar = $("<div class='text-center mb-4'><button type='submit' class='btn btn-primary btn-lg btnSendData'>Finalizar</button></div>");
     //$("#masterDetail").children().last().find(".card-body").append(botonFinalizar);
@@ -330,6 +338,7 @@ $("#collapseGuest button[type='submit']").click(function (e) {
 $('#btnPrevRooms').click(function (e) {
 
     e.preventDefault();
+    $(".childs").remove()
 
     $("#collapseGuest").collapse('hide');
     $("#collapseRoom").collapse('show');
@@ -365,127 +374,125 @@ $(".btnSendData").click(function (e) {
             "#IsMain"];
 
         // Validar que todos los campos del formulario estén llenos
-        $form.find(formFields.join(",")).each(function (i) {
+        $form.find(formFields.join(",")).each(function (i, e) {
             if ($(this).val() === "") {
-                alert(formName + ": Por favor, complete todos los campos." + i);
+                alert(formName + ": Por favor, complete todos los campos." + e);
                 formValid = false;
                 return false;
             }
         });
-
-        if (!formValid) {
-            return false;
-        }
-        else {
-            swal({
-                title: 'Estas seguro de enviar la reserva?',
-                text: "Confirmacion",
-                icon: 'info',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Si, Enviar!'
-            },
-                function (respuesta) {
-                    if (respuesta) {
-                        $(".showSweetAlert").LoadingOverlay("show")
-                        sendData();
-                    }
-                    $(".showSweetAlert").LoadingOverlay("hide")
-                });
-        }
-    });
-})
-
-function sendData() {
-    let movement = {};
-    let data = {
-        "Guests": [],
-        "Book": {},
-        "Movement": {}
-    };
-
-    movement.IdTipoDocumentoMovimiento = $("#cboTipoDocumentoMovimiento").val();
-    //movement.documentoCliente = $("#txtDocumentoCliente").val();
-    movement.NombreCliente = $("#txtNombreCliente").val();
-    movement.SubTotal = $("#txtSubTotal").val();
-    movement.ImpuestoTotal = $("#txtIGV").val();
-    movement.Total = $("#txtTotal").val();
-    // movement.numeroDocumentoExterno = establishmentParaPedido.cantidad
-
-    var book = {};
-
-    book.Reason = $("#Reason").val();
-    book.CheckIn = checkIn;
-    book.CheckOut = checkOut;
-    book.IdEstablishment = establishmentParaPedido.idEstablishment;
-
-    $("#masterDetail, .collapseCompanion").each(function (index) {
-
-        var guest = {};
-
-        var $form = $(this).find("form");
-
-        guest.DocumentType = $form.find("#DocumentType").val();
-        guest.Document = $form.find("#Document").val();
-        guest.RoomId = $form.find("#IdRoom").val();
-        guest.Room = $form.find("#IdRoom option:selected").text();
-        guest.Name = $form.find("#Name").val();
-        guest.LastName = $form.find("#LastName").val();
-        guest.RecidenceCity = $form.find("#RecidenceCity").val();
-        guest.OriginCity = $form.find("#OriginCity").val();
-        guest.NumberCompanions = $form.find("#NumberCompanions").val();
-        guest.IsMain = $form.find("#IsMain").val();
-
-        data.Guests.push(guest);
     });
 
-    data.Movement = movement;
-    data.Book = book;
-    // console.log("data " + JSON.stringify(data));
+    if (!formValid) {
+        return false;
+    }
+    else {
+        swal({
+            title: 'Estas seguro de enviar la reserva?',
+            text: "Confirmacion",
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Si, Enviar!'
+        },
+            function (respuesta) {
+                if (respuesta) {
+                    $(".showSweetAlert").LoadingOverlay("show")
+                    //sendData();
+                    //function sendData() {
+                    let movement = {};
+                    let data = {
+                        "Guests": [],
+                        "Book": {},
+                        "Movement": {}
+                    };
 
-    fetch("/Booking/SaveBook", {
-        method: "POST",
-        headers: { "Content-type": "application/json; charset=utf-8" },
-        body: JSON.stringify(data),
-    })
-        .then(response => {
-            $(".showSweetAlert").LoadingOverlay("hide")
-            return response.ok ? response.json() : Promise.reject(response);
-        })
-        .then(responseJson => {
-            if (responseJson.estado) {
+                    movement.IdTipoDocumentoMovimiento = $("#cboTipoDocumentoMovimiento").val();
+                    //movement.documentoCliente = $("#txtDocumentoCliente").val();
+                    movement.NombreCliente = $("#txtNombreCliente").val();
+                    movement.SubTotal = $("#txtSubTotal").val();
+                    movement.ImpuestoTotal = $("#txtIGV").val();
+                    movement.Total = $("#txtTotal").val();
+                    // movement.numeroDocumentoExterno = establishmentParaPedido.cantidad
 
-                roomsParaMovimiento = [];
-                establishmentParaPedido = [];
+                    var book = {};
 
-                mostrarRoom_Precios(roomsParaMovimiento);
+                    book.Reason = $("#Reason").val();
+                    book.CheckIn = checkIn;
+                    book.CheckOut = checkOut;
+                    book.IdEstablishment = establishmentParaPedido.idEstablishment;
 
-                $("#collapseEstablishment").collapse('show');
+                    $("#masterDetail, .collapseCompanion").each(function (index) {
 
-                $(".childs").empty();
-                $("#frmMainGuest")[0].reset();
+                        var guest = {};
 
+                        var $form = $(this).find("form");
 
-                $("#collapseGuest").collapse('hide');
-                // mostrarProducto_Precios(productosParaMovimiento);
-                limpiarEstablishment()
+                        guest.DocumentType = $form.find("#DocumentType").val();
+                        guest.Document = $form.find("#Document").val();
+                        guest.RoomId = $form.find("#IdRoom").val();
+                        guest.Room = $form.find("#IdRoom option:selected").text();
+                        guest.Name = $form.find("#Name").val();
+                        guest.LastName = $form.find("#LastName").val();
+                        guest.RecidenceCity = $form.find("#RecidenceCity").val();
+                        guest.OriginCity = $form.find("#OriginCity").val();
+                        guest.NumberCompanions = $form.find("#NumberCompanions").val();
+                        guest.IsMain = $form.find("#IsMain").val();
 
-                $("#collapseRoom").collapse('hide');
+                        data.Guests.push(guest);
+                    });
 
-                $("#txtDocumentoCliente").val("");
-                $("#txtNombreCliente").val("");
-                $("#cboTipoDocumentoMovimiento").val($("#cboTipoDocumentoMovimiento option:first").val())
-                $("#txtSubTotal").val("");
-                $("#txtIGV").val("");
-                $("#txtTotal").val("");
+                    data.Movement = movement;
+                    data.Book = book;
 
-                $(".sweet-alert  .showSweetAlert .visible").LoadingOverlay("hide")
-                swal("Registrado", `Numero de Reserva:${responseJson.objeto.movement.numeroMovimiento}  `, "success")
+                    // console.log("data " + JSON.stringify(data));
+                    //$(".sweet-alert  .showSweetAlert .visible").LoadingOverlay("show");
 
-            } else {
-                swal("Error", responseJson.mensaje, "error")
+                    fetch("/Booking/SaveBook", {
+                        method: "POST",
+                        headers: { "Content-type": "application/json; charset=utf-8" },
+                        body: JSON.stringify(data),
+                    })
+                        .then(response => {
 
-            }
-        })
-}
+                           // $(".sweet-alert .showSweetAlert  .visible").LoadingOverlay("show");
+                            $(".showSweetAlert").LoadingOverlay("hide")
+                            return response.ok ? response.json() : Promise.reject(response);
+                        })
+                        .then(responseJson => {
+                            if (responseJson.estado) {
+
+                                roomsParaMovimiento = [];
+                                establishmentParaPedido = [];
+
+                                mostrarRoom_Precios(roomsParaMovimiento);
+
+                                $("#collapseEstablishment").collapse('show');
+                                $(".childs").remove()
+                                $("#frmMainGuest")[0].reset();
+                                $("#collapseGuest").collapse('hide');
+                                // mostrarProducto_Precios(productosParaMovimiento);
+                                limpiarEstablishment()
+                                $("#collapseRoom").collapse('hide');
+                                $("#txtDocumentoCliente").val("");
+                                $("#txtNombreCliente").val("");
+                                $("#cboTipoDocumentoMovimiento").val($("#cboTipoDocumentoMovimiento option:first").val())
+                                $("#txtSubTotal").val("");
+                                $("#txtIGV").val("");
+                                $("#txtTotal").val("");
+                                //$(".sweet-alert  .showSweetAlert .visible").LoadingOverlay("hide")
+                                swal("Registrado", `Numero de Reserva:${responseJson.objeto.movement.numeroMovimiento}  `, "success")
+                                $(".showSweetAlert").LoadingOverlay("hide");
+
+                            } else {
+                                $(".showSweetAlert").LoadingOverlay("hide")
+                                swal("Error", responseJson.mensaje, "error")
+
+                            }
+                        });
+                }
+
+            });
+    }
+});
