@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using SistemaVenta.AplicacionWeb.Models;
 using SistemaVenta.AplicacionWeb.Models.DTOs;
 using SistemaVenta.AplicacionWeb.Utilidades.Response;
+using SistemaVenta.BLL.Implementacion;
 using SistemaVenta.BLL.Interfaces;
 using SistemaVenta.Entity;
 using System.Diagnostics;
@@ -19,12 +20,16 @@ namespace SistemaVenta.AplicacionWeb.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly IUsuarioService _usuarioService;
         private readonly IMapper _mapper;
+        private readonly ISubscriptionService _subscriptionService;
+        private readonly IPlanService _planService;
 
-        public HomeController(ILogger<HomeController> logger, IUsuarioService usuarioService, IMapper mapper)
+        public HomeController(ILogger<HomeController> logger, IUsuarioService usuarioService, IMapper mapper, ISubscriptionService subscriptionService, IPlanService planService)
         {
             _logger = logger;
             _usuarioService = usuarioService;
             _mapper = mapper;
+            _subscriptionService = subscriptionService;
+            _planService = planService;
         }
 
         public IActionResult Index()
@@ -79,7 +84,38 @@ namespace SistemaVenta.AplicacionWeb.Controllers
             }
             return StatusCode(StatusCodes.Status200OK, response);
         }
+        [HttpGet]
+        public async Task<IActionResult> ObtenerServicios()
+        {
+            GenericResponse<SubscriptionDTO> response = new GenericResponse<SubscriptionDTO>();
+            try
+            {
+                ClaimsPrincipal claimUser = HttpContext.User;
 
+                string idUsuario = claimUser.Claims
+                    .Where(c => c.Type == ClaimTypes.NameIdentifier)
+                    .Select(c => c.Value).SingleOrDefault();
+
+                var idSubscription = int.Parse(((ClaimsIdentity)claimUser.Identity).FindFirst("Subscription").Value);
+
+                Subscription subscription_obtenida = await _subscriptionService.GetSubscriptionById(idSubscription);
+
+                Plan plan_obtenido = await _planService.GetPlanById(subscription_obtenida.IdPlan);
+
+                SubscriptionDTO subscription = _mapper.Map<SubscriptionDTO>(subscription_obtenida);
+                subscription.PlanName = plan_obtenido.PlanName;
+                subscription.PlanDescription = plan_obtenido.PlanDescription;
+
+                response.Estado = true;
+                response.Objeto = subscription;
+            }
+            catch (Exception ex)
+            {
+                response.Estado = false;
+                response.Mensaje = ex.Message;
+            }
+            return StatusCode(StatusCodes.Status200OK, response);
+        }
 
         [HttpPost]
         public async Task<IActionResult> GuardarPerfil([FromBody] UsuarioDTO modelo)

@@ -180,19 +180,16 @@ namespace SistemaVenta.AplicacionWeb.Utilidades.AutoMapper
 
             #region DetailBook
             CreateMap<DetailBook, DetailBookDTO>().ReverseMap();
-            //.ForMember(destino => destino.Price,
-            //    opt => opt.MapFrom(origen => Convert.ToString(origen.Price.Value, new CultureInfo("es-CO"))))
-            //.ForMember(destino => destino.Total,
-            //    opt => opt.MapFrom(origen => Convert.ToString(origen.Total.Value, new CultureInfo("es-CO"))));
 
             CreateMap<DetailBookDTO, DetailBook>().ReverseMap();
-            //.ForMember(destino => destino.Price,
-            //    opt => opt.MapFrom(origen => Convert.ToDecimal(origen.Price, new CultureInfo("es-CO"))))
-            //.ForMember(destino => destino.Total,
-            //    opt => opt.MapFrom(origen => Convert.ToDecimal(origen.Total, new CultureInfo("es-CO"))));
 
             #endregion
+            #region Subscription
+            CreateMap<Subscription, SubscriptionDTO>().ReverseMap();
 
+            CreateMap<SubscriptionDTO, Subscription>().ReverseMap();
+
+            #endregion
             #region DetalleMovimiento
             CreateMap<DetalleMovimiento, DetalleMovimientoDTO>()
                 .ForMember(destino => destino.Precio,

@@ -50,6 +50,7 @@ namespace SistemaVenta.IOC
             services.AddScoped<IGuestService, GuestService>();
             services.AddScoped<ISubscriptionService, SubscriptionService>();
             services.AddScoped<IParamPlanService, ParamPlanService>();
+            services.AddScoped<IPlanService, PlanService>();
         }
     }
 }

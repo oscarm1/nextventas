@@ -1,28 +1,42 @@
 ﻿$(document).ready(function () {
 
-    $(".container").LoadingOverlay("show");
 
-    $.ajax({
-        url: '/Home/ObtenerUsuario',
-        type: 'GET',
-        dataType: 'json',
-        success: function (response) {
-            $(".container").LoadingOverlay("hide");
-            if (response.estado) {
-                const o = response.objeto
+    $(".container-fluid").LoadingOverlay("show");
 
-                $("#infoUser h1").text(`¡Bienvenido(a) ${o.nombre}!`)
-                $("#infoUser p").text("Gracias por utilizar Hottely. Aquí tienes la herramienta para gestionar tu establecimiento.")
-                $("#infoSubscripcion p").text(`Estás inscrito(a) en la subscripción ${o.subscripcion}. Tu plan expira el ${o.fechaExpiracion}.`)
+    // Obtener información del usuario
+    fetch("/Home/ObtenerUsuario")
+        .then(response => {
+            $(".container-fluid").LoadingOverlay("hide");
+            return response.ok ? response.json() : Promise.reject(response);
+        })
+        .then(responseJson => {
+            if (responseJson.estado) {
+                const o = responseJson.objeto
+
+                // Mostrar información del usuario
+                $("#nombreUsuario").text(o.nombre);
+
+                // Obtener información de la subscripción
+                return fetch("/Home/ObtenerServicios");
             } else {
-                swal("Lo sentimos!", response.mensaje, "error")
+                swal("Lo sentimos!", responseJson.mensaje, "error")
             }
-        },
-        error: function () {
-            $(".container").LoadingOverlay("hide");
-            swal("Lo sentimos!", "Ocurrió un error al obtener los datos del usuario.", "error")
-        }
-    });
+        })
+        .then(response => {
+            return response.ok ? response.json() : Promise.reject(response);
+        })
+        .then(responseJson => {
+            if (responseJson.estado) {
+                const o = responseJson.objeto
+
+                // Mostrar información de la subscripción
+                $("#nombreSubscripcion").text(o.planDescription);
+                const expiryDate = new Date(o.expiryDate);
+                $("#fechaExpiracion").text(expiryDate.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }));
+            } else {
+                swal("Lo sentimos!", responseJson.mensaje, "error")
+            }
+        });
 });
 
 //$("#btnGuardarCambios").click(function () {

@@ -59,7 +59,7 @@ namespace SistemaVenta.AplicacionWeb.Controllers
                 new Claim("UrlFoto", usuario_encontrado.UrlFoto),
                 new Claim("urlLogo", empresa_encontrada.UrlLogo),
                 new Claim("IdCompany", empresa_encontrada.IdCompany.ToString()),
-                new Claim("Subscription", suscripcion_encontrada.IdPlan.ToString()),
+                new Claim("Subscription", suscripcion_encontrada.IdSubscription.ToString()),
                 new Claim("SubscriptionStatus", suscripcion_encontrada.SubscriptionStatus.ToString()),
                 new Claim("ExpiryDateSubscription", suscripcion_encontrada.ExpiryDate.ToString())
 

@@ -22,6 +22,11 @@ namespace SistemaVenta.BLL.Implementacion
             Subscription subcription_found = await _repositorio.Obtener(c => c.IdCompany == idCompany);
             return subcription_found;
         }
+        public async Task<Subscription> GetSubscriptionById(int Id)
+        {
+            Subscription company_found = await _repositorio.Obtener(c => c.IdCompany == Id);
+            return company_found;
+        }
         public async Task<List<Subscription>> Lista()
         {
             IQueryable<Subscription> query = await _repositorio.Consultar();
