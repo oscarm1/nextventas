@@ -17,13 +17,13 @@ namespace SistemaVenta.BLL.Implementacion
         private readonly IGenericRepository<Establishment> _repositorioEstablishment;
         private readonly IGenericRepository<Room> _repositorioRoom;
         private readonly IBookRepository _repositorioBooking;
-        private readonly IMovimientoRepository _repositorioMovimiento;
+       // private readonly IMovimientoRepository _repositorioMovimiento;
         public BookingService(IGenericRepository<Establishment> repositorioEstablishment, IGenericRepository<Room> repositorioRoom,
             IBookRepository repositorioBooking, IMovimientoRepository repositorioMovimiento)
         {
             _repositorioEstablishment = repositorioEstablishment;
             _repositorioRoom = repositorioRoom;
-            _repositorioMovimiento = repositorioMovimiento;
+           // _repositorioMovimiento = repositorioMovimiento;
             _repositorioBooking = repositorioBooking;
         }
 
@@ -119,14 +119,14 @@ namespace SistemaVenta.BLL.Implementacion
         //           .First();
         //}
 
-        //public async Task<List<DetalleMovimiento>> Reporte(string fechaInicio, string fechaFin)
-        //{
-        //    DateTime fecha_inicio = DateTime.ParseExact(fechaInicio, "dd/MM/yyyy", new CultureInfo("es-CO"));
-        //    DateTime fecha_fin = DateTime.ParseExact(fechaFin, "dd/MM/yyyy", new CultureInfo("es-CO"));
+        public async Task<List<BookingResult>> Reporte(string fechaInicio, string fechaFin, int idCompany)
+        {
+            DateTime fecha_inicio = DateTime.ParseExact(fechaInicio, "dd/MM/yyyy", new CultureInfo("es-CO"));
+            DateTime fecha_fin = DateTime.ParseExact(fechaFin, "dd/MM/yyyy", new CultureInfo("es-CO"));
 
-        //    List<DetalleMovimiento> lista = await _repositorioMovimiento.Reporte(fecha_inicio, fecha_fin);
-        //    return lista;
+            List<BookingResult> lista = await _repositorioBooking.Reporte(fecha_inicio, fecha_fin, idCompany);
+            return lista;
 
-        //}
+        }
     }
 }

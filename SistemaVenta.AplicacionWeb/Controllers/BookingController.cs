@@ -235,6 +235,38 @@ namespace SistemaVenta.AplicacionWeb.Controllers
             }
             return StatusCode(StatusCodes.Status200OK, genericResponse);
         }
+        //[HttpGet]
+        //public async Task<IActionResult> HistorialMovimiento(string numeroMovimiento, string buscarPorTipo, string fechaInicio, string fechaFin)
+        //{
+        //    var listaventa = await _bookingService.Historial(numeroMovimiento, buscarPorTipo, fechaInicio, fechaFin);
+        //    List<MovimientoDTO> lista = _mapper.Map<List<MovimientoDTO>>(listaventa);
+        //    return StatusCode(StatusCodes.Status200OK, lista);
+        //}
 
+
+        public IActionResult MostrarPDFMovimiento(string numeroMovimiento)
+        {
+            string urlPlantillaVista = $"{this.Request.Scheme}://{this.Request.Host}/Plantilla/PDFMovimiento?numeroMovimiento={numeroMovimiento}";
+
+            var pdf = new HtmlToPdfDocument()
+            {
+                GlobalSettings = new GlobalSettings()
+                {
+                    PaperSize = PaperKind.A4,
+                    Orientation = Orientation.Portrait
+                },
+
+                Objects =  {
+                    new ObjectSettings()
+                    {
+                        Page = urlPlantillaVista
+                    }
+                }
+            };
+
+            var archivoPDF = _converter.Convert(pdf);
+            return File(archivoPDF, "application/pdf");
+
+        }
     }
 }

@@ -62,7 +62,7 @@ namespace SistemaVenta.AplicacionWeb.Controllers
                 ClaimsPrincipal claimUser = HttpContext.User;
 
                 var idCompany = int.Parse(((ClaimsIdentity)claimUser.Identity).FindFirst("IdCompany").Value);
-                var subscription = int.Parse(((ClaimsIdentity)claimUser.Identity).FindFirst("Subscription").Value);
+                var subscription = int.Parse(((ClaimsIdentity)claimUser.Identity).FindFirst("Plain").Value);
                 var listaEstablecimientos = await _establishmentService.ListByIdCompany(idCompany);
                 List<EstablishmentDTO> listaEstablecimientosDto = _mapper.Map<List<EstablishmentDTO>>(listaEstablecimientos);
                 var parametros_encontrados = await _paramPlanService.GetParamPlanByIdPlan(subscription);

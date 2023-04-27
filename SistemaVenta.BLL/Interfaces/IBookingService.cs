@@ -17,7 +17,7 @@ namespace SistemaVenta.BLL.Interfaces
 
         //Task<List<Booking>> Historial(string numeroBookingProveedorProveedor, string fechaInicio, string fechaFin);
         //Task<Booking> Detalle(string numeroBookingProveedorProveedor);
-        //Task<List<DetalleMovimiento>> Reporte(string fechaInicio, string fechaFin);
+        Task<List<BookingResult>> Reporte(string fechaInicio, string fechaFin, int idCompany);
 
 
     }

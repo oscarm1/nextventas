@@ -75,7 +75,7 @@ namespace SistemaVenta.AplicacionWeb.Controllers
                 ClaimsPrincipal claimUser = HttpContext.User;
 
                 dtoUsuario.IdCompany = int.Parse(((ClaimsIdentity)claimUser.Identity).FindFirst("IdCompany").Value);
-                var subscription = int.Parse(((ClaimsIdentity)claimUser.Identity).FindFirst("Subscription").Value);
+                var subscription = int.Parse(((ClaimsIdentity)claimUser.Identity).FindFirst("Plain").Value);
 
                 var listaUsuarios = await _usuarioService.ListByCompany(dtoUsuario.IdCompany);
                 List<UsuarioDTO> listaUsuariosDto = _mapper.Map<List<UsuarioDTO>>(listaUsuarios);

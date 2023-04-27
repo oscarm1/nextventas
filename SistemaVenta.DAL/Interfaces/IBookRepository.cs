@@ -11,6 +11,6 @@ namespace SistemaVenta.DAL.Interfaces
     {
         Task<bool> CheckBookings(string document, DateTime ci, DateTime co);
         Task<Book> Registrar(Book entidad);
-       // Task<List<DetalleMovimiento>> Reporte(DateTime fechaInicio,DateTime fechaFin);
+        Task<List<BookingResult>> Reporte(DateTime fechaIni, DateTime fechaFin, int idCompany);
     }
 }

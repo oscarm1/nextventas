@@ -176,6 +176,7 @@ namespace SistemaVenta.AplicacionWeb.Utilidades.AutoMapper
 
             CreateMap<BookDTO, Book>()
                 .ReverseMap();
+
             #endregion
 
             #region DetailBook

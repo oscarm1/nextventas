@@ -82,17 +82,11 @@ namespace SistemaVenta.DAL.Implementacion
             return bookGenerada;
         }
 
-        //public async Task<List<DetalleBook>> Reporte(DateTime fechaInicio, DateTime fechaFin)
-        //{
-        //    List<DetalleBook> listaResumen = await _dbContext.DetalleBook
-        //        .Include(v => v.IdBookNavigation)
-        //        .ThenInclude(u => u.IdUsuarioNavigation)
-        //        .Include(v => v.IdBookNavigation)
-        //        .ThenInclude(tdv => tdv.IdTipoDocumentoBookNavigation)
-        //        .Where(dv => dv.IdBookNavigation.FechaRegistro.Value.Date >= fechaInicio.Date &&
-        //        dv.IdBookNavigation.FechaRegistro.Value.Date <= fechaFin.Date).ToListAsync();
+        public async Task<List<BookingResult>> Reporte(DateTime fechaIni, DateTime fechaFin, int idCompany)
+        {
+            IEnumerable<BookingResult> bookingResult = _dbContext.GetBookingsByDateRange(fechaIni, fechaFin, idCompany);
+            return bookingResult.ToList();
+        }
 
-        //    return listaResumen;
-        //}
     }
 }
