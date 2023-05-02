@@ -18,6 +18,7 @@ namespace SistemaVenta.AplicacionWeb.Models.DTOs
         public int? isActive { get; set; }
         public DateTime CreationDate { get; set; }
         public DateTime ModificationDate { get; set; }
+        public virtual ICollection<DetailBookDTO>? DetailBook { get; set; }
 
     }
 }

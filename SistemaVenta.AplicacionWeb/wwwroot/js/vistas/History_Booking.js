@@ -105,9 +105,9 @@ $("#tbventa tbody").on("click", ".btn-secondary", function () {
 
         $("#tbProductos tbody").append(
             $("<tr>").append(
-                $("<td>").text(item.room.number ),
-                $("<td>").text(item.room.categoryName),
-                $("<td>").text(item.guest.name + " " + item.guest.lastName),
+                $("<td>").text(item.idBook),
+                $("<td>").text(item.idGuest),
+                $("<td>").text(item.idRoom),
                 $("<td>").text(item.total),
             )
         )

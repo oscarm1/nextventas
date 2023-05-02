@@ -11,8 +11,10 @@ namespace SistemaVenta.AplicacionWeb.Models.DTOs
         public DateTime CheckOut { get; set; }
         public int? IdUsuario { get; set; }
         public int IdEstablishment { get; set; }
+        public DateTime CreationDate { get; set; }
         public virtual ICollection<DetailBookDTO>? DetailBook { get; set; }
-       // public virtual MovimientoDTO? IdMovimientoNavigation { get; set; } //es la entidad de facturacion
+        public virtual MovimientoDTO? IdMovimientoNavigation { get; set; }
+        // public virtual MovimientoDTO? IdMovimientoNavigation { get; set; } //es la entidad de facturacion
 
     }
 }
