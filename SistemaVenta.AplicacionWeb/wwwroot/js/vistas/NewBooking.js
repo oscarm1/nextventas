@@ -234,21 +234,24 @@ $('#btnNextGuest').click(function () {
             let cantidad = 0;
             const idRoom = parseFloat($(this).closest("tr").attr("id"));
             const room = parseFloat($(this).closest("tr").find(".td-number").text());
+            const price = parseFloat($(this).closest("tr").find(".input-price").val());
             cantidad = parseFloat($(this).closest("tr").find(".input-cantidad").val());
 
             if (cantidad >= 1) {
 
-                const newRoom = { id: idRoom, room: room };
+                const newRoom = { id: idRoom, room: room, price: price};
                 rooms.push(newRoom);
                 cantidadTot = cantidadTot + cantidad;
             }
         });
 
         $.each(rooms, function (index, value) {
-            $('#IdRoom').append($('<option>', {
+            var option = $('<option>', {
                 value: value.id,
                 text: value.room
-            }));
+            });
+            option.data('price', value.price);
+            $('#IdRoom').append(option);
         });
 
         $("#NumberCompanions").val(cantidadTot - 1).prop('readonly', true);
@@ -294,10 +297,10 @@ $("#collapseGuest button[type='submit']").click(function (e) {
               <input type="text" class="form-control" id="Document" required>
             </div>
             <div class="col-md-2">
-                <label for="IdRoom" class="form-label">N. Habitación</label>
+                <label for="IdRoom" class="form-label">Habitación</label>
               <select class="form-select form-control input-room" id="IdRoom" required>
                 <option selected>Elige...</option>
-                ${rooms.map(room => `<option value="${room.id}">${room.room}</option>`).join("")}
+                ${rooms.map(room => `<option value="${room.id}" data-price="${room.price}" >${room.room}</option>`).join("")}
               </select>
             </div >
             <div class="col-md-6">
@@ -409,8 +412,8 @@ $(".btnSendData").click(function (e) {
                     };
 
                     movement.IdTipoDocumentoMovimiento = $("#cboTipoDocumentoMovimiento").val();
-                    //movement.documentoCliente = $("#txtDocumentoCliente").val();
-                    movement.NombreCliente = $("#txtNombreCliente").val();
+                    movement.documentoCliente = $("#Document").val();
+                    movement.NombreCliente = $("#Name").val() + ' ' + $("#LastName").val();
                     movement.SubTotal = $("#txtSubTotal").val();
                     movement.ImpuestoTotal = $("#txtIGV").val();
                     movement.Total = $("#txtTotal").val();
@@ -433,6 +436,7 @@ $(".btnSendData").click(function (e) {
                         guest.Document = $form.find("#Document").val();
                         guest.RoomId = $form.find("#IdRoom").val();
                         guest.Room = $form.find("#IdRoom option:selected").text();
+                        guest.Price = $form.find("#IdRoom option:selected").data('price');
                         guest.Name = $form.find("#Name").val();
                         guest.LastName = $form.find("#LastName").val();
                         guest.RecidenceCity = $form.find("#RecidenceCity").val();
@@ -486,7 +490,7 @@ $(".btnSendData").click(function (e) {
                                 $(".showSweetAlert").LoadingOverlay("hide");
 
                             } else {
-                                $(".showSweetAlert").LoadingOverlay("hide")
+                                $(".showSweetAlert").LoadingOverlay("hide");
                                 swal("Error", responseJson.mensaje, "error")
 
                             }

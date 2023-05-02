@@ -9,7 +9,7 @@ namespace SistemaVenta.BLL.Interfaces
 {
     public interface ICompanyService
     {
-        Task<Company> Obtener();
+   //     Task<Company> Obtener();
         Task<Company> GetCompanyById(int id);
         Task<Company> GuardarCambios(Company entidad, Stream logo = null, string nombreLogo = "");
     }

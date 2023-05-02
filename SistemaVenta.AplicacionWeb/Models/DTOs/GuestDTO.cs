@@ -18,6 +18,7 @@
         public int? IsMain { get; set; }
         public int RoomId { get; set; }
         public string Room { get; set; }
+        public int Price { get; set; }
         //public DateTime CheckIn { get; set; }
         //public DateTime CheckOut { get; set; }
         //public DateTime CreationDate { get; set; }

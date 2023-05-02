@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SistemaVenta.AplicacionWeb.Models.DTOs;
 using SistemaVenta.BLL.Interfaces;
 using SistemaVenta.DAL.Interfaces;
 using SistemaVenta.Entity;
@@ -16,14 +17,15 @@ namespace SistemaVenta.BLL.Implementacion
     {
         private readonly IGenericRepository<Establishment> _repositorioEstablishment;
         private readonly IGenericRepository<Room> _repositorioRoom;
+        private readonly IGenericRepository<Movimiento> _repositorioMovement;
         private readonly IBookRepository _repositorioBooking;
-       // private readonly IMovimientoRepository _repositorioMovimiento;
+        // private readonly IMovimientoRepository _repositorioMovimiento;
         public BookingService(IGenericRepository<Establishment> repositorioEstablishment, IGenericRepository<Room> repositorioRoom,
-            IBookRepository repositorioBooking, IMovimientoRepository repositorioMovimiento)
+            IBookRepository repositorioBooking, IGenericRepository<Movimiento> repositorioMovement, IMovimientoRepository repositorioMovimiento)
         {
             _repositorioEstablishment = repositorioEstablishment;
             _repositorioRoom = repositorioRoom;
-           // _repositorioMovimiento = repositorioMovimiento;
+            _repositorioMovement = repositorioMovement;
             _repositorioBooking = repositorioBooking;
         }
 
@@ -51,7 +53,7 @@ namespace SistemaVenta.BLL.Implementacion
             );
 
 
-           return rooms.ToList();
+            return rooms.ToList();
         }
         public async Task<bool> CheckBookings(string document, DateTime ci, DateTime co)
         {
@@ -78,36 +80,57 @@ namespace SistemaVenta.BLL.Implementacion
                 throw;
             }
         }
-        //public async Task<List<Booking>> Historial(string numeroBookingEstablishmentEstablishment, string fechaInicio, string fechaFin)
-        //{
-        //    IQueryable<Booking> query = await _repositorioBookingEstablishmentEstablishment.Consultar();
-        //    fechaInicio = fechaInicio is null? "" : fechaInicio;
-        //    fechaFin = fechaFin is null ? "" : fechaFin;
 
-        //    if (fechaInicio != "" && fechaFin != "")
-        //    {
-        //        DateTime fecha_inicio = DateTime.ParseExact(fechaInicio, "dd/MM/yyyy", new CultureInfo("es-CO"));
-        //        DateTime fecha_fin = DateTime.ParseExact(fechaFin, "dd/MM/yyyy", new CultureInfo("es-CO"));
+        public async Task<List<BookingDetailResult>> Reporte(string fechaInicio, string fechaFin, int idCompany)
+        {
+            DateTime fecha_inicio = DateTime.ParseExact(fechaInicio, "dd/MM/yyyy", new CultureInfo("es-CO"));
+            DateTime fecha_fin = DateTime.ParseExact(fechaFin, "dd/MM/yyyy", new CultureInfo("es-CO"));
 
-        //        return query.Where(v => 
-        //                v.FechaRegistro.Value.Date >= fecha_inicio.Date &&
-        //                v.FechaRegistro.Value.Date <= fecha_fin.Date
-        //            )
-        //            .Include(tDoc => tDoc.IdTipoDocumentoBookingEstablishmentEstablishmentNavigation)
-        //            .Include(usu => usu.IdUsuarioNavigation)
-        //            .Include(det => det.DetalleBookingEstablishmentEstablishment)
-        //            .ToList();
-        //    }
-        //    else
-        //    {
-        //        return query.Where(v => v.NumeroBookingEstablishmentEstablishment == numeroBookingEstablishmentEstablishment)
-        //           .Include(tDoc => tDoc.IdTipoDocumentoVentaNavigation)
-        //           .Include(usu => usu.IdUsuarioNavigation)
-        //           .Include(det => det.DetalleMovimiento)
-        //           .ToList();
-        //    }
+            List<BookingDetailResult> lista = await _repositorioBooking.Reporte(fecha_inicio, fecha_fin, idCompany);
+            return lista;
 
-        //}
+        }
+
+        public async Task<List<Book>> History(string movementNumber, string fechaInicio, string fechaFin, int idCompany)
+        {
+            try
+            {
+
+                IQueryable<Book> query = await _repositorioBooking.Consultar();
+                fechaInicio = fechaInicio is null ? "" : fechaInicio;
+                fechaFin = fechaFin is null ? "" : fechaFin;
+                Movimiento movement_found = await _repositorioMovement.Obtener(n => n.NumeroMovimiento == movementNumber);
+
+                if (fechaInicio != "" && fechaFin != "")
+                {
+                    DateTime fecha_inicio = DateTime.ParseExact(fechaInicio, "dd/MM/yyyy", new CultureInfo("es-CO"));
+                    DateTime fecha_fin = DateTime.ParseExact(fechaFin, "dd/MM/yyyy", new CultureInfo("es-CO"));
+
+                    return query.Where(v =>
+                            v.CreationDate.Date >= fecha_inicio.Date &&
+                            v.CreationDate.Date <= fecha_fin.Date
+                        )
+                        .Include(tDoc => tDoc.IdMovimientoNavigation)
+                        //.Include(usu => usu.IdUsuarioNavigation)
+                        .Include(det => det.DetailBook)
+                        .ToList();
+                }
+                else
+                {
+                    return query.Where(v => v.IdMovimiento == movement_found.IdMovimiento)
+                        .Include(tDoc => tDoc.IdMovimientoNavigation)
+                        .Include(det => det.DetailBook)
+                       .ToList();
+                }
+
+            }
+            catch (Exception e)
+            {
+
+                throw;
+            }
+
+        }
 
         //public async Task<Movimiento> Detalle(string numeroMovimiento)
         //{
@@ -119,14 +142,6 @@ namespace SistemaVenta.BLL.Implementacion
         //           .First();
         //}
 
-        public async Task<List<BookingResult>> Reporte(string fechaInicio, string fechaFin, int idCompany)
-        {
-            DateTime fecha_inicio = DateTime.ParseExact(fechaInicio, "dd/MM/yyyy", new CultureInfo("es-CO"));
-            DateTime fecha_fin = DateTime.ParseExact(fechaFin, "dd/MM/yyyy", new CultureInfo("es-CO"));
 
-            List<BookingResult> lista = await _repositorioBooking.Reporte(fecha_inicio, fecha_fin, idCompany);
-            return lista;
-
-        }
     }
 }

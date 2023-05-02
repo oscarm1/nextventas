@@ -15,9 +15,9 @@ namespace SistemaVenta.BLL.Interfaces
         Task<bool> CheckBookings(string document,DateTime ci, DateTime co);
         Task<Book> Save(Book entidad);
 
-        //Task<List<Booking>> Historial(string numeroBookingProveedorProveedor, string fechaInicio, string fechaFin);
+        Task<List<BookingDetailResult>> Reporte(string fechaInicio, string fechaFin, int idCompany);
+        Task<List<Book>> History(string movementNumber, string fechaInicio, string fechaFin, int idCompany);
         //Task<Booking> Detalle(string numeroBookingProveedorProveedor);
-        Task<List<BookingResult>> Reporte(string fechaInicio, string fechaFin, int idCompany);
 
 
     }

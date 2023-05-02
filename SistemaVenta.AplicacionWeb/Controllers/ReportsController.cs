@@ -32,7 +32,7 @@ namespace SistemaVenta.AplicacionWeb.Controllers
 
                 ClaimsPrincipal claimUser = HttpContext.User;
                 var idCompany = int.Parse(((ClaimsIdentity)claimUser.Identity).FindFirst("IdCompany").Value);
-                List<BookingResult> lista = await _bookingService.Reporte(fechaInicio, fechaFin, idCompany);
+                List<BookingDetailResult> lista = await _bookingService.Reporte(fechaInicio, fechaFin, idCompany);
                 return StatusCode(StatusCodes.Status200OK, new { data = lista });
 
             }

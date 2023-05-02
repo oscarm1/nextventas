@@ -49,7 +49,7 @@ namespace SistemaVenta.AplicacionWeb.Controllers
         {
             return View();
         }
-        public IActionResult HistorialMovimientos()
+        public IActionResult HistoryBookings()
         {
             return View();
         }
@@ -104,7 +104,7 @@ namespace SistemaVenta.AplicacionWeb.Controllers
                         detailBook.IdGuest = guest_creado.IdGuest;
                         detailBook.IdRoom = guestDTO.RoomId;
                         //detailBook.IdBook = book_created.IdBook;
-                        detailBook.Total = movement_created.Total;
+                        detailBook.Total = 111;//guestDTO.Price;
 
                         listDetail.Add(detailBook);
 
@@ -235,13 +235,27 @@ namespace SistemaVenta.AplicacionWeb.Controllers
             }
             return StatusCode(StatusCodes.Status200OK, genericResponse);
         }
-        //[HttpGet]
-        //public async Task<IActionResult> HistorialMovimiento(string numeroMovimiento, string buscarPorTipo, string fechaInicio, string fechaFin)
-        //{
-        //    var listaventa = await _bookingService.Historial(numeroMovimiento, buscarPorTipo, fechaInicio, fechaFin);
-        //    List<MovimientoDTO> lista = _mapper.Map<List<MovimientoDTO>>(listaventa);
-        //    return StatusCode(StatusCodes.Status200OK, lista);
-        //}
+
+        [HttpGet]
+        public async Task<IActionResult> HistoryBooking(string bookingNumber, string searchBy, string dateIni, string dateFin)
+        {
+            try
+            {
+
+                ClaimsPrincipal claimUser = HttpContext.User;
+                var idCompany = int.Parse(((ClaimsIdentity)claimUser.Identity).FindFirst("IdCompany").Value);
+
+                var listaventa = await _bookingService.History(bookingNumber, dateIni, dateFin, idCompany);
+                List<BookDTO> lista = _mapper.Map<List<BookDTO>>(listaventa);
+                return StatusCode(StatusCodes.Status200OK, lista);
+
+            }
+            catch (Exception e)
+            {
+
+                throw;
+            }
+        }
 
 
         public IActionResult MostrarPDFMovimiento(string numeroMovimiento)

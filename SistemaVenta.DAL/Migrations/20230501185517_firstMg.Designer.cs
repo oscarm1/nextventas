@@ -12,8 +12,8 @@ using SistemaVenta.DAL.DBContext;
 namespace nextadvisordotnet.DAL.Migrations
 {
     [DbContext(typeof(DbventaContext))]
-    [Migration("20230421204631_first")]
-    partial class first
+    [Migration("20230501185517_firstMg")]
+    partial class firstMg
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -38,6 +38,9 @@ namespace nextadvisordotnet.DAL.Migrations
                         .HasColumnType("int")
                         .HasColumnName("idBook");
 
+                    b.Property<int?>("IdBookNavigationIdBook")
+                        .HasColumnType("int");
+
                     b.Property<int>("IdGuest")
                         .HasColumnType("int")
                         .HasColumnName("idGuest");
@@ -46,10 +49,13 @@ namespace nextadvisordotnet.DAL.Migrations
                         .HasColumnType("int")
                         .HasColumnName("idRoom");
 
+                    b.Property<decimal?>("Price")
+                        .HasColumnType("decimal(18,2)");
+
                     b.HasKey("IdDetailBook")
                         .HasName("PK__DetalleB__BFE2843FB3D3EFB5");
 
-                    b.HasIndex("IdBook");
+                    b.HasIndex("IdBookNavigationIdBook");
 
                     b.HasIndex("IdGuest");
 
@@ -103,6 +109,56 @@ namespace nextadvisordotnet.DAL.Migrations
                     b.HasIndex("IdMovimiento");
 
                     b.ToTable("Books");
+                });
+
+            modelBuilder.Entity("SistemaVenta.Entity.BookingDetailResult", b =>
+                {
+                    b.Property<string>("BookNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CheckIn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CheckOut")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreationDate")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DocumentType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EstablishmentName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("GuestDocument")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("GuestName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RoomNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("SubTotal")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("TotalBook")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("TotalTax")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.ToTable("BookingDetailResult");
                 });
 
             modelBuilder.Entity("SistemaVenta.Entity.Categoria", b =>
@@ -1226,10 +1282,7 @@ namespace nextadvisordotnet.DAL.Migrations
                 {
                     b.HasOne("SistemaVenta.Entity.Book", "IdBookNavigation")
                         .WithMany("DetailBook")
-                        .HasForeignKey("IdBook")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK__DetailBo__idBoo");
+                        .HasForeignKey("IdBookNavigationIdBook");
 
                     b.HasOne("SistemaVenta.Entity.Guest", "IdGuestNavigation")
                         .WithMany("DetailBook")

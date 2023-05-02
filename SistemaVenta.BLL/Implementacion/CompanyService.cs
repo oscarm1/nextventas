@@ -20,20 +20,20 @@ namespace SistemaVenta.BLL.Implementacion
             _fireBaseService = fireBaseService;
         }
 
-        public async Task<Company> Obtener()
-        {
-            try
-            {
-                Company company_encontrado = await _repositorio.Obtener(n => n.IdCompany == 1);
-                return company_encontrado;
-            }
-            catch (Exception)
-            {
+        //public async Task<Company> Obtener()
+        //{
+        //    try
+        //    {
+        //        Company company_encontrado = await _repositorio.Obtener(n => n.IdCompany == 1);
+        //        return company_encontrado;
+        //    }
+        //    catch (Exception)
+        //    {
 
-                throw;
-            }
+        //        throw;
+        //    }
 
-        }
+        //}
         public async Task<Company> GetCompanyById(int Id)
         {
             Company company_found = await _repositorio.Obtener(c => c.IdCompany == Id);

@@ -51,9 +51,9 @@ public partial class DbventaContext : DbContext
     public DbSet<GeneralParams> GeneralParams { get; set; }
     public DbSet<Plan> Plans { get; set; }
     public DbSet<ParamPlan> ParamPlans { get; set; }
-    public IEnumerable<BookingResult> GetBookingsByDateRange(DateTime fechaIni, DateTime fechaFin, int idCompany)
+    public IEnumerable<BookingDetailResult> GetBookingsByDateRange(DateTime fechaIni, DateTime fechaFin, int idCompany)
     {
-        return this.Set<BookingResult>().FromSqlRaw("EXEC sp_GetBookingsByDateRange @fechaIni={0}, @fechaFin={1}, @idCompany={2}", fechaIni, fechaFin, idCompany);
+        return this.Set<BookingDetailResult>().FromSqlRaw("EXEC sp_GetBookingsByDateRange @fechaIni={0}, @fechaFin={1}, @idCompany={2}", fechaIni, fechaFin, idCompany);
     }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -61,7 +61,7 @@ public partial class DbventaContext : DbContext
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<BookingResult>(entity => { entity.HasNoKey(); });
+        modelBuilder.Entity<BookingDetailResult>(entity => { entity.HasNoKey(); });
 
         modelBuilder.Entity<Categoria>(entity =>
         {

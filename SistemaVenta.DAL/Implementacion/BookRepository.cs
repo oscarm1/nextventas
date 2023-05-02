@@ -82,9 +82,9 @@ namespace SistemaVenta.DAL.Implementacion
             return bookGenerada;
         }
 
-        public async Task<List<BookingResult>> Reporte(DateTime fechaIni, DateTime fechaFin, int idCompany)
+        public async Task<List<BookingDetailResult>> Reporte(DateTime fechaIni, DateTime fechaFin, int idCompany)
         {
-            IEnumerable<BookingResult> bookingResult = _dbContext.GetBookingsByDateRange(fechaIni, fechaFin, idCompany);
+            IEnumerable<BookingDetailResult> bookingResult = _dbContext.GetBookingsByDateRange(fechaIni, fechaFin, idCompany);
             return bookingResult.ToList();
         }
 

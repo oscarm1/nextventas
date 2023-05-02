@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace SistemaVenta.Entity;
 
-public partial class BookingResult
+public partial class BookingDetailResult
 {
     public string CreationDate { get; set; }
     public string BookNumber { get; set; }
