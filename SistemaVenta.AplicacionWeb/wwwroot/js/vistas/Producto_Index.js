@@ -94,6 +94,7 @@ $(document).ready(function () {
 
 });
 
+
 function MostrarModal(modelo = MODELO_BASE) {
     $("#txtId").val(modelo.idProducto);
     $("#txtCodigoBarra").val(modelo.codigoBarra);
@@ -115,8 +116,8 @@ $("#btnNuevo").click(function () {
 
 $("#btnGuardar").click(function () {
     //Validaciones
-    const inputs = $("input.input-validar").serializeArray(); 
-    const inputs_sin_valor = inputs.filter((item) => item.value.trim() == "") 
+    const inputs = $("input.input-validar").serializeArray();
+    const inputs_sin_valor = inputs.filter((item) => item.value.trim() == "")
 
     console.log(inputs_sin_valor);
 
@@ -127,7 +128,7 @@ $("#btnGuardar").click(function () {
         return;
     }
 
-    const modelo = structuredClone(MODELO_BASE); 
+    const modelo = structuredClone(MODELO_BASE);
     modelo["idProducto"] = parseInt($("#txtId").val());
     modelo["codigoBarra"] = $("#txtCodigoBarra").val();
     modelo["marca"] = $("#txtMarca").val();
@@ -242,6 +243,422 @@ $("#tbdata tbody").on("click", ".btn-eliminar", function () {
                         if (responseJson.estado) {
                             tablaData.row(fila).remove().draw();
                             swal("Listo!", "El producto fue eliminado", "success")
+                        } else {
+                            swal("Lo sentimos!", responseJson.mensaje, "error")
+                        }
+                    })
+            }
+        }
+    );
+
+})
+
+//// Categorias
+
+let tablaDataP;
+let tablaSel = false;
+
+const MODELO_BASEP = {
+    idCategoria: 0,
+    descripcion: "",
+    esActivo: 1,
+}
+
+
+$(".categoria").click(function () {
+
+    if (!tablaSel) {
+
+        tablaSel = true;
+        tablaDataP = $('#tbdataP').DataTable({
+            responsive: true,
+            "ajax": {
+                "url": '/Categoria/Lista',
+                "type": "GET",
+                "datatype": "json"
+            },
+            "columns": [
+                { "data": "idCategoria", "visible": false, "searchable": false },
+                { "data": "descripcion" },
+                {
+                    "data": "esActivo", render: function (data) {
+                        if (data == 1) return '<span class="badge badge-success">Activo</span>';
+                        else return '<span class="badge badge-secondary">No Activo</span>';
+                    }
+                },
+                {
+                    "defaultContent": '<button class="btn btn-outline-secondary btn-editarP btn-sm mr-2"><i class="fas fa-pencil-alt"></i></button>' +
+                        '<button class="btn btn-outline-danger btn-eliminar btn-sm"><i class="fas fa-trash-alt"></i></button>',
+                    "orderable": false,
+                    "searchable": false,
+                    "width": "80px"
+                }
+            ],
+            order: [[0, "desc"]],
+            dom: "Bfrtip",
+            buttons: [
+                {
+                    text: 'Exportar Excel',
+                    className: '',
+                    extend: 'excelHtml5',
+                    title: '',
+                    filename: 'Reporte Categorias',
+                    exportOptions: {
+                        columns: [1, 2]
+                    }
+                }, 'pageLength'
+            ],
+            language: {
+                url: "https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json"
+            },
+        });
+
+
+    }
+});
+
+function MostrarModalP(modelo = MODELO_BASEP) {
+    $("#txtIdP").val(modelo.idCategoria);
+    $("#txtDescripcionP").val(modelo.descripcion);
+    $("#cboEstadoP").val(modelo.esActivo);
+
+    $("#modalDataP").modal("show");
+    console.log(modelo);
+}
+
+$("#btnNuevoP").click(function () {
+    MostrarModalP();
+});
+
+$("#btnGuardarP").click(function () {
+
+    if ($("#txtDescripcionP").val().trim() == "") {
+        toastr.warning("", "Debes completar el campo: Descripción");
+        $("#txtDescripcionP").focus();
+        return;
+    }
+
+    const modelo = structuredClone(MODELO_BASEP);
+    modelo["idCategoria"] = parseInt($("#txtIdP").val());
+    modelo["descripcion"] = $("#txtDescripcionP").val();
+    modelo["esActivo"] = $("#cboEstadoP").val();
+
+    $("#modalDataP").find("div.modal-content").LoadingOverlay("show");
+
+    if (modelo.idCategoria == 0) {
+        fetch("/Categoria/Crear", {
+            method: "POST",
+            headers: { "Content-type": "application/json; charset=utf-8" },
+            body: JSON.stringify(modelo),
+        })
+            .then(response => {
+                $("#modalDataP").find("div.modal-content").LoadingOverlay("hide");
+                return response.ok ? response.json() : Promise.reject(response);
+            })
+            .then(responseJson => {
+                if (responseJson.estado) {
+                    tablaDataP.row.add(responseJson.objeto).draw(false);
+                    $("#modalDataP").modal("hide");
+                    swal("Listo!", "La Categoria fue Creada", "success")
+                } else {
+                    swal("Lo sentimos!", responseJson.mensaje, "error")
+                }
+            })
+    } else {
+        fetch("/Categoria/Editar", {
+            method: "PUT",
+            headers: { "Content-type": "application/json; charset=utf-8" },
+            body: JSON.stringify(modelo),
+        })
+            .then(response => {
+                $("#modalDataP").find("div.modal-content").LoadingOverlay("hide");
+                return response.ok ? response.json() : Promise.reject(response);
+            })
+            .then(responseJson => {
+                if (responseJson.estado) {
+                    tablaDataP.row(filaSeleccionadaP).data(responseJson.objeto).draw(false);
+                    filaSeleccionadaP = null;
+                    $("#modalDataP").modal("hide");
+                    swal("Listo!", "La Categoria fue modificada", "success")
+                } else {
+                    swal("Lo sentimos!", responseJson.mensaje, "error")
+                }
+            })
+    }
+});
+
+let filaSeleccionadaP;
+
+$("#tbdataP tbody").on("click", ".btn-editarP", function () {
+
+    if ($(this).closest("tr").hasClass("child")) {
+        filaSeleccionadaP = $(this).closest("tr").prev();
+    } else {
+        filaSeleccionadaP = $(this).closest("tr");
+    }
+
+    const data = tablaDataP.row(filaSeleccionadaP).data();
+    MostrarModalP(data);
+
+})
+
+$("#tbdataP tbody").on("click", ".btn-eliminar", function () {
+    let fila;
+    if ($(this).closest("tr").hasClass("child")) {
+        fila = $(this).closest("tr").prev();
+    } else {
+        fila = $(this).closest("tr");
+    }
+
+    const data = tablaDataP.row(fila).data();
+
+    swal({
+        title: "¿Está seguro?",
+        text: `Eliminar la Categoria "${data.descripcionP}"`,
+        type: "warning",
+        showCancelButton: true,
+        showConfirmButton: true,
+        confirmButtonClass: "btn-danger",
+        confirmButtonText: "Si, eliminar",
+        cancelButtonText: "No, cancelar",
+        closeOnConf‌irm: false,
+        closeOnCancel: true
+    },
+        function (respuesta) {
+            if (respuesta) {
+                $(".showSweetAlert").LoadingOverlay("show");
+
+                fetch(`/Categoria/Eliminar?IdCategoria=${data.idCategoria}`, {
+                    method: "DELETE",
+                })
+                    .then(response => {
+                        $(".showSweetAlert").LoadingOverlay("hide");
+                        return response.ok ? response.json() : Promise.reject(response);
+                    })
+                    .then(responseJson => {
+                        $(".showSweetAlert").LoadingOverlay("hide");
+                        if (responseJson.estado) {
+                            tablaDataP.row(fila).remove().draw();
+                            swal("Listo!", "La Categoria fue eliminada", "success")
+                        } else {
+                            swal("Lo sentimos!", responseJson.mensaje, "error")
+                        }
+                    })
+            }
+        }
+    );
+
+})
+
+///// Proveedores
+
+const MODELO_BASEV = {
+    idProveedor: 0,
+    nit: "",
+    nombre: "",
+    contacto: "",
+    telefono: "",
+    correo: 0,
+    esActivo: 1,
+}
+
+let tablaDataV;
+let tablaSelV = false;
+
+//$(document).ready(function () {
+$(".proveedor").click(function () {
+
+    if (!tablaSelV) {
+        tablaSelV = true;
+        tablaDataV = $('#tbdataV').DataTable({
+            responsive: true,
+            "ajax": {
+                "url": '/Proveedor/Lista',
+                "type": "GET",
+                "datatype": "json"
+            },
+            "columns": [
+                { "data": "idProveedor", "visible": false, "searchable": false },
+                { "data": "nit" },
+                { "data": "nombre" },
+                { "data": "contacto" },
+                { "data": "telefono" },
+                { "data": "correo" },
+                {
+                    "data": "esActivo", render: function (data) {
+                        if (data == 1) return '<span class="badge badge-success">Activo</span>';
+                        else return '<span class="badge badge-secondary">No Activo</span>';
+                    }
+                },
+                {
+                    "defaultContent": '<button class="btn btn-outline-secondary btn-editarV btn-sm mr-2"><i class="fas fa-pencil-alt"></i></button>' +
+                        '<button class="btn btn-outline-danger btn-eliminar btn-sm"><i class="fas fa-trash-alt"></i></button>',
+                    "orderable": false,
+                    "searchable": false,
+                    "width": "80px"
+                }
+            ],
+            order: [[0, "desc"]],
+            dom: "Bfrtip",
+            buttons: [
+                {
+                    text: 'Exportar Excel',
+                    className: '',
+                    extend: 'excelHtml5',
+                    title: '',
+                    filename: 'Reporte Proveedors',
+                    exportOptions: {
+                        columns: [2, 3, 4, 5, 6, 7]
+                    }
+                }, 'pageLength'
+            ],
+            language: {
+                url: "https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json"
+            },
+        });
+    }
+});
+
+function MostrarModalV(modelo = MODELO_BASEV) {
+    $("#txtIdV").val(modelo.idProveedor);
+    $("#txtNITV").val(modelo.nit);
+    $("#txtNombreV").val(modelo.nombre);
+    $("#txtContactoV").val(modelo.contacto);
+    $("#txtTelefonoV").val(modelo.telefono);
+    $("#txtCorreoV").val(modelo.correo);
+    $("#cboEstadoV").val(modelo.esActivo);
+
+    $("#modalDataV").modal("show");
+}
+
+$("#btnNuevoV").click(function () {
+    MostrarModalV();
+});
+
+$("#btnGuardarV").click(function () {
+    //Validaciones
+    const inputs = $("input.input-validarV").serializeArray();
+    const inputs_sin_valor = inputs.filter((item) => item.value.trim() == "")
+
+    //  console.log(inputs_sin_valor);
+
+    if (inputs_sin_valor.length > 0) {
+        const mensaje = `Desbes completar el campo "${inputs_sin_valor[0].name}"`;
+        toastr.warning("", mensaje);
+        $(`input[name = "${inputs_sin_valor[0].name}"]`).focus();
+        return;
+    }
+
+    const modelo = structuredClone(MODELO_BASEV);
+    modelo["idProveedor"] = parseInt($("#txtIdV").val());
+    modelo["nit"] = $("#txtNITV").val();
+    modelo["nombre"] = $("#txtNombreV").val();
+    modelo["contacto"] = $("#txtContactoV").val();
+    modelo["telefono"] = $("#txtTelefonoV").val();
+    modelo["correo"] = $("#txtCorreoV").val();
+    modelo["esActivo"] = $("#cboEstadoV").val();
+
+
+    //const inputImagen = document.getElementById("txtImagen");
+    const formData = new FormData();
+    // formData.append("imagen", inputImagen.files[0])
+    formData.append("modelo", JSON.stringify(modelo))
+
+    $("#modalDataV").find("div.modal-content").LoadingOverlay("show");
+
+    if (modelo.idProveedor == 0) {
+        fetch("/Proveedor/Crear", {
+            method: "POST",
+            body: formData,
+        })
+            .then(response => {
+                $("#modalDataV").find("div.modal-content").LoadingOverlay("hide");
+                return response.ok ? response.json() : Promise.reject(response);
+            })
+            .then(responseJson => {
+                if (responseJson.estado) {
+                    tablaDataV.row.add(responseJson.objeto).draw(false);
+                    $("#modalDataV").modal("hide");
+                    swal("Listo!", "El Proveedor fue Creado", "success")
+                } else {
+                    swal("Lo sentimos!", responseJson.mensaje, "error")
+                }
+            })
+    } else {
+        fetch("/Proveedor/Editar", {
+            method: "PUT",
+            body: formData,
+        })
+            .then(response => {
+                $("#modalDataV").find("div.modal-content").LoadingOverlay("hide");
+                return response.ok ? response.json() : Promise.reject(response);
+            })
+            .then(responseJson => {
+                if (responseJson.estado) {
+                    tablaDataV.row(filaSeleccionadaV).data(responseJson.objeto).draw(false);
+                    filaSeleccionadaV = null;
+                    $("#modalDataV").modal("hide");
+                    swal("Listo!", "El Proveedor fue modificado", "success")
+                } else {
+                    swal("Lo sentimos!", responseJson.mensaje, "error")
+                }
+            })
+    }
+});
+
+let filaSeleccionadaV;
+
+$("#tbdataV tbody").on("click", ".btn-editarV", function () {
+
+    if ($(this).closest("tr").hasClass("child")) {
+        filaSeleccionadaV = $(this).closest("tr").prev();
+    } else {
+        filaSeleccionadaV = $(this).closest("tr");
+    }
+
+    const data = tablaDataV.row(filaSeleccionadaV).data();
+    //console.log(data);
+    MostrarModalV(data);
+
+})
+
+$("#tbdataV tbody").on("click", ".btn-eliminar", function () {
+    let fila;
+    if ($(this).closest("tr").hasClass("child")) {
+        fila = $(this).closest("tr").prev();
+    } else {
+        fila = $(this).closest("tr");
+    }
+
+    const data = tablaDataV.row(fila).data();
+
+    swal({
+        title: "¿Está seguro?",
+        text: `Eliminar al Proveedor "${data.Telefono}"`,
+        type: "warning",
+        showCancelButton: true,
+        showConfirmButton: true,
+        confirmButtonClass: "btn-danger",
+        confirmButtonText: "Si, eliminar",
+        cancelButtonText: "No, cancelar",
+        closeOnConf‌irm: false,
+        closeOnCancel: true
+    },
+        function (respuesta) {
+            if (respuesta) {
+                $(".showSweetAlert").LoadingOverlay("show");
+
+                fetch(`/Proveedor/Eliminar?idProveedor=${data.idProveedor}`, {
+                    method: "DELETE",
+                })
+                    .then(response => {
+                        $(".showSweetAlert").LoadingOverlay("hide");
+                        return response.ok ? response.json() : Promise.reject(response);
+                    })
+                    .then(responseJson => {
+                        if (responseJson.estado) {
+                            tablaDataV.row(fila).remove().draw();
+                            swal("Listo!", "El Proveedor fue eliminado", "success")
                         } else {
                             swal("Lo sentimos!", responseJson.mensaje, "error")
                         }

@@ -19,6 +19,7 @@ namespace SistemaVenta.AplicacionWeb.Models.DTOs
         public string? UrlFoto { get; set; }
 
         public int? EsActivo { get; set; }
+        public bool? CajaIniciada { get; set; }
 
     }
 }

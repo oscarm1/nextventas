@@ -11,13 +11,14 @@ namespace SistemaVenta.AplicacionWeb.Controllers
     public class AccesoController : Controller
     {
         private readonly IUsuarioService _usuarioServicio;
-        private readonly INegocioService _negocioService;
+        //private readonly INegocioService _negocioService;
         private readonly ICompanyService _companyService;
         private readonly ISubscriptionService _subscriptionService;
-        public AccesoController(IUsuarioService usuarioServicio, INegocioService negocioService, ICompanyService companyService, ISubscriptionService subscriptionService)
+        
+        public AccesoController(IUsuarioService usuarioServicio, ICompanyService companyService, ISubscriptionService subscriptionService)
         {
             _usuarioServicio = usuarioServicio;
-            _negocioService = negocioService;
+            
             _companyService = companyService;
             _subscriptionService = subscriptionService;
         }

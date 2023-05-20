@@ -22,14 +22,15 @@ namespace SistemaVenta.AplicacionWeb.Controllers
         private readonly IMapper _mapper;
         private readonly ISubscriptionService _subscriptionService;
         private readonly IPlanService _planService;
-
-        public HomeController(ILogger<HomeController> logger, IUsuarioService usuarioService, IMapper mapper, ISubscriptionService subscriptionService, IPlanService planService)
+        private readonly ICajaService _cajaService;
+        public HomeController(ILogger<HomeController> logger, ICajaService cajaService, IUsuarioService usuarioService, IMapper mapper, ISubscriptionService subscriptionService, IPlanService planService)
         {
             _logger = logger;
             _usuarioService = usuarioService;
             _mapper = mapper;
             _subscriptionService = subscriptionService;
             _planService = planService;
+            _cajaService = cajaService;
         }
 
         public IActionResult Index()
@@ -73,6 +74,8 @@ namespace SistemaVenta.AplicacionWeb.Controllers
                 Usuario user_obtenido = await _usuarioService.ObtenerPorId(int.Parse(idUsuario));
 
                 UsuarioDTO usuario = _mapper.Map<UsuarioDTO>(user_obtenido);
+
+                usuario.CajaIniciada = _cajaService.CajaCierre(int.Parse(idUsuario));
 
                 response.Estado = true;
                 response.Objeto = usuario;

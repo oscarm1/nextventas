@@ -9,11 +9,11 @@ using SistemaVenta.DAL.DBContext;
 
 #nullable disable
 
-namespace nextadvisordotnet.DAL.Migrations
+namespace SistemaVenta.DAL.Migrations
 {
     [DbContext(typeof(DbventaContext))]
-    [Migration("20230501190307_firstMg1")]
-    partial class firstMg1
+    [Migration("20230520033625_firstMigration2")]
+    partial class firstMigration2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -156,6 +156,60 @@ namespace nextadvisordotnet.DAL.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.ToTable("BookingDetailResult");
+                });
+
+            modelBuilder.Entity("SistemaVenta.Entity.Caja", b =>
+                {
+                    b.Property<int>("IdCaja")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("idCaja");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdCaja"));
+
+                    b.Property<DateTime?>("FechaCierre")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasColumnName("fechaCierre")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<DateTime>("FechaInicio")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasColumnName("fechaInicio")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<int>("IdMedioPago")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("IdMovimiento")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdUsuario")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("SaldoFinal")
+                        .HasColumnType("decimal(10, 2)")
+                        .HasColumnName("saldoFinal");
+
+                    b.Property<decimal>("SaldoInicial")
+                        .HasColumnType("decimal(10, 2)")
+                        .HasColumnName("saldoInicial");
+
+                    b.Property<decimal>("Valor")
+                        .HasColumnType("decimal(10, 2)")
+                        .HasColumnName("valor");
+
+                    b.HasKey("IdCaja")
+                        .HasName("PK__Caja__077D56148B22AC5G");
+
+                    b.HasIndex("IdMedioPago");
+
+                    b.HasIndex("IdMovimiento");
+
+                    b.HasIndex("IdUsuario");
+
+                    b.ToTable("Caja");
                 });
 
             modelBuilder.Entity("SistemaVenta.Entity.Categoria", b =>
@@ -506,6 +560,40 @@ namespace nextadvisordotnet.DAL.Migrations
                         .HasName("PK_Guest");
 
                     b.ToTable("Guest", (string)null);
+                });
+
+            modelBuilder.Entity("SistemaVenta.Entity.MedioPago", b =>
+                {
+                    b.Property<int>("IdMedioPago")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("idMedioPago");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdMedioPago"));
+
+                    b.Property<string>("Descripcion")
+                        .HasMaxLength(20)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(20)")
+                        .HasColumnName("descripcion");
+
+                    b.Property<string>("Naturaleza")
+                        .IsRequired()
+                        .HasMaxLength(2)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(2)")
+                        .HasColumnName("naturaleza");
+
+                    b.Property<string>("UrlImagen")
+                        .HasMaxLength(20)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(20)")
+                        .HasColumnName("urlImagen");
+
+                    b.HasKey("IdMedioPago")
+                        .HasName("PK__MedioPago__077D56148B22AC5G");
+
+                    b.ToTable("MedioPago");
                 });
 
             modelBuilder.Entity("SistemaVenta.Entity.Menu", b =>
@@ -1315,6 +1403,34 @@ namespace nextadvisordotnet.DAL.Migrations
                     b.Navigation("IdMovimientoNavigation");
                 });
 
+            modelBuilder.Entity("SistemaVenta.Entity.Caja", b =>
+                {
+                    b.HasOne("SistemaVenta.Entity.MedioPago", "IdMedioPagoNavigation")
+                        .WithMany("Caja")
+                        .HasForeignKey("IdMedioPago")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK__Caja__medioPago__403A8C7D");
+
+                    b.HasOne("SistemaVenta.Entity.Movimiento", "IdMovimientoNavigation")
+                        .WithMany("Caja")
+                        .HasForeignKey("IdMovimiento")
+                        .HasConstraintName("FK__Caja__idMovimiento__403A8C7D");
+
+                    b.HasOne("SistemaVenta.Entity.Usuario", "IdUsuarioNavigation")
+                        .WithMany("Caja")
+                        .HasForeignKey("IdUsuario")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK__Caja__idProveedor__403A8C7D");
+
+                    b.Navigation("IdMedioPagoNavigation");
+
+                    b.Navigation("IdMovimientoNavigation");
+
+                    b.Navigation("IdUsuarioNavigation");
+                });
+
             modelBuilder.Entity("SistemaVenta.Entity.DetalleMovimiento", b =>
                 {
                     b.HasOne("SistemaVenta.Entity.Movimiento", "IdMovimientoNavigation")
@@ -1518,6 +1634,11 @@ namespace nextadvisordotnet.DAL.Migrations
                     b.Navigation("DetailBook");
                 });
 
+            modelBuilder.Entity("SistemaVenta.Entity.MedioPago", b =>
+                {
+                    b.Navigation("Caja");
+                });
+
             modelBuilder.Entity("SistemaVenta.Entity.Menu", b =>
                 {
                     b.Navigation("InverseIdMenuPadreNavigation");
@@ -1528,6 +1649,8 @@ namespace nextadvisordotnet.DAL.Migrations
             modelBuilder.Entity("SistemaVenta.Entity.Movimiento", b =>
                 {
                     b.Navigation("Book");
+
+                    b.Navigation("Caja");
 
                     b.Navigation("DetalleMovimiento");
                 });
@@ -1570,6 +1693,8 @@ namespace nextadvisordotnet.DAL.Migrations
 
             modelBuilder.Entity("SistemaVenta.Entity.Usuario", b =>
                 {
+                    b.Navigation("Caja");
+
                     b.Navigation("Movimiento");
                 });
 #pragma warning restore 612, 618

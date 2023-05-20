@@ -104,7 +104,7 @@ namespace SistemaVenta.AplicacionWeb.Controllers
                         detailBook.IdGuest = guest_creado.IdGuest;
                         detailBook.IdRoom = guestDTO.RoomId;
                         //detailBook.IdBook = book_created.IdBook;
-                        detailBook.Total = 111;//guestDTO.Price;
+                        detailBook.Price = guestDTO.Price;
 
                         listDetail.Add(detailBook);
 

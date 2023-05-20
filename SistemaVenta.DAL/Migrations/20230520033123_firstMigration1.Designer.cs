@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SistemaVenta.DAL.DBContext;
 
@@ -11,9 +12,11 @@ using SistemaVenta.DAL.DBContext;
 namespace SistemaVenta.DAL.Migrations
 {
     [DbContext(typeof(DbventaContext))]
-    partial class DbventaContextModelSnapshot : ModelSnapshot
+    [Migration("20230520033123_firstMigration1")]
+    partial class firstMigration1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -203,8 +206,6 @@ namespace SistemaVenta.DAL.Migrations
                     b.HasIndex("IdMedioPago");
 
                     b.HasIndex("IdMovimiento");
-
-                    b.HasIndex("IdUsuario");
 
                     b.ToTable("Caja");
                 });
@@ -1407,25 +1408,16 @@ namespace SistemaVenta.DAL.Migrations
                         .HasForeignKey("IdMedioPago")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK__Caja__medioPago__403A8C7D");
+                        .HasConstraintName("FK__Caja__idProveedor__403A8C7D");
 
                     b.HasOne("SistemaVenta.Entity.Movimiento", "IdMovimientoNavigation")
                         .WithMany("Caja")
                         .HasForeignKey("IdMovimiento")
                         .HasConstraintName("FK__Caja__idMovimiento__403A8C7D");
 
-                    b.HasOne("SistemaVenta.Entity.Usuario", "IdUsuarioNavigation")
-                        .WithMany("Caja")
-                        .HasForeignKey("IdUsuario")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK__Caja__idProveedor__403A8C7D");
-
                     b.Navigation("IdMedioPagoNavigation");
 
                     b.Navigation("IdMovimientoNavigation");
-
-                    b.Navigation("IdUsuarioNavigation");
                 });
 
             modelBuilder.Entity("SistemaVenta.Entity.DetalleMovimiento", b =>
@@ -1690,8 +1682,6 @@ namespace SistemaVenta.DAL.Migrations
 
             modelBuilder.Entity("SistemaVenta.Entity.Usuario", b =>
                 {
-                    b.Navigation("Caja");
-
                     b.Navigation("Movimiento");
                 });
 #pragma warning restore 612, 618

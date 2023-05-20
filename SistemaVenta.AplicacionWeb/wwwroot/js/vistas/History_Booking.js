@@ -108,7 +108,7 @@ $("#tbventa tbody").on("click", ".btn-secondary", function () {
                 $("<td>").text(item.idBook),
                 $("<td>").text(item.idGuest),
                 $("<td>").text(item.idRoom),
-                $("<td>").text(item.total),
+                $("<td>").text(item.price),
             )
         )
     })

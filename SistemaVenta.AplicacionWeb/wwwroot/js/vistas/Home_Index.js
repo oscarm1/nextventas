@@ -16,6 +16,56 @@
                 // Mostrar información del usuario
                 $("#nombreUsuario").text(o.nombre);
 
+                if (o.cajaIniciada) {
+
+                    swal({
+                        title: 'Caja sin iniciar',
+                        text: 'Desea ingresar efectivo inicial en Caja?',
+                  //      imageUrl: data.urlImagen,
+                        showCancelButton: true,
+                        type: "input",
+                        //showConfirmButton: true,
+                        //confirmButtonClass: "btn-danger",
+                        confirmButtonText: 'Registrar dinero inicial',
+                        //cancelButtonText: "No, cancelar",
+                        closeOnConf‌irm: false,
+                        inputPlaceholder: "Ingrese efectivo Inicial"
+                        //    closeOnCancel: true
+                    },
+                        function (valor) {
+                            if (valor === false) { return false }
+                            if (valor === "") {
+                                toastr.warning("", "Nesecita ingresar la cantidad");
+                                return false;
+                            }
+                            if (isNaN(parseInt(valor))) {
+                                toastr.warning("", "Debe ingresar un valor numérico");
+                                return false;
+                            }
+
+                            let caja = {
+                                idMedioPago: 5,
+                                saldoInicial: parseInt(valor),
+                                valor: parseInt(valor),
+                            }
+
+                            fetch("/Movimiento/SaveCash", {
+                                method: "POST",
+                                headers: { "Content-type": "application/json; charset=utf-8" },
+                                body: JSON.stringify(caja),
+                            })
+                                .then(response => {
+
+                                    // $(".sweet-alert .showSweetAlert  .visible").LoadingOverlay("show");
+                                    $(".showSweetAlert").LoadingOverlay("hide")
+                                    return response.ok ? response.json() : Promise.reject(response);
+                                })
+                            swal.close();
+                        }
+                    );
+
+                }
+
                 // Obtener información de la subscripción
                 return fetch("/Home/ObtenerServicios");
             } else {

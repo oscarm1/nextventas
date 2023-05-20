@@ -4,6 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>5d2306b1-c699-4e8c-a143-05fe3022e5c3</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -36,9 +37,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SistemaVenta.BLL\nextadvisordotnet.BLL.csproj" />
-    <ProjectReference Include="..\SistemaVenta.Entity\nextadvisordotnet.Entity.csproj" />
-    <ProjectReference Include="..\SistemaVenta.IOC\nextadvisordotnet.IOC.csproj" />
+    <ProjectReference Include="..\SistemaVenta.BLL\SistemaVenta.BLL.csproj" />
+    <ProjectReference Include="..\SistemaVenta.Entity\SistemaVenta.Entity.csproj" />
+    <ProjectReference Include="..\SistemaVenta.IOC\SistemaVenta.IOC.csproj" />
   </ItemGroup>
 
   <ItemGroup>

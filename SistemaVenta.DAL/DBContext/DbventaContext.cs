@@ -41,6 +41,8 @@ public partial class DbventaContext : DbContext
     public virtual DbSet<Usuario> Usuarios { get; set; }
 
     public virtual DbSet<Movimiento> Movimiento { get; set; }
+    public virtual DbSet<Caja> Caja { get; set; }
+    public virtual DbSet<MedioPago> MedioPago { get; set; }
     public DbSet<Guest> Guests { get; set; }
     public DbSet<Book> Books { get; set; }
     public DbSet<Establishment> Establishments { get; set; }
@@ -463,6 +465,61 @@ public partial class DbventaContext : DbContext
             entity.HasOne(d => d.IdProveedorNavigation).WithMany(p => p.Movimiento)
                 .HasForeignKey(d => d.IdProveedor)
                 .HasConstraintName("FK__Movimiento__idProveedor__403A8C7D");
+
+        });
+
+        modelBuilder.Entity<Caja>(entity =>
+        {
+            entity.HasKey(e => e.IdCaja).HasName("PK__Caja__077D56148B22AC5G");
+
+            entity.Property(e => e.IdCaja).HasColumnName("idCaja");
+            entity.Property(e => e.FechaInicio)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .HasColumnName("fechaInicio");
+            entity.Property(e => e.FechaCierre)
+                //.HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .HasColumnName("fechaCierre");
+            entity.Property(e => e.SaldoInicial)
+                .HasColumnType("decimal(10, 2)")
+                .HasColumnName("saldoInicial");
+            entity.Property(e => e.SaldoFinal)
+                .HasColumnType("decimal(10, 2)")
+                .HasColumnName("saldoFinal");
+            entity.Property(e => e.Valor)
+                .HasColumnType("decimal(10, 2)")
+                .HasColumnName("valor");
+            entity.HasOne(d => d.IdMovimientoNavigation).WithMany(p => p.Caja)
+                .HasForeignKey(d => d.IdMovimiento)
+                .HasConstraintName("FK__Caja__idMovimiento__403A8C7D");
+
+            entity.HasOne(d => d.IdMedioPagoNavigation).WithMany(p => p.Caja)
+                .HasForeignKey(d => d.IdMedioPago)
+                .HasConstraintName("FK__Caja__medioPago__403A8C7D");
+
+            entity.HasOne(d => d.IdUsuarioNavigation).WithMany(p => p.Caja)
+                .HasForeignKey(d => d.IdUsuario)
+                .HasConstraintName("FK__Caja__idProveedor__403A8C7D");
+        });
+
+        modelBuilder.Entity<MedioPago>(entity =>
+        {
+            entity.HasKey(e => e.IdMedioPago).HasName("PK__MedioPago__077D56148B22AC5G");
+
+            entity.Property(e => e.IdMedioPago).HasColumnName("idMedioPago");
+            entity.Property(e => e.Descripcion)
+                  .HasMaxLength(20)
+                  .IsUnicode(false)
+                  .HasColumnName("descripcion");
+            entity.Property(e => e.Naturaleza)
+                  .HasMaxLength(2)
+                  .IsUnicode(false)
+                  .HasColumnName("naturaleza");
+            entity.Property(e => e.UrlImagen)
+                  .HasMaxLength(20)
+                  .IsUnicode(false)
+                  .HasColumnName("urlImagen");
 
         });
 

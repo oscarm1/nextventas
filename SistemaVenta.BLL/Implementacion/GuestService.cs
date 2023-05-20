@@ -52,7 +52,7 @@ namespace SistemaVenta.BLL.Implementacion
                 guest_creado = query.First();
                 return guest_creado;
             }
-            catch (Exception)
+            catch (Exception e)
             {
 
                 throw;

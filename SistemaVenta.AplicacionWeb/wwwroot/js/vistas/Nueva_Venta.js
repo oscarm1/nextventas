@@ -1,4 +1,4 @@
-﻿let valorImpuesto=0;
+﻿let valorImpuesto = 0;
 
 $(document).ready(function () {
 
@@ -18,7 +18,7 @@ $(document).ready(function () {
             }
         })
 
-    fetch("/Negocio/Obtener")
+    fetch("/Company/Obtener")
         .then(response => {
             return response.ok ? response.json() : Promise.reject(response);
         })
@@ -26,10 +26,10 @@ $(document).ready(function () {
             if (responseJson.estado) {
                 const d = responseJson.objeto;
                 console.log(d);
-                $("#inputGroupSubTotal").text(`Sub Total - ${d.simboloMoneda}`)
-                $("#inputGroupIGV").text(`IMP(${d.porcentajeImpuesto}%) - ${d.simboloMoneda}`)
-                $("#inputGroupTotal").text(`Total - ${d.simboloMoneda}`)
-                valorImpuesto = parseFloat(d.porcentajeImpuesto);
+                $("#inputGroupSubTotal").text(`Sub Total - ${d.currency}`)
+                $("#inputGroupIGV").text(`IMP(${d.tax}%) - ${d.currency}`)
+                $("#inputGroupTotal").text(`Total - ${d.currency}`)
+                valorImpuesto = parseFloat(d.tax);
             }
         })
 
@@ -55,12 +55,12 @@ $(document).ready(function () {
                             urlImagen: item.urlImagen,
                             precio: item.precio
                         }
-                        
+
                     ))
                 };
             }
         },
-        language:'es',
+        language: 'es',
         placeholder: 'Buscar producto',
         minimumInputLength: 1,
         templateResult: formatoResultado,
@@ -111,19 +111,18 @@ $("#cboBuscarProducto").on("select2:select", function (e) {
         text: data.text,
         imageUrl: data.urlImagen,
         showCancelButton: true,
-        type:"input",
+        type: "input",
         //showConfirmButton: true,
         //confirmButtonClass: "btn-danger",
         //confirmButtonText: "Si, eliminar",
         //cancelButtonText: "No, cancelar",
         closeOnConf‌irm: false,
-        inputPlaceholder:"Ingrese cantidad"
-    //    closeOnCancel: true
+        inputPlaceholder: "Ingrese cantidad"
+        //    closeOnCancel: true
     },
         function (valor) {
             if (valor === false) { return false }
-            if (valor === "")
-            {
+            if (valor === "") {
                 toastr.warning("", "Nesecita ingresar la cantidad");
                 return false;
             }
@@ -139,7 +138,7 @@ $("#cboBuscarProducto").on("select2:select", function (e) {
                 categoriaProducto: data.categoria,
                 cantidad: parseInt(valor),
                 precio: data.precio.toString(),
-                total: (parseFloat(valor)*data.precio).toString()
+                total: (parseFloat(valor) * data.precio).toString()
             }
 
             productosParaMovimiento.push(producto);
@@ -169,7 +168,7 @@ function mostrarProducto_Precios() {
                 $("<td>").append(
                     $("<button>").addClass("btn btn-danger btn-eliminar btn-sm").append(
                         $("<i>").addClass("fas fa-trash-alt")
-                    ).data("idProducto",item.idProducto),
+                    ).data("idProducto", item.idProducto),
                 ),
                 $("<td>").text(item.descripcionProducto),
                 $("<td>").text(item.cantidad),
@@ -190,13 +189,14 @@ function mostrarProducto_Precios() {
 
 }
 
-$(document).on("click","button.btn-eliminar", function () {
+$(document).on("click", "button.btn-eliminar", function () {
     const _idProducto = $(this).data("idProducto")
     productosParaMovimiento = productosParaMovimiento.filter(p => p.idProducto != _idProducto);
     mostrarProducto_Precios();
 })
 
 $("#btnTerminarMovimiento").click(function () {
+
     if (productosParaMovimiento < 1) {
         toastr.warning("", "Debe ingresar un producto");
         return;
@@ -206,45 +206,109 @@ $("#btnTerminarMovimiento").click(function () {
         toastr.warning("", "Debe ingresar datos de Cliente");
         return;
     }
-    const detalleMovimientoDto = productosParaMovimiento;
 
-    const Movimiento = {
-        idTipoDocumentoMovimiento: $("#cboTipoDocumentoMovimiento").val(),
-        documentoCliente: $("#txtDocumentoCliente").val(),
-        nombreCliente: $("#txtNombreCliente").val(),
-        subTotal: $("#txtSubTotal").val(),
-        impuestoTotal: $("#txtIGV").val(),
-        total: $("#txtTotal").val(),
-        DetalleMovimiento: detalleMovimientoDto
-    }
-
-    $("#btnTerminarMovimiento").LoadingOverlay("show");
-
-    fetch("/Movimiento/RegistrarMovimiento", {
-        method: "POST",
-        headers: { "Content-type": "application/json; charset=utf-8" },
-        body: JSON.stringify(Movimiento),
-    })
+    fetch("/Movimiento/GetPaymentMethods")
         .then(response => {
-            $("#btnTerminarMovimiento").LoadingOverlay("hide");
             return response.ok ? response.json() : Promise.reject(response);
         })
         .then(responseJson => {
-            if (responseJson.estado) {
-                productosParaMovimiento = [];
-                mostrarProducto_Precios();
-                $("#txtDocumentoCliente").val("");
-                $("#txtNombreCliente").val("");
-                $("#cboTipoDocumentoMovimiento").val($("#cboTipoDocumentoMovimiento option:first").val())
-                $("#txtSubTotal").val("");
-                $("#txtIGV").val("");
-                $("#txtTotal").val("");
+            if (responseJson.data.length > 0) {
+                responseJson.data.forEach((item) => {
 
-                swal("Registrado", `Numero de Movimiento:${responseJson.objeto.numeroMovimiento}  `, "success")
-            } else {
-                swal("Error", responseJson.mensaje, "error")
-
+                })
             }
-            
         })
+
+    swal({
+        title: "Cobrar",
+        imageUrl: '/img/mercado.png',
+        html: true,
+        text:
+            '<div>' + $("#txtTotal").val() + '</div><br/>' +
+            '<div><button class="btn btn-primary active">Efectivo</button>' +
+            '<button class="btn btn-primary">Tarjeta</button>' +
+            '<button class="btn btn-primary">Electronico</button>' +
+            '<button class="btn btn-primary">Credito</button></div><br/>' +
+            '<div>Su cambio: <span id="cambio"></span></div>',
+        //'<div>Selecciona una opción:</div>' +
+        //'<div class="radio-options">' +
+        //'<label class="radio-inline"><input type="hidden" name="opcion" value="opcion1"> Efectivo</label>' +
+        //'<label class="radio-inline"><input type="radio" name="opcion" value="opcion1"> Efectivo</label>' +
+        //'<label class="radio-inline"><input type="radio" name="opcion" value="opcion2"> Tarjeta</label>' +
+        //'<label class="radio-inline"><input type="radio" name="opcion" value="opcion3"> Electronico</label>' +
+        //'<label class="radio-inline"><input type="radio" name="opcion" value="opcion3"> Credito</label>' +
+        //'</div>',
+        type: "input",
+        showCancelButton: true,
+        closeOnConfirm: false,
+        //animation: "slide-from-top",
+        inputPlaceholder: "Pago con:",
+        //footer: "<span>Este es el footer del alert</span>"
+    },
+        function (inputValue) {
+            if (inputValue === null) return false;
+
+            if (inputValue === "") {
+                swal.showInputError("You need to write something!");
+                return false;
+            }
+            //swal("Nice!", "You wrote: " + inputValue, "success");
+
+
+            const detalleMovimientoDto = productosParaMovimiento;
+
+            const Movimiento = {
+                idTipoDocumentoMovimiento: $("#cboTipoDocumentoMovimiento").val(),
+                documentoCliente: $("#txtDocumentoCliente").val(),
+                nombreCliente: $("#txtNombreCliente").val(),
+                subTotal: $("#txtSubTotal").val(),
+                impuestoTotal: $("#txtIGV").val(),
+                total: $("#txtTotal").val(),
+                DetalleMovimiento: detalleMovimientoDto
+            }
+
+            $("#btnTerminarMovimiento").LoadingOverlay("show");
+
+            fetch("/Movimiento/RegistrarMovimiento", {
+                method: "POST",
+                headers: { "Content-type": "application/json; charset=utf-8" },
+                body: JSON.stringify(Movimiento),
+            })
+                .then(response => {
+                    $("#btnTerminarMovimiento").LoadingOverlay("hide");
+                    return response.ok ? response.json() : Promise.reject(response);
+                })
+                .then(responseJson => {
+                    if (responseJson.estado) {
+                        productosParaMovimiento = [];
+                        mostrarProducto_Precios();
+                        $("#txtDocumentoCliente").val("");
+                        $("#txtNombreCliente").val("");
+                        $("#cboTipoDocumentoMovimiento").val($("#cboTipoDocumentoMovimiento option:first").val())
+                        $("#txtSubTotal").val("");
+                        $("#txtIGV").val("");
+                        $("#txtTotal").val("");
+
+                        swal("Registrado", `Numero de Movimiento:${responseJson.objeto.numeroMovimiento}  `, "success")
+                    } else {
+                        swal("Error", responseJson.mensaje, "error")
+
+                    }
+
+                })
+
+        });
+
+    $(".sweet-alert input").on("input", function () {
+        var inputValue = $(this).val();
+        var total = parseFloat($("#txtTotal").val());
+        var pago = parseFloat(inputValue);
+
+        if (!isNaN(pago)) {
+            var cambio = pago - total;
+            $("#cambio").text(cambio);
+        } else {
+            $("#cambio").text("");
+        }
+    });
 })

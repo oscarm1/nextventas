@@ -15,20 +15,32 @@ namespace SistemaVenta.BLL.Implementacion
     {
         private readonly IGenericRepository<Producto> _repositorioProducto;
         private readonly IMovimientoRepository _repositorioMovimiento;
+        private readonly IGenericRepository<Configuracion> _repositorioConfiguracion;
 
-        public MovimientoService(IGenericRepository<Producto> repositorioProducto, IMovimientoRepository repositorioMovimiento)
+        public MovimientoService(IGenericRepository<Producto> repositorioProducto, IMovimientoRepository repositorioMovimiento, IGenericRepository<Configuracion> repositorioConfiguracion)
         {
             _repositorioProducto = repositorioProducto;
             _repositorioMovimiento = repositorioMovimiento;
+            _repositorioConfiguracion = repositorioConfiguracion;
         }
 
         public async Task<List<Producto>> ObtenerProductos(string busqueda)
         {
-            IQueryable<Producto> query = await _repositorioProducto.Consultar(
-                p => p.EsActivo == true && 
-                p.Stock > 0 && 
-                string.Concat(p.CodigoBarra, p.Marca, p.Descripcion).Contains(busqueda)
-                );
+            IQueryable<Configuracion> queryConfiguracion = await _repositorioConfiguracion.Consultar(c => c.Recurso.Equals("VentaProducto"));
+            Dictionary<string, string> config = queryConfiguracion.ToDictionary(keySelector: c => c.Propiedad, elementSelector: c => c.Valor);
+
+            IQueryable<Producto> query;
+
+            if (config["ValidaStock"] == "true")
+            {
+                query = await _repositorioProducto.Consultar(
+                p => p.EsActivo == true && p.Stock > 0 && string.Concat(p.CodigoBarra, p.Marca, p.Descripcion).Contains(busqueda));
+            }
+            else
+            {
+                query = await _repositorioProducto.Consultar(
+                p => p.EsActivo == true && string.Concat(p.CodigoBarra, p.Marca, p.Descripcion).Contains(busqueda));
+            }
 
             return query.Include(c => c.IdCategoriaNavigation).ToList();
         }
@@ -49,7 +61,7 @@ namespace SistemaVenta.BLL.Implementacion
         public async Task<List<Movimiento>> Historial(string numeroMovimiento, string buscarPorTipo, string fechaInicio, string fechaFin)
         {
             IQueryable<Movimiento> query = await _repositorioMovimiento.Consultar();
-            fechaInicio = fechaInicio is null? "" : fechaInicio;
+            fechaInicio = fechaInicio is null ? "" : fechaInicio;
             fechaFin = fechaFin is null ? "" : fechaFin;
             buscarPorTipo = buscarPorTipo is null ? "E" : buscarPorTipo == "salida" ? "S" : "E";
 
@@ -59,7 +71,7 @@ namespace SistemaVenta.BLL.Implementacion
                 DateTime fecha_inicio = DateTime.ParseExact(fechaInicio, "dd/MM/yyyy", new CultureInfo("es-CO"));
                 DateTime fecha_fin = DateTime.ParseExact(fechaFin, "dd/MM/yyyy", new CultureInfo("es-CO"));
 
-                return query.Where(v => 
+                return query.Where(v =>
                         v.FechaRegistro.Value.Date >= fecha_inicio.Date &&
                         v.FechaRegistro.Value.Date <= fecha_fin.Date &&
                         (v.IdTipoDocumentoMovimientoNavigation.Naturaleza == buscarPorTipo)
