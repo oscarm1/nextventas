@@ -197,108 +197,114 @@ $(document).on("click", "button.btn-eliminar", function () {
 
 $("#btnTerminarMovimiento").click(function () {
 
+    // Validar si hay productos para el movimiento
     if (productosParaMovimiento < 1) {
         toastr.warning("", "Debe ingresar un producto");
         return;
     }
+
+    // Validar si se requieren datos de cliente
     if ($("#cboTipoDocumentoMovimiento").val() == 5 && $("#txtDocumentoCliente").val() == ''
         || $("#cboTipoDocumentoMovimiento").val() == 2 && $("#txtDocumentoCliente").val() == '') {
         toastr.warning("", "Debe ingresar datos de Cliente");
         return;
     }
 
+    // Obtener los métodos de pago disponibles
     fetch("/Movimiento/GetPaymentMethods")
         .then(response => {
             return response.ok ? response.json() : Promise.reject(response);
         })
         .then(responseJson => {
-            if (responseJson.data.length > 0) {
-                responseJson.data.forEach((item) => {
+            if (responseJson.length > 0) {
+                var paymentButtons = '';
+                responseJson.forEach((item) => {
+                    paymentButtons += '<button class="btn btn-primary payment-button" data-urlimagen="' + item.urlImagen + '">' + item.descripcion + '</button>';
+                });
 
-                })
-            }
-        })
+                // Obtén la URL de la primera imagen
+                var firstImageUrl = responseJson.length > 0 ? responseJson[0].urlImagen : '';
 
-    swal({
-        title: "Cobrar",
-        imageUrl: '/img/mercado.png',
-        html: true,
-        text:
-            '<div>' + $("#txtTotal").val() + '</div><br/>' +
-            '<div><button class="btn btn-primary active">Efectivo</button>' +
-            '<button class="btn btn-primary">Tarjeta</button>' +
-            '<button class="btn btn-primary">Electronico</button>' +
-            '<button class="btn btn-primary">Credito</button></div><br/>' +
-            '<div>Su cambio: <span id="cambio"></span></div>',
-        //'<div>Selecciona una opción:</div>' +
-        //'<div class="radio-options">' +
-        //'<label class="radio-inline"><input type="hidden" name="opcion" value="opcion1"> Efectivo</label>' +
-        //'<label class="radio-inline"><input type="radio" name="opcion" value="opcion1"> Efectivo</label>' +
-        //'<label class="radio-inline"><input type="radio" name="opcion" value="opcion2"> Tarjeta</label>' +
-        //'<label class="radio-inline"><input type="radio" name="opcion" value="opcion3"> Electronico</label>' +
-        //'<label class="radio-inline"><input type="radio" name="opcion" value="opcion3"> Credito</label>' +
-        //'</div>',
-        type: "input",
-        showCancelButton: true,
-        closeOnConfirm: false,
-        //animation: "slide-from-top",
-        inputPlaceholder: "Pago con:",
-        //footer: "<span>Este es el footer del alert</span>"
-    },
-        function (inputValue) {
-            if (inputValue === null) return false;
+                // Mostrar SweetAlert para seleccionar método de pago
+                swal({
+                    title: "Cobrar",
+                    imageUrl: firstImageUrl,  // URL de la primera imagen
+                    html: true,
+                    text:
+                        '<div>' + $("#txtTotal").val() + '</div><br/>' +
+                        '<div>' + paymentButtons + '</div><br/>' +
+                        '<div>Su cambio: <span id="cambio"></span></div>',
+                    type: "input",
+                    showCancelButton: true,
+                    closeOnConfirm: false,
+                    inputPlaceholder: "Pago con:",
+                }).then((inputValue) => {
+                    if (inputValue) {
+                        var selectedButton = $(".swal2-container button.swal2-confirm:focus");
+                        var imageUrl = selectedButton.data('urlimagen');
+                        var paymentMethod = selectedButton.text();
 
-            if (inputValue === "") {
-                swal.showInputError("You need to write something!");
-                return false;
-            }
-            //swal("Nice!", "You wrote: " + inputValue, "success");
+                        // Mostrar información adicional sobre el método de pago seleccionado
+                        if (imageUrl) {
+                            swal({
+                                imageUrl: imageUrl,  // URL de la imagen seleccionada
+                                title: paymentMethod,  // Descripción del medio de pago seleccionado
+                                text: "Más información sobre el medio de pago",
+                            }).then(() => {
+                                // Lógica cuando se confirma el pago
+                                if (inputValue === "") {
+                                    swal.showInputError("You need to write something!");
+                                    return false;
+                                }
 
+                                const detalleMovimientoDto = productosParaMovimiento;
 
-            const detalleMovimientoDto = productosParaMovimiento;
+                                const Movimiento = {
+                                    idTipoDocumentoMovimiento: $("#cboTipoDocumentoMovimiento").val(),
+                                    documentoCliente: $("#txtDocumentoCliente").val(),
+                                    nombreCliente: $("#txtNombreCliente").val(),
+                                    subTotal: $("#txtSubTotal").val(),
+                                    impuestoTotal: $("#txtIGV").val(),
+                                    total: $("#txtTotal").val(),
+                                    DetalleMovimiento: detalleMovimientoDto
+                                }
 
-            const Movimiento = {
-                idTipoDocumentoMovimiento: $("#cboTipoDocumentoMovimiento").val(),
-                documentoCliente: $("#txtDocumentoCliente").val(),
-                nombreCliente: $("#txtNombreCliente").val(),
-                subTotal: $("#txtSubTotal").val(),
-                impuestoTotal: $("#txtIGV").val(),
-                total: $("#txtTotal").val(),
-                DetalleMovimiento: detalleMovimientoDto
-            }
+                                $("#btnTerminarMovimiento").LoadingOverlay("show");
 
-            $("#btnTerminarMovimiento").LoadingOverlay("show");
+                                // Registrar el movimiento
+                                fetch("/Movimiento/RegistrarMovimiento", {
+                                    method: "POST",
+                                    headers: { "Content-type": "application/json; charset=utf-8" },
+                                    body: JSON.stringify(Movimiento),
+                                })
+                                    .then(response => {
+                                        $("#btnTerminarMovimiento").LoadingOverlay("hide");
+                                        return response.ok ? response.json() : Promise.reject(response);
+                                    })
+                                    .then(responseJson => {
+                                        if (responseJson.estado) {
+                                            productosParaMovimiento = [];
+                                            mostrarProducto_Precios();
+                                            $("#txtDocumentoCliente").val("");
+                                            $("#txtNombreCliente").val("");
+                                            $("#cboTipoDocumentoMovimiento").val($("#cboTipoDocumentoMovimiento option:first").val())
+                                            $("#txtSubTotal").val("");
+                                            $("#txtIGV").val("");
+                                            $("#txtTotal").val("");
 
-            fetch("/Movimiento/RegistrarMovimiento", {
-                method: "POST",
-                headers: { "Content-type": "application/json; charset=utf-8" },
-                body: JSON.stringify(Movimiento),
-            })
-                .then(response => {
-                    $("#btnTerminarMovimiento").LoadingOverlay("hide");
-                    return response.ok ? response.json() : Promise.reject(response);
-                })
-                .then(responseJson => {
-                    if (responseJson.estado) {
-                        productosParaMovimiento = [];
-                        mostrarProducto_Precios();
-                        $("#txtDocumentoCliente").val("");
-                        $("#txtNombreCliente").val("");
-                        $("#cboTipoDocumentoMovimiento").val($("#cboTipoDocumentoMovimiento option:first").val())
-                        $("#txtSubTotal").val("");
-                        $("#txtIGV").val("");
-                        $("#txtTotal").val("");
-
-                        swal("Registrado", `Numero de Movimiento:${responseJson.objeto.numeroMovimiento}  `, "success")
-                    } else {
-                        swal("Error", responseJson.mensaje, "error")
-
+                                            swal("Registrado", `Numero de Movimiento:${responseJson.objeto.numeroMovimiento}  `, "success");
+                                        } else {
+                                            swal("Error", responseJson.mensaje, "error");
+                                        }
+                                    });
+                            });
+                        }
                     }
-
-                })
-
+                });
+            }
         });
 
+    // Actualizar el cambio al ingresar el pago
     $(".sweet-alert input").on("input", function () {
         var inputValue = $(this).val();
         var total = parseFloat($("#txtTotal").val());
@@ -311,4 +317,4 @@ $("#btnTerminarMovimiento").click(function () {
             $("#cambio").text("");
         }
     });
-})
+});

@@ -265,6 +265,10 @@ namespace SistemaVenta.AplicacionWeb.Utilidades.AutoMapper
             //   .ForMember(destino => destino.Total,
             //       opt => opt.MapFrom(origen => Convert.ToString(origen.Total.Value, new CultureInfo("es-CO"))));
             #endregion
+            #region MedioPago
+            CreateMap<MedioPago, MedioPagoDTO>().ReverseMap();
+            CreateMap<MedioPagoDTO, MedioPago>().ReverseMap();
+            #endregion
             #region Pedido
             //CreateMap<Pedido, PedidoDTO>()
             //    //.ForMember(destino => destino.TipoDocumentoPedido,

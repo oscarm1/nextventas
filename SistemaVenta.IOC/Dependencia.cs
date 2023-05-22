@@ -52,6 +52,7 @@ namespace SistemaVenta.IOC
             services.AddScoped<IParamPlanService, ParamPlanService>();
             services.AddScoped<IPlanService, PlanService>();
             services.AddScoped<ICajaService, CajaService>();
+            services.AddScoped<IMedioPagoService, MedioPagoService>();
         }
     }
 }
